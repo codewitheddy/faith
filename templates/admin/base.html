@@ -1,0 +1,206 @@
+{% load static %}<!DOCTYPE html>
+{% load i18n static %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}">
+<head>
+<title>{% block title %}{% endblock %}</title>
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
+{% block dark-mode-vars %}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/dark_mode.css" %}">
+{% endblock %}
+{% block extrastyle %}{% endblock %}
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
+{% block extrahead %}{% endblock %}
+{% block responsive %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}">
+    {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}">{% endif %}
+{% endblock %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+</head>
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}has-sidebar{% endblock %}"
+  data-admin-utc-offset="{% now "Z" %}">
+
+<!-- Sidebar Navigation -->
+<div class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+        <a href="{% url 'admin:index' %}" class="sidebar-logo">
+            POPSHOP ADMIN
+        </a>
+        <div class="sidebar-subtitle">Jewellery Management</div>
+    </div>
+    
+    <div class="sidebar-menu">
+        <!-- Dashboard -->
+        <div class="menu-section">
+            <div class="menu-section-title">Dashboard</div>
+            <a href="{% url 'admin:index' %}" class="menu-item">
+                <span class="menu-icon">📊</span>
+                <span class="menu-text">Overview</span>
+            </a>
+        </div>
+        
+        <!-- Products -->
+        <div class="menu-section">
+            <div class="menu-section-title">Products</div>
+            <a href="{% url 'admin:shop_product_changelist' %}" class="menu-item">
+                <span class="menu-icon">💎</span>
+                <span class="menu-text">All Products</span>
+                {% if total_products %}<span class="menu-badge">{{ total_products }}</span>{% endif %}
+            </a>
+            <a href="{% url 'admin:shop_product_add' %}" class="menu-item">
+                <span class="menu-icon">➕</span>
+                <span class="menu-text">Add Product</span>
+            </a>
+            <a href="{% url 'admin:shop_category_changelist' %}" class="menu-item">
+                <span class="menu-icon">📂</span>
+                <span class="menu-text">Categories</span>
+                {% if total_categories %}<span class="menu-badge">{{ total_categories }}</span>{% endif %}
+            </a>
+            <a href="{% url 'admin:shop_category_add' %}" class="menu-item">
+                <span class="menu-icon">➕</span>
+                <span class="menu-text">Add Category</span>
+            </a>
+        </div>
+        
+        <div class="menu-divider"></div>
+        
+        <!-- Users & Authentication -->
+        <div class="menu-section">
+            <div class="menu-section-title">Users & Access</div>
+            <a href="{% url 'admin:auth_user_changelist' %}" class="menu-item">
+                <span class="menu-icon">👥</span>
+                <span class="menu-text">Users</span>
+            </a>
+            <a href="{% url 'admin:auth_user_add' %}" class="menu-item">
+                <span class="menu-icon">➕</span>
+                <span class="menu-text">Add User</span>
+            </a>
+            <a href="{% url 'admin:auth_group_changelist' %}" class="menu-item">
+                <span class="menu-icon">🔐</span>
+                <span class="menu-text">Groups</span>
+            </a>
+        </div>
+        
+        <div class="menu-divider"></div>
+        
+        <!-- Settings -->
+        <div class="menu-section">
+            <div class="menu-section-title">Settings</div>
+            <a href="{% url 'admin:admin_interface_theme_changelist' %}" class="menu-item">
+                <span class="menu-icon">🎨</span>
+                <span class="menu-text">Theme Settings</span>
+            </a>
+            <a href="/" target="_blank" class="menu-item">
+                <span class="menu-icon">🌐</span>
+                <span class="menu-text">View Website</span>
+            </a>
+        </div>
+        
+        <div class="menu-divider"></div>
+        
+        <!-- Account -->
+        <div class="menu-section">
+            <div class="menu-section-title">Account</div>
+            <a href="{% url 'admin:password_change' %}" class="menu-item">
+                <span class="menu-icon">🔑</span>
+                <span class="menu-text">Change Password</span>
+            </a>
+            <a href="{% url 'admin:logout' %}" class="menu-item">
+                <span class="menu-icon">🚪</span>
+                <span class="menu-text">Logout</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Toggle -->
+<button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+}
+</script>
+
+<div id="container">
+
+    {% if not is_popup %}
+    <!-- Header -->
+    {% block header %}
+    <div id="header">
+        <div id="branding">
+        {% block branding %}{% endblock %}
+        </div>
+        {% block usertools %}
+        {% if has_permission %}
+        <div id="user-tools">
+            {% block welcome-msg %}
+                {% trans 'Welcome,' %}
+                <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+            {% endblock %}
+            {% block userlinks %}
+                {% if site_url %}
+                    <a href="{{ site_url }}">{% trans 'View site' %}</a> /
+                {% endif %}
+                {% if user.is_active and user.is_staff %}
+                    {% url 'django-admindocs-docroot' as docsroot %}
+                    {% if docsroot %}
+                        <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+                    {% endif %}
+                {% endif %}
+                {% if user.has_usable_password %}
+                <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
+                {% endif %}
+                <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+            {% endblock %}
+        </div>
+        {% endif %}
+        {% endblock %}
+        {% block nav-global %}{% endblock %}
+    </div>
+    {% endblock %}
+    <!-- END Header -->
+    {% block breadcrumbs %}
+    <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    {% if title %} &rsaquo; {{ title }}{% endif %}
+    </div>
+    {% endblock %}
+    {% endif %}
+
+    <div class="main" id="main">
+      {% block nav-sidebar %}
+        {# Disable default Django nav sidebar - we have our custom sidebar #}
+      {% endblock %}
+      <div class="content">
+        {% block messages %}
+          {% if messages %}
+            <ul class="messagelist">{% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+            {% endfor %}</ul>
+          {% endif %}
+        {% endblock messages %}
+        <!-- Content -->
+        <div id="content" class="{% block coltype %}colM{% endblock %}">
+          {% block pretitle %}{% endblock %}
+          {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+          {% block content_subtitle %}{% if subtitle %}<h2>{{ subtitle }}</h2>{% endif %}{% endblock %}
+          {% block content %}
+            {% block object-tools %}{% endblock %}
+            {{ content }}
+          {% endblock %}
+          {% block sidebar %}{% endblock %}
+          <br class="clear">
+        </div>
+        <!-- END Content -->
+        {% block footer %}<div id="footer"></div>{% endblock %}
+      </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+from django.urls import path
+from . import views
+
+app_name = 'shop'
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('add-to-cart/', views.add_to_cart, name='add_to_cart'),
+    path('update-cart/', views.update_cart, name='update_cart'),
+    path('get-cart/', views.get_cart, name='get_cart'),
+    path('checkout/', views.checkout, name='checkout'),
+]

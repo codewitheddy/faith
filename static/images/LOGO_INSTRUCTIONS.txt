@@ -1,0 +1,15 @@
+LOGO SETUP INSTRUCTIONS
+========================
+
+Please save your logo image as:
+static/images/logo.png
+
+The logo you provided should be saved in this directory with the filename "logo.png"
+
+Recommended specifications:
+- Format: PNG (with transparent background)
+- Width: 400-600px
+- Height: 100-150px
+- File size: < 200KB for fast loading
+
+The navigation bar will automatically display your logo at 50px height on desktop and 40px on mobile.
