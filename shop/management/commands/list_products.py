@@ -15,7 +15,7 @@ class Command(BaseCommand):
             self.stdout.write('-' * 60)
             
             for product in products:
-                has_image = '📷' if product.image else '❌'
+                has_image = '📷' if product.get_image_url() else '❌'
                 self.stdout.write(f'{has_image} {product.name}')
                 self.stdout.write(f'   Price: Ksh {product.price:,.2f}')
                 self.stdout.write(f'   {product.short_description}')
