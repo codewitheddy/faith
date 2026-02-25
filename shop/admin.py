@@ -1,90 +1,10 @@
 from django.contrib import admin
-from django.db.models import Avg, Sum, Count
-from django.template.response import TemplateResponse
-from .models import Category, Product
+from .models import Category, Product, Order, OrderItem
 
 # Customize admin site headers
 admin.site.site_header = "POPSHOP ADMIN"
 admin.site.site_title = "POPSHOP Admin Portal"
 admin.site.index_title = "Welcome to POPSHOP Administration"
-
-
-# Context processor for sidebar counts
-def get_sidebar_context():
-    """Get counts for sidebar badges"""
-    return {
-        'total_products': Product.objects.count(),
-        'total_categories': Category.objects.count(),
-    }
-
-
-# Custom admin index view with analytics
-def admin_index(request):
-    # Get statistics
-    total_products = Product.objects.count()
-    available_products = Product.objects.filter(is_available=True).count()
-    total_categories = Category.objects.count()
-    
-    # Calculate average price and total value
-    stats = Product.objects.filter(is_available=True).aggregate(
-        avg_price=Avg('price'),
-        total_value=Sum('price')
-    )
-    avg_price = stats['avg_price'] or 0
-    total_value = stats['total_value'] or 0
-    
-    # Category breakdown
-    category_stats = []
-    categories = Category.objects.annotate(product_count=Count('products'))
-    for category in categories:
-        if total_products > 0:
-            percentage = (category.product_count / total_products) * 100
-        else:
-            percentage = 0
-        category_stats.append({
-            'name': category.name,
-            'count': category.product_count,
-            'percentage': percentage
-        })
-    
-    # Sort by count descending
-    category_stats.sort(key=lambda x: x['count'], reverse=True)
-    
-    # Recent products
-    recent_products = Product.objects.order_by('-created_at')[:5]
-    
-    context = {
-        'total_products': total_products,
-        'available_products': available_products,
-        'total_categories': total_categories,
-        'avg_price': avg_price,
-        'total_value': total_value,
-        'category_stats': category_stats,
-        'recent_products': recent_products,
-    }
-    
-    # Get the default admin index context
-    from django.contrib.admin.sites import site
-    context.update(site.each_context(request))
-    
-    return TemplateResponse(request, 'admin/index.html', context)
-
-
-# Override the admin index view
-admin.site.index = admin_index
-
-
-# Add context processor to all admin views
-from django.contrib.admin import AdminSite
-
-original_each_context = AdminSite.each_context
-
-def custom_each_context(self, request):
-    context = original_each_context(self, request)
-    context.update(get_sidebar_context())
-    return context
-
-AdminSite.each_context = custom_each_context
 
 
 @admin.register(Category)
@@ -101,7 +21,6 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'category', 'price', 'is_available', 'created_at']
-    list_filter = ['category', 'is_available', 'created_at']
     list_editable = ['is_available', 'price']
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ['name', 'description', 'short_description']
@@ -135,3 +54,61 @@ class ProductAdmin(admin.ModelAdmin):
         updated = queryset.update(is_available=False)
         self.message_user(request, f'{updated} product(s) marked as unavailable.')
     make_unavailable.short_description = 'Mark selected products as unavailable'
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    fields = ['product', 'quantity', 'price', 'get_subtotal']
+    readonly_fields = ['get_subtotal']
+    
+    def get_subtotal(self, obj):
+        if obj.id:
+            return f'Ksh {obj.get_subtotal():,.2f}'
+        return '-'
+    get_subtotal.short_description = 'Subtotal'
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['order_number', 'customer_name', 'customer_phone', 'status', 'total_amount', 'created_at']
+    search_fields = ['order_number', 'customer_name', 'customer_phone']
+    readonly_fields = ['order_number', 'created_at', 'updated_at']
+    date_hierarchy = 'created_at'
+    list_per_page = 20
+    inlines = [OrderItemInline]
+    
+    fieldsets = (
+        ('Order Information', {
+            'fields': ('order_number', 'status', 'total_amount')
+        }),
+        ('Customer Details', {
+            'fields': ('customer_name', 'customer_phone', 'customer_address', 'notes')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = ['mark_confirmed', 'mark_processing', 'mark_shipped', 'mark_delivered']
+    
+    def mark_confirmed(self, request, queryset):
+        updated = queryset.update(status='confirmed')
+        self.message_user(request, f'{updated} order(s) marked as confirmed.')
+    mark_confirmed.short_description = 'Mark as Confirmed'
+    
+    def mark_processing(self, request, queryset):
+        updated = queryset.update(status='processing')
+        self.message_user(request, f'{updated} order(s) marked as processing.')
+    mark_processing.short_description = 'Mark as Processing'
+    
+    def mark_shipped(self, request, queryset):
+        updated = queryset.update(status='shipped')
+        self.message_user(request, f'{updated} order(s) marked as shipped.')
+    mark_shipped.short_description = 'Mark as Shipped'
+    
+    def mark_delivered(self, request, queryset):
+        updated = queryset.update(status='delivered')
+        self.message_user(request, f'{updated} order(s) marked as delivered.')
+    mark_delivered.short_description = 'Mark as Delivered'
