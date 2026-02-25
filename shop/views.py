@@ -1,14 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.views.decorators.cache import cache_page
 from django.core.paginator import Paginator
 from .models import Category, Product
 import json
 from urllib.parse import quote
 
-# Cache the home page for 5 minutes (300 seconds)
-@cache_page(300)
 def home(request):
     categories = Category.objects.all()
     # Optimize query with select_related to avoid N+1 queries
