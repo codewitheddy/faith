@@ -141,6 +141,15 @@
             transform: scale(1.1);
         }
         
+        .nav-cart-icon.pulse {
+            animation: cartPulse 0.5s ease;
+        }
+        
+        @keyframes cartPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
         .nav-cart-count {
             position: absolute;
             top: -8px;
@@ -155,6 +164,16 @@
             justify-content: center;
             font-size: 0.75rem;
             font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-cart-count.updated {
+            animation: countBounce 0.5s ease;
+        }
+        
+        @keyframes countBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
         }
         
         .mobile-menu-btn {
@@ -817,6 +836,12 @@
         
         .btn-add-cart:hover {
             background: #f5b5d0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-add-cart:active {
+            transform: scale(0.95);
+            transition: transform 0.1s;
         }
         
         .btn-add-cart.added {
@@ -2567,6 +2592,41 @@
 
         // Add to Cart with Quantity Selector
         function addToCart(productId, buttonElement) {
+            // Optimistic UI update - update immediately before server response
+            const currentCount = parseInt(document.getElementById('cartCount').textContent) || 0;
+            const newCount = currentCount + 1;
+            
+            // Update UI instantly with animation
+            const cartIcon = document.querySelector('.nav-cart-icon');
+            const cartCountBadge = document.getElementById('navCartCount');
+            
+            document.getElementById('cartCount').textContent = newCount;
+            cartCountBadge.textContent = newCount;
+            
+            // Trigger animations
+            cartIcon.classList.add('pulse');
+            cartCountBadge.classList.add('updated');
+            setTimeout(() => {
+                cartIcon.classList.remove('pulse');
+                cartCountBadge.classList.remove('updated');
+            }, 500);
+            
+            // Show quantity selector immediately
+            if (buttonElement) {
+                const productFooter = buttonElement.parentElement;
+                const quantitySelector = productFooter.querySelector('.quantity-selector[data-product-id="' + productId + '"]');
+                
+                buttonElement.style.display = 'none';
+                if (quantitySelector) {
+                    quantitySelector.classList.add('active');
+                    quantitySelector.querySelector('.qty-display').textContent = '1';
+                }
+            }
+            
+            // Show toast notification immediately
+            showToast('Added to Cart', 'Item successfully added to your cart', 'success');
+            
+            // Send to server in background
             const formData = new FormData();
             formData.append('product_id', productId);
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
@@ -2578,32 +2638,80 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // Sync with server response (in case of discrepancy)
                     document.getElementById('cartCount').textContent = data.cart_count;
                     document.getElementById('navCartCount').textContent = data.cart_count;
+                } else {
+                    // Rollback on error
+                    document.getElementById('cartCount').textContent = currentCount;
+                    document.getElementById('navCartCount').textContent = currentCount;
                     
-                    // Show toast notification
-                    showToast('Added to Cart', 'Item successfully added to your cart', 'success');
-                    
-                    // Show quantity selector instead of button
                     if (buttonElement) {
                         const productFooter = buttonElement.parentElement;
                         const quantitySelector = productFooter.querySelector('.quantity-selector[data-product-id="' + productId + '"]');
                         
-                        buttonElement.style.display = 'none';
+                        buttonElement.style.display = 'flex';
                         if (quantitySelector) {
-                            quantitySelector.classList.add('active');
-                            quantitySelector.querySelector('.qty-display').textContent = '1';
+                            quantitySelector.classList.remove('active');
                         }
                     }
+                    showToast('Error', 'Failed to add item to cart', 'error');
                 }
             })
             .catch(error => {
+                // Rollback on error
+                document.getElementById('cartCount').textContent = currentCount;
+                document.getElementById('navCartCount').textContent = currentCount;
+                
+                if (buttonElement) {
+                    const productFooter = buttonElement.parentElement;
+                    const quantitySelector = productFooter.querySelector('.quantity-selector[data-product-id="' + productId + '"]');
+                    
+                    buttonElement.style.display = 'flex';
+                    if (quantitySelector) {
+                        quantitySelector.classList.remove('active');
+                    }
+                }
                 showToast('Error', 'Failed to add item to cart', 'error');
             });
         }
         
         // Adjust Quantity from Product Card
         function adjustQuantity(productId, action, selectorElement) {
+            // Optimistic UI update
+            const currentCount = parseInt(document.getElementById('cartCount').textContent) || 0;
+            const qtyDisplay = selectorElement.querySelector('.qty-display');
+            const currentQty = parseInt(qtyDisplay.textContent) || 1;
+            
+            let newQty = currentQty;
+            let newCount = currentCount;
+            
+            if (action === 'increase') {
+                newQty = currentQty + 1;
+                newCount = currentCount + 1;
+                qtyDisplay.textContent = newQty;
+            } else if (action === 'decrease') {
+                if (currentQty > 1) {
+                    newQty = currentQty - 1;
+                    newCount = currentCount - 1;
+                    qtyDisplay.textContent = newQty;
+                } else {
+                    // Will remove item
+                    newCount = currentCount - 1;
+                    selectorElement.classList.remove('active');
+                    const productFooter = selectorElement.parentElement;
+                    const addButton = productFooter.querySelector('.btn-add-cart[data-product-id="' + productId + '"]');
+                    if (addButton) {
+                        addButton.style.display = 'flex';
+                    }
+                }
+            }
+            
+            // Update cart count immediately
+            document.getElementById('cartCount').textContent = newCount;
+            document.getElementById('navCartCount').textContent = newCount;
+            
+            // Send to server in background
             fetch('{% url "shop:update_cart" %}', {
                 method: 'POST',
                 headers: {
@@ -2617,39 +2725,29 @@
             })
             .then(response => response.json())
             .then(data => {
+                // Sync with server response
                 document.getElementById('cartCount').textContent = data.cart_count;
                 document.getElementById('navCartCount').textContent = data.cart_count;
+            })
+            .catch(error => {
+                // Rollback on error
+                document.getElementById('cartCount').textContent = currentCount;
+                document.getElementById('navCartCount').textContent = currentCount;
+                qtyDisplay.textContent = currentQty;
                 
-                // Update quantity display or hide selector if removed
-                if (action === 'decrease') {
-                    // Check if item was removed from cart
-                    fetch('{% url "shop:get_cart" %}')
-                    .then(response => response.json())
-                    .then(cartData => {
-                        const item = cartData.cart_items.find(i => i.id == productId);
-                        if (item) {
-                            selectorElement.querySelector('.qty-display').textContent = item.quantity;
-                        } else {
-                            // Item removed, show add button again
-                            selectorElement.classList.remove('active');
-                            const productFooter = selectorElement.parentElement;
-                            const addButton = productFooter.querySelector('.btn-add-cart[data-product-id="' + productId + '"]');
-                            if (addButton) {
-                                addButton.style.display = 'flex';
-                            }
-                        }
-                    });
-                } else if (action === 'increase') {
-                    // Get updated quantity
-                    fetch('{% url "shop:get_cart" %}')
-                    .then(response => response.json())
-                    .then(cartData => {
-                        const item = cartData.cart_items.find(i => i.id == productId);
-                        if (item) {
-                            selectorElement.querySelector('.qty-display').textContent = item.quantity;
-                        }
-                    });
+                if (action === 'decrease' && currentQty === 1) {
+                    // Restore UI if removal failed
+                    selectorElement.classList.add('active');
+                    const productFooter = selectorElement.parentElement;
+                    const addButton = productFooter.querySelector('.btn-add-cart[data-product-id="' + productId + '"]');
+                    if (addButton) {
+                        addButton.style.display = 'none';
+                    }
                 }
+                
+                showToast('Error', 'Failed to update cart', 'error');
+            });
+        }
             });
         }
         
