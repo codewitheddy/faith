@@ -2060,7 +2060,7 @@
                 {% for product in products %}
                 <div class="product-card" data-category="{{ product.category.slug }}" onclick="showProductModal({{ product.id }}, '{{ product.name }}', '{{ product.description }}', '{{ product.price }}', '{% if product.get_image_url %}{{ product.get_image_url }}{% endif %}')">
                     <div class="product-image">
-                        <img src="{% if product.get_image_url %}{{ product.get_image_url }}{% else %}{% static 'images/placeholder.svg' %}{% endif %}" alt="{{ product.name }}">
+                        <img src="{% if product.get_image_url %}{{ product.get_image_url }}{% else %}{% static 'images/placeholder.svg' %}{% endif %}" alt="{{ product.name }}" loading="lazy">
                     </div>
                     <div class="product-info">
                         <div class="product-name">{{ product.name }}</div>
