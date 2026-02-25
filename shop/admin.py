@@ -119,8 +119,8 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('price', 'is_available')
         }),
         ('Media', {
-            'fields': ('image',),
-            'description': 'Upload product image (recommended: square images, min 800x800px)'
+            'fields': ('image_url', 'image_base64', 'image'),
+            'description': 'Choose one option: 1) External URL (recommended), 2) Base64 data, or 3) Upload file'
         }),
     )
     

@@ -23,7 +23,18 @@ class Product(models.Model):
     short_description = models.CharField(max_length=150)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='products/')
+    
+    # Option 1: Store image URL (recommended for external images)
+    image_url = models.URLField(max_length=500, blank=True, null=True, 
+                                help_text="External image URL (e.g., from Unsplash, Imgur)")
+    
+    # Option 2: Store base64 image data (for small images stored in DB)
+    image_base64 = models.TextField(blank=True, null=True,
+                                    help_text="Base64 encoded image data")
+    
+    # Keep the old ImageField for backward compatibility (optional)
+    image = models.ImageField(upload_to='products/', blank=True, null=True)
+    
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -34,6 +45,16 @@ class Product(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+    
+    def get_image_url(self):
+        """Return the appropriate image URL"""
+        if self.image_url:
+            return self.image_url
+        elif self.image_base64:
+            return f"data:image/jpeg;base64,{self.image_base64}"
+        elif self.image:
+            return self.image.url
+        return None
     
     def __str__(self):
         return self.name

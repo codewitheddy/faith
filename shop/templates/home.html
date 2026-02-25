@@ -60,6 +60,7 @@
         .logo {
             height: 50px;
             transition: transform 0.3s ease;
+            flex-shrink: 0;
         }
         
         .logo:hover {
@@ -71,6 +72,8 @@
             gap: 40px;
             align-items: center;
             list-style: none;
+            flex: 1;
+            justify-content: center;
         }
         
         .nav-links a {
@@ -80,26 +83,49 @@
             font-size: 1rem;
             transition: all 0.3s ease;
             position: relative;
-            padding: 5px 0;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .nav-links a::after {
+        .nav-links a .nav-icon {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-links a::before {
             content: '';
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--pastel-pink);
-            transition: width 0.3s ease;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--pastel-pink), #fde4ec);
+            border-radius: 25px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
         
-        .nav-links a:hover::after {
-            width: 100%;
+        .nav-links a:hover::before,
+        .nav-links a.active::before {
+            opacity: 1;
         }
         
         .nav-links a:hover {
-            color: var(--pastel-pink);
+            color: var(--black);
+            transform: translateY(-2px);
+        }
+        
+        .nav-links a:hover .nav-icon {
+            transform: scale(1.2);
+        }
+        
+        .nav-links a.active {
+            color: var(--black);
+            font-weight: 600;
         }
         
         .nav-cart-icon {
@@ -107,6 +133,8 @@
             cursor: pointer;
             font-size: 1.5rem;
             transition: transform 0.3s ease;
+            flex-shrink: 0;
+            margin-left: auto;
         }
         
         .nav-cart-icon:hover {
@@ -189,8 +217,7 @@
         .hero {
             position: relative;
             background: linear-gradient(135deg, #fde4ec 0%, var(--pastel-pink) 50%, #fde4ec 100%);
-            padding: 120px 20px;
-            text-align: center;
+            padding: 80px 20px;
             overflow: hidden;
             min-height: 85vh;
             display: flex;
@@ -214,17 +241,28 @@
             50% { transform: scale(1.1); opacity: 0.8; }
         }
         
-        .hero-content {
+        .hero-container {
             position: relative;
             z-index: 1;
-            max-width: 800px;
+            max-width: 1400px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .hero-content {
+            text-align: left;
+            padding: 20px;
         }
         
         .hero-sparkle {
-            font-size: 4rem;
+            font-size: 3rem;
             margin-bottom: 20px;
             animation: sparkle 2s ease-in-out infinite;
+            display: inline-block;
         }
         
         @keyframes sparkle {
@@ -233,7 +271,7 @@
         }
         
         .hero h1 {
-            font-size: 4rem;
+            font-size: 3.5rem;
             margin-bottom: 20px;
             font-weight: 300;
             letter-spacing: 4px;
@@ -273,9 +311,34 @@
         .hero-buttons {
             display: flex;
             gap: 20px;
-            justify-content: center;
             flex-wrap: wrap;
             animation: fadeInUp 1.6s ease-out;
+        }
+        
+        .hero-image {
+            position: relative;
+            animation: fadeInRight 1.2s ease-out;
+            padding: 20px;
+        }
+        
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            /* box-shadow: 0 20px 60px rgba(0,0,0,0.2); */
+            object-fit: cover;
+            max-height: 600px;
+        }
+        
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
         
         .floating-elements {
@@ -345,6 +408,30 @@
         @keyframes scroll {
             0% { opacity: 1; top: 10px; }
             100% { opacity: 0; top: 30px; }
+        }
+        
+        /* Mobile responsive for hero */
+        @media (max-width: 968px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .hero-content {
+                text-align: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+            }
+            
+            .hero-image {
+                order: -1;
+            }
         }
         
         /* Scroll Reveal Animation */
@@ -1807,7 +1894,7 @@
         
         @media (max-width: 480px) {
             .products-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 2fr;
                 gap: 20px;
             }
             
@@ -1823,23 +1910,25 @@
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="/">
-                <img src="{% static 'images/logo.png' %}" alt="The POPSHOP.KE" class="logo">
+                <img src="{% static 'images/logo.png' %}" alt="ThePOPSHOP.KE" class="logo">
             </a>
             
             <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#products">Shop</a></li>
-                <li><a href="#categories">Categories</a></li>
-                <li><a href="#faq">FAQ</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li>
-                    <div class="nav-cart-icon" onclick="openCart()">
-                        🛒
-                        <span class="nav-cart-count" id="navCartCount">{{ cart_count }}</span>
-                    </div>
-                </li>
+                <li><a href="#home" class="active"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="#about"><span class="nav-icon">ℹ️</span>About</a></li>
+                <li><a href="#products"><span class="nav-icon">💎</span>Shop</a></li>
+                <li><a href="#categories"><span class="nav-icon">📂</span>Categories</a></li>
+                <li><a href="#faq"><span class="nav-icon">❓</span>FAQ</a></li>
+                <li><a href="#contact"><span class="nav-icon">📧</span>Contact</a></li>
             </ul>
+            
+            <div class="nav-cart-icon" onclick="openCart()">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+  <path fill-rule="evenodd" d="M4 4a1 1 0 0 1 1-1h1.5a1 1 0 0 1 .979.796L7.939 6H19a1 1 0 0 1 .979 1.204l-1.25 6a1 1 0 0 1-.979.796H9.605l.208 1H17a3 3 0 1 1-2.83 2h-2.34a3 3 0 1 1-4.009-1.76L5.686 5H5a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
+</svg>
+
+                <span class="nav-cart-count" id="navCartCount">{{ cart_count }}</span>
+            </div>
             
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
         </div>
@@ -1862,19 +1951,26 @@
     <section class="hero" id="home">
         <div class="floating-elements">
             <div class="floating-gem">💎</div>
-            <div class="floating-gem">✨</div>
             <div class="floating-gem">💍</div>
+            <div class="floating-gem">👑</div>
+                <div class="floating-gem">💎</div>
+            <div class="floating-gem">✨</div>
             <div class="floating-gem">👑</div>
         </div>
         
-        <div class="hero-content">
-            <div class="hero-sparkle">✨</div>
-            <h1>The POPSHOP</h1>
-            <p class="hero-subtitle">Where Elegance Meets Craftsmanship</p>
-            <p>Discover our exquisite collection of handcrafted jewellery pieces.<br>Each design tells a story of timeless beauty and sophistication.</p>
-            <div class="hero-buttons">
-                <a href="#products" class="btn-primary">Explore Collection</a>
-                <a href="https://wa.me/254700840182" class="btn-secondary">Contact Us</a>
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>ThePopShoP Kenya</h1>
+                <p class="hero-subtitle">Where Elegance Meets Craftsmanship</p>
+                <p>Discover our exquisite collection of handcrafted jewellery pieces. Each design tells a story of timeless beauty and sophistication.</p>
+                <div class="hero-buttons">
+                    <a href="#products" class="btn-primary">Explore Collection</a>
+                    <a href="https://wa.me/254700840182" class="btn-secondary">Contact Us</a>
+                </div>
+            </div>
+            
+            <div class="hero-image">
+                <img src="{% static 'images/rt.png' %}" alt="Elegant Jewellery Collection" loading="lazy">
             </div>
         </div>
         
@@ -1932,11 +2028,11 @@
             
             <div class="about-stats reveal">
                 <div class="stat-item">
-                    <span class="stat-number">500+</span>
+                    <span class="stat-number">1000+</span>
                     <span class="stat-label">Happy Customers</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number">100+</span>
+                    <span class="stat-number">500+</span>
                     <span class="stat-label">Unique Designs</span>
                 </div>
                 <div class="stat-item">
@@ -1962,9 +2058,9 @@
             <h2 class="section-title">Our Collection</h2>
             <div class="products-grid">
                 {% for product in products %}
-                <div class="product-card" data-category="{{ product.category.slug }}" onclick="showProductModal({{ product.id }}, '{{ product.name }}', '{{ product.description }}', '{{ product.price }}', '{% if product.image %}{{ product.image.url }}{% endif %}')">
+                <div class="product-card" data-category="{{ product.category.slug }}" onclick="showProductModal({{ product.id }}, '{{ product.name }}', '{{ product.description }}', '{{ product.price }}', '{% if product.get_image_url %}{{ product.get_image_url }}{% endif %}')">
                     <div class="product-image">
-                        <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/placeholder.svg' %}{% endif %}" alt="{{ product.name }}">
+                        <img src="{% if product.get_image_url %}{{ product.get_image_url }}{% else %}{% static 'images/placeholder.svg' %}{% endif %}" alt="{{ product.name }}">
                     </div>
                     <div class="product-info">
                         <div class="product-name">{{ product.name }}</div>
@@ -2246,11 +2342,65 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 The POPSHOP.KE. All rights reserved.</p>
+        <p>&copy; 2026 ThePOPSHOP Kenya All rights reserved.</p>
         <p>Contact us: <a href="https://wa.me/254700840182">+254 700 840 182</a></p>
     </footer>
 
     <script>
+        /* Navigation Active State & Smooth Scroll */
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            // Smooth scroll to section
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Get target section
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    
+                    if (targetSection) {
+                        // Calculate offset for fixed navbar
+                        const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                        const targetPosition = targetSection.offsetTop - navbarHeight;
+                        
+                        // Smooth scroll to target
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Set active state based on scroll position
+            window.addEventListener('scroll', function() {
+                let current = '';
+                const sections = document.querySelectorAll('section[id]');
+                const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - navbarHeight - 100;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= sectionTop) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+        
         /* Toast Notification System */
         function showToast(title, message, type = 'success') {
             const container = document.getElementById('toastContainer');
