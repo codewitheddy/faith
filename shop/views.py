@@ -2,7 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
-from .models import Category, Product
+from .models import Category, Product, Order, OrderItem
+from decimal import Decimal
 import json
 from urllib.parse import quote
 
@@ -29,7 +30,13 @@ def home(request):
 
 @require_POST
 def add_to_cart(request):
-    product_id = request.POST.get('product_id')
+    # Handle both JSON and form data
+    if request.content_type == 'application/json':
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+    else:
+        product_id = request.POST.get('product_id')
+    
     product = get_object_or_404(Product, id=product_id)
     
     cart = request.session.get('cart', {})
@@ -41,7 +48,7 @@ def add_to_cart(request):
             'name': product.name,
             'price': str(product.price),
             'quantity': 1,
-            'image': product.image.url if product.image else ''
+            'image': product.get_image_url() or ''
         }
     
     request.session['cart'] = cart
@@ -110,10 +117,37 @@ def checkout(request):
         
         cart = request.session.get('cart', {})
         
+        if not cart:
+            return JsonResponse({'success': False, 'error': 'Cart is empty'})
+        
+        # Calculate total
+        total = sum(float(item['price']) * item['quantity'] for item in cart.values())
+        
+        # Create Order in database
+        order = Order.objects.create(
+            customer_name=name,
+            customer_phone=phone,
+            customer_address=address,
+            notes=notes,
+            total_amount=Decimal(str(total)),
+            status='pending'
+        )
+        
+        # Create OrderItems
+        for product_id, item in cart.items():
+            product = Product.objects.get(id=product_id)
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=item['quantity'],
+                price=Decimal(item['price'])
+            )
+        
         # Build WhatsApp message with basic ASCII characters only
         message = "*THE POPSHOP.KE*\n"
         message += "========================\n"
         message += "*NEW ORDER RECEIVED*\n"
+        message += f"Order #: {order.order_number}\n"
         message += "========================\n\n"
         
         # Customer Information
@@ -126,12 +160,10 @@ def checkout(request):
         message += "*ORDER ITEMS*\n"
         message += "------------------------\n"
         
-        total = 0
         item_count = 0
         item_number = 1
         for item in cart.values():
             subtotal = float(item['price']) * item['quantity']
-            total += subtotal
             item_count += item['quantity']
             message += f"{item_number}. {item['name']}\n"
             message += f"   Qty: {item['quantity']} x Ksh {float(item['price']):,.2f}\n"
@@ -163,6 +195,10 @@ def checkout(request):
         # Clear cart
         request.session['cart'] = {}
         
-        return JsonResponse({'success': True, 'whatsapp_url': whatsapp_url})
+        return JsonResponse({
+            'success': True, 
+            'whatsapp_url': whatsapp_url,
+            'order_number': order.order_number
+        })
     
     return JsonResponse({'success': False})

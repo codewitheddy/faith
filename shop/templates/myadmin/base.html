@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MyAdmin - POPSHOP.KE{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'myadmin/css/admin.css' %}?v=2">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <!-- Header -->
+    <header class="admin-header">
+        <div style="display: flex; align-items: center;">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <a href="{% url 'myadmin:dashboard' %}" class="admin-logo">POPSHOP.KE MyAdmin</a>
+        </div>
+        <div class="admin-user-menu">
+            <span class="admin-username">{{ user.username }}</span>
+            <a href="{% url 'myadmin:logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <nav>
+            <ul class="sidebar-nav">
+                <li>
+                    <a href="{% url 'myadmin:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'myadmin:product_list' %}" class="{% if 'product' in request.resolver_match.url_name %}active{% endif %}">
+                        <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        Products
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'myadmin:order_list' %}" class="{% if 'order' in request.resolver_match.url_name %}active{% endif %}">
+                        <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        Orders
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'myadmin:category_list' %}" class="{% if 'category' in request.resolver_match.url_name %}active{% endif %}">
+                        <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                        Categories
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'myadmin:analytics' %}" class="{% if 'analytics' in request.resolver_match.url_name %}active{% endif %}">
+                        <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Analytics
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <!-- Breadcrumbs -->
+        {% block breadcrumbs %}
+        <div class="breadcrumbs">
+            <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+        </div>
+        {% endblock %}
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="toast toast-{{ message.tags }}" id="toast-{{ forloop.counter }}">
+                <div class="toast-icon">
+                    {% if message.tags == 'success' %}✓{% elif message.tags == 'error' %}✗{% else %}ℹ{% endif %}
+                </div>
+                <div class="toast-message">{{ message }}</div>
+                <button class="toast-close" onclick="document.getElementById('toast-{{ forloop.counter }}').remove()">×</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </main>
+    {% else %}
+    <!-- Not authenticated - show login page -->
+    {% block login_content %}{% endblock %}
+    {% endif %}
+
+    <script src="{% static 'myadmin/js/admin.js' %}?v=2"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+        // Auto-dismiss success toasts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const successToasts = document.querySelectorAll('.toast-success');
+            successToasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.3s ease-out';
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

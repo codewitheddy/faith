@@ -1465,6 +1465,57 @@
             transform: rotate(45deg);
         }
         
+        /* Modal Quantity Selector */
+        .product-modal-quantity-selector {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: var(--white);
+            border: 2px solid var(--pastel-pink);
+            border-radius: 30px;
+            padding: 8px 16px;
+            min-width: 140px;
+            justify-content: space-between;
+        }
+        
+        .product-modal-quantity-selector.active {
+            display: flex;
+        }
+        
+        .product-modal-quantity-selector .qty-control-btn {
+            background: var(--pastel-pink);
+            color: var(--black);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            line-height: 1;
+        }
+        
+        .product-modal-quantity-selector .qty-control-btn:hover {
+            background: #f5b5d0;
+            transform: scale(1.1);
+        }
+        
+        .product-modal-quantity-selector .qty-control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .product-modal-quantity-selector .qty-display {
+            font-weight: 600;
+            font-size: 1.1rem;
+            min-width: 30px;
+            text-align: center;
+            color: var(--black);
+        }
+        
         .cart-modal-content {
             max-width: 500px;
         }
@@ -1983,6 +2034,11 @@
                 width: 100%;
             }
             
+            .product-modal-quantity-selector {
+                width: 100%;
+                min-width: auto;
+            }
+            
             .contact-container h2 {
                 font-size: 2rem;
             }
@@ -2441,6 +2497,11 @@
                             <span class="btn-icon">+</span>
                             <span class="btn-text">Add to Cart</span>
                         </button>
+                        <div class="product-modal-quantity-selector" id="productModalQuantitySelector">
+                            <button class="qty-control-btn" onclick="adjustModalQuantity('decrease')">−</button>
+                            <span class="qty-display" id="productModalQtyDisplay">1</span>
+                            <button class="qty-control-btn" onclick="adjustModalQuantity('increase')">+</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3116,6 +3177,29 @@
             }
             
             document.getElementById('productModalImage').src = optimizedImage;
+            
+            // Check if product is already in cart
+            fetch('{% url "shop:get_cart" %}')
+            .then(response => response.json())
+            .then(data => {
+                const modalBtn = document.getElementById('addToCartModalBtn');
+                const modalQtySelector = document.getElementById('productModalQuantitySelector');
+                const modalQtyDisplay = document.getElementById('productModalQtyDisplay');
+                
+                const cartItem = data.cart_items.find(item => item.id === id);
+                
+                if (cartItem) {
+                    // Product is in cart - show quantity selector
+                    modalBtn.style.display = 'none';
+                    modalQtySelector.classList.add('active');
+                    modalQtyDisplay.textContent = cartItem.quantity;
+                } else {
+                    // Product not in cart - show add button
+                    modalBtn.style.display = 'flex';
+                    modalQtySelector.classList.remove('active');
+                }
+            });
+            
             document.getElementById('productModal').classList.add('active');
         }
 
@@ -3125,10 +3209,122 @@
 
         function addToCartFromModal() {
             const modalBtn = document.getElementById('addToCartModalBtn');
-            addToCart(currentProductId, modalBtn);
-            setTimeout(() => {
-                closeProductModal();
-            }, 500);
+            const modalQtySelector = document.getElementById('productModalQuantitySelector');
+            const modalQtyDisplay = document.getElementById('productModalQtyDisplay');
+            
+            // Optimistic UI update
+            modalBtn.style.display = 'none';
+            modalQtySelector.classList.add('active');
+            modalQtyDisplay.textContent = '1';
+            
+            // Update cart count optimistically
+            const currentCount = parseInt(document.getElementById('cartCount').textContent);
+            document.getElementById('cartCount').textContent = currentCount + 1;
+            document.getElementById('navCartCount').textContent = currentCount + 1;
+            
+            // Add pulse animation to cart icon
+            const navCartIcon = document.querySelector('.nav-cart-icon');
+            navCartIcon.classList.add('pulse');
+            setTimeout(() => navCartIcon.classList.remove('pulse'), 500);
+            
+            // Add bounce animation to cart count
+            const navCartCount = document.getElementById('navCartCount');
+            navCartCount.classList.add('updated');
+            setTimeout(() => navCartCount.classList.remove('updated'), 500);
+            
+            // Send to server
+            fetch('{% url "shop:add_to_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    product_id: currentProductId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Sync with server
+                document.getElementById('cartCount').textContent = data.cart_count;
+                document.getElementById('navCartCount').textContent = data.cart_count;
+                
+                showToast('Added to Cart', 'Product added successfully!', 'success');
+            })
+            .catch(error => {
+                // Rollback on error
+                modalBtn.style.display = 'flex';
+                modalQtySelector.classList.remove('active');
+                document.getElementById('cartCount').textContent = currentCount;
+                document.getElementById('navCartCount').textContent = currentCount;
+                
+                showToast('Error', 'Failed to add to cart', 'error');
+            });
+        }
+        
+        function adjustModalQuantity(action) {
+            const modalQtyDisplay = document.getElementById('productModalQtyDisplay');
+            const modalQtySelector = document.getElementById('productModalQuantitySelector');
+            const modalBtn = document.getElementById('addToCartModalBtn');
+            
+            let currentQty = parseInt(modalQtyDisplay.textContent);
+            let newQty = action === 'increase' ? currentQty + 1 : currentQty - 1;
+            
+            if (newQty < 1) {
+                // Remove from cart
+                modalQtySelector.classList.remove('active');
+                modalBtn.style.display = 'flex';
+                newQty = 0;
+            } else {
+                modalQtyDisplay.textContent = newQty;
+            }
+            
+            // Update cart count optimistically
+            const currentCount = parseInt(document.getElementById('cartCount').textContent);
+            const countChange = action === 'increase' ? 1 : -1;
+            document.getElementById('cartCount').textContent = currentCount + countChange;
+            document.getElementById('navCartCount').textContent = currentCount + countChange;
+            
+            // Add animations
+            const navCartIcon = document.querySelector('.nav-cart-icon');
+            navCartIcon.classList.add('pulse');
+            setTimeout(() => navCartIcon.classList.remove('pulse'), 500);
+            
+            const navCartCount = document.getElementById('navCartCount');
+            navCartCount.classList.add('updated');
+            setTimeout(() => navCartCount.classList.remove('updated'), 500);
+            
+            // Send to server
+            fetch('{% url "shop:update_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    product_id: currentProductId,
+                    action: action
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Sync with server
+                document.getElementById('cartCount').textContent = data.cart_count;
+                document.getElementById('navCartCount').textContent = data.cart_count;
+            })
+            .catch(error => {
+                // Rollback on error
+                modalQtyDisplay.textContent = currentQty;
+                document.getElementById('cartCount').textContent = currentCount;
+                document.getElementById('navCartCount').textContent = currentCount;
+                
+                if (newQty === 0) {
+                    modalQtySelector.classList.add('active');
+                    modalBtn.style.display = 'none';
+                }
+                
+                showToast('Error', 'Failed to update cart', 'error');
+            });
         }
 
         // Cart Modal

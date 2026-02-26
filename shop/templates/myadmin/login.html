@@ -1,0 +1,54 @@
+{% extends 'myadmin/base.html' %}
+{% load static %}
+
+{% block title %}Login - MyAdmin{% endblock %}
+
+{% block login_content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-logo">POPSHOP.KE</div>
+        <h1 class="login-title">MyAdmin Login</h1>
+        
+        {% if messages %}
+        <div class="messages mb-3">
+            {% for message in messages %}
+            <div class="toast toast-{{ message.tags }}" style="position: relative; top: 0; right: 0; margin-bottom: 16px;">
+                <div class="toast-icon">
+                    {% if message.tags == 'success' %}✓{% elif message.tags == 'error' %}✗{% else %}ℹ{% endif %}
+                </div>
+                <div class="toast-message">{{ message }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="post" action="{% url 'myadmin:login' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_username" class="form-label form-label-required">Username</label>
+                <input type="text" name="username" id="id_username" class="form-input" required autofocus>
+                {% if form.username.errors %}
+                <div class="form-error">{{ form.username.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password" class="form-label form-label-required">Password</label>
+                <input type="password" name="password" id="id_password" class="form-input" required>
+                {% if form.password.errors %}
+                <div class="form-error">{{ form.password.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            {% if form.non_field_errors %}
+            <div class="form-error mb-2">{{ form.non_field_errors.0 }}</div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+    </div>
+</div>
+{% endblock %}

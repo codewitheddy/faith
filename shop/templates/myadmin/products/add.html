@@ -1,0 +1,157 @@
+{% extends 'myadmin/base.html' %}
+{% load static %}
+
+{% block title %}Add Product - MyAdmin{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <span class="breadcrumbs-separator">›</span>
+    <a href="{% url 'myadmin:product_list' %}">Products</a>
+    <span class="breadcrumbs-separator">›</span>
+    <span>Add Product</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Add Product</h1>
+</div>
+
+<div class="card">
+    <form method="post" enctype="multipart/form-data" action="{% url 'myadmin:product_add' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}" class="form-label form-label-required">{{ form.name.label }}</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+            <div class="form-error">{{ form.name.errors.0 }}</div>
+            {% endif %}
+            {% if form.name.help_text %}
+            <div class="form-help">{{ form.name.help_text }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.category.id_for_label }}" class="form-label form-label-required">{{ form.category.label }}</label>
+            {{ form.category }}
+            {% if form.category.errors %}
+            <div class="form-error">{{ form.category.errors.0 }}</div>
+            {% endif %}
+            {% if form.category.help_text %}
+            <div class="form-help">{{ form.category.help_text }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.short_description.id_for_label }}" class="form-label form-label-required">{{ form.short_description.label }}</label>
+            {{ form.short_description }}
+            {% if form.short_description.errors %}
+            <div class="form-error">{{ form.short_description.errors.0 }}</div>
+            {% endif %}
+            {% if form.short_description.help_text %}
+            <div class="form-help">{{ form.short_description.help_text }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}" class="form-label form-label-required">{{ form.description.label }}</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+            <div class="form-error">{{ form.description.errors.0 }}</div>
+            {% endif %}
+            {% if form.description.help_text %}
+            <div class="form-help">{{ form.description.help_text }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.price.id_for_label }}" class="form-label form-label-required">{{ form.price.label }}</label>
+            {{ form.price }}
+            {% if form.price.errors %}
+            <div class="form-error">{{ form.price.errors.0 }}</div>
+            {% endif %}
+            {% if form.price.help_text %}
+            <div class="form-help">{{ form.price.help_text }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="card" style="background: var(--gray-light); padding: 20px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 16px; font-size: 18px;">Product Image (Choose One Option)</h3>
+            
+            <div class="form-group">
+                <label for="{{ form.image_url.id_for_label }}" class="form-label">{{ form.image_url.label }}</label>
+                {{ form.image_url }}
+                {% if form.image_url.errors %}
+                <div class="form-error">{{ form.image_url.errors.0 }}</div>
+                {% endif %}
+                {% if form.image_url.help_text %}
+                <div class="form-help">{{ form.image_url.help_text }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
+                {{ form.image }}
+                {% if form.image.errors %}
+                <div class="form-error">{{ form.image.errors.0 }}</div>
+                {% endif %}
+                {% if form.image.help_text %}
+                <div class="form-help">{{ form.image.help_text }}</div>
+                {% endif %}
+                <div id="imagePreview" style="margin-top: 12px; display: none;">
+                    <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid var(--gray-medium);">
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="{{ form.image_base64.id_for_label }}" class="form-label">{{ form.image_base64.label }}</label>
+                {{ form.image_base64 }}
+                {% if form.image_base64.errors %}
+                <div class="form-error">{{ form.image_base64.errors.0 }}</div>
+                {% endif %}
+                {% if form.image_base64.help_text %}
+                <div class="form-help">{{ form.image_base64.help_text }}</div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                {{ form.is_available }}
+                <span class="form-label" style="margin-bottom: 0;">{{ form.is_available.label }}</span>
+            </label>
+            {% if form.is_available.errors %}
+            <div class="form-error">{{ form.is_available.errors.0 }}</div>
+            {% endif %}
+        </div>
+        
+        {% if form.non_field_errors %}
+        <div class="form-error mb-2">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Product</button>
+            <a href="{% url 'myadmin:product_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Image preview functionality
+    document.getElementById('{{ form.image.id_for_label }}').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('previewImg').src = event.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}

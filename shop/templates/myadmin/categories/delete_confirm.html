@@ -1,0 +1,65 @@
+{% extends 'myadmin/base.html' %}
+{% load static %}
+
+{% block title %}Delete Category - MyAdmin{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <span class="breadcrumbs-separator">›</span>
+    <a href="{% url 'myadmin:category_list' %}">Categories</a>
+    <span class="breadcrumbs-separator">›</span>
+    <span>Delete: {{ object.name }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Delete Category</h1>
+</div>
+
+<div class="card">
+    <div style="max-width: 600px;">
+        <h2 style="font-size: 20px; margin-bottom: 16px; color: var(--error-dark);">
+            ⚠️ Confirm Deletion
+        </h2>
+        
+        <p style="margin-bottom: 16px;">
+            Are you sure you want to delete the following category?
+        </p>
+        
+        <div class="card" style="background: var(--gray-light); padding: 16px; margin-bottom: 24px;">
+            <h3 style="font-size: 18px; margin-bottom: 8px;">{{ object.name }}</h3>
+            <p class="text-muted">
+                This category contains <strong>{{ object.products.count }}</strong> product{{ object.products.count|pluralize }}.
+            </p>
+        </div>
+        
+        {% if object.products.exists %}
+        <div class="card" style="background: var(--error); border-left: 4px solid var(--error-dark); padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; color: var(--error-dark); font-weight: 500;">
+                ⚠️ Cannot delete this category because it has associated products. Please reassign or delete the products first.
+            </p>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{% url 'myadmin:category_list' %}" class="btn btn-secondary">Back to Categories</a>
+        </div>
+        {% else %}
+        <div class="card" style="background: var(--error); border-left: 4px solid var(--error-dark); padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; color: var(--error-dark); font-weight: 500;">
+                ⚠️ This action cannot be undone. The category will be permanently deleted from the database.
+            </p>
+        </div>
+        
+        <form method="post" action="{% url 'myadmin:category_delete' object.pk %}">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Yes, Delete Category</button>
+                <a href="{% url 'myadmin:category_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
