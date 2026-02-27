@@ -208,9 +208,12 @@ LOGGING = {
 
 # Add file logging only in development
 if DEBUG:
+    # Ensure logs directory exists
+    logs_dir = BASE_DIR / 'logs'
+    logs_dir.mkdir(exist_ok=True)
     LOGGING['handlers']['file'] = {
         'class': 'logging.FileHandler',
-        'filename': BASE_DIR / 'logs' / 'myadmin.log',
+        'filename': str(logs_dir / 'myadmin.log'),
         'formatter': 'verbose',
     }
     LOGGING['loggers']['myadmin']['handlers'].append('file')

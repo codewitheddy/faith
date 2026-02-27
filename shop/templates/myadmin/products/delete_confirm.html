@@ -1,4 +1,5 @@
 {% extends 'myadmin/base.html' %}
+{% load image_tags %}
 {% load static %}
 
 {% block title %}Delete Product - MyAdmin{% endblock %}
@@ -36,7 +37,7 @@
                 <div>
                     <h3 style="font-size: 18px; margin-bottom: 8px;">{{ object.name }}</h3>
                     <p class="text-muted" style="margin-bottom: 4px;">Category: {{ object.category.name }}</p>
-                    <p class="text-muted" style="margin-bottom: 4px;">Price: KES {{ object.price|floatformat:2 }}</p>
+                    <p class="text-muted" style="margin-bottom: 4px;">Price: KES {{ object.price|thousand_separator }}</p>
                     <p class="text-muted">
                         Status: 
                         {% if object.is_available %}

@@ -102,25 +102,29 @@ class ProductForm(forms.ModelForm):
         image = self.cleaned_data.get('image')
         
         if image:
-            # Check file size (max 5MB)
-            if image.size > 5 * 1024 * 1024:
-                raise ValidationError('Image file size cannot exceed 5MB.')
-            
-            # Check file type
-            valid_types = ['image/jpeg', 'image/png', 'image/webp']
-            if image.content_type not in valid_types:
-                raise ValidationError(
-                    'Invalid image format. Supported formats: JPEG, PNG, WebP.'
-                )
-            
-            # Validate image integrity
-            try:
-                img = Image.open(image)
-                img.verify()
-                # Reset file pointer after verify
-                image.seek(0)
-            except Exception:
-                raise ValidationError('Invalid or corrupted image file.')
+            # Check if this is a new uploaded file (has content_type) or existing image
+            if hasattr(image, 'content_type'):
+                # This is a newly uploaded file - validate it
+                # Check file size (max 5MB)
+                if image.size > 5 * 1024 * 1024:
+                    raise ValidationError('Image file size cannot exceed 5MB.')
+                
+                # Check file type
+                valid_types = ['image/jpeg', 'image/png', 'image/webp']
+                if image.content_type not in valid_types:
+                    raise ValidationError(
+                        'Invalid image format. Supported formats: JPEG, PNG, WebP.'
+                    )
+                
+                # Validate image integrity
+                try:
+                    img = Image.open(image)
+                    img.verify()
+                    # Reset file pointer after verify
+                    image.seek(0)
+                except Exception:
+                    raise ValidationError('Invalid or corrupted image file.')
+            # If no content_type, it's an existing image file - no validation needed
         
         return image
     

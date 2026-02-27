@@ -1,3 +1,4 @@
+{% load image_tags %}
 {% load static %}
 {% load image_tags %}
 <!DOCTYPE html>
@@ -8,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>The POPSHOP.KE - Elegant Handcrafted Jewellery</title>
+    <title>ThePOPSHOP.KE - Elegant Handcrafted Jewellery</title>
     <!-- Version 3.1 - Image Optimization System -->
     <style>
         * {
@@ -815,7 +816,7 @@
         
         .product-price {
             font-size: 1.2rem;
-            font-weight: 600;
+            font-weight: 400;
             color: var(--black);
         }
         
@@ -2195,7 +2196,7 @@
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="/">
-                <img src="{% static 'images/logo.png' %}" alt="ThePOPSHOP.KE" class="logo">
+                <img src="{% static 'images/plogo.png' %}" alt="ThePOPSHOP.KE" class="logo">
             </a>
             
             <ul class="nav-links">
@@ -2283,7 +2284,7 @@
         
         <div class="hero-container">
             <div class="hero-content">
-                <h1>ThePopShoP Kenya</h1>
+                <h1>ThePopShop Kenya</h1>
                 <p class="hero-subtitle">Where Elegance Meets Craftsmanship</p>
                 <p>Discover our exquisite collection of handcrafted jewellery pieces. Each design tells a story of timeless beauty and sophistication.</p>
                 <div class="hero-buttons">
@@ -2307,17 +2308,17 @@
         <div class="about-container">
             <div class="about-content">
                 <div class="about-text">
-                    <h2>About The POPSHOP</h2>
+                    <h2>About ThePopShop Kenya</h2>
                     <p>
-                        Welcome to <span class="highlight">The POPSHOP.KE</span>, your premier destination for exquisite handcrafted jewellery in Kenya. 
-                        We believe that every piece of jewellery tells a story, and we're here to help you find yours.
+                        Welcome to <span style="font-weight: 600;">ThePopShop Kenya</span>, your premier destination for exquisite Jewelry in Kenya. 
+                        We believe that every piece of Jewelry tells a story, and we're here to help you find yours.
                     </p>
                     <p>
                         Our carefully curated collection features elegant designs that blend timeless beauty with contemporary style. 
                         From delicate necklaces to statement rings, each piece is selected with love and attention to detail.
                     </p>
                     <p>
-                        We're passionate about making luxury jewellery accessible to everyone, offering quality pieces at prices that won't break the bank. 
+                        We're passionate about making luxury Jewelry accessible to everyone, offering quality pieces at prices that won't break the bank. 
                         <span class="highlight">Your satisfaction is our priority.</span>
                     </p>
                 </div>
@@ -2332,7 +2333,7 @@
                     <div class="feature-card">
                         <span class="feature-icon">💎</span>
                         <h3>Affordable Luxury</h3>
-                        <p>Premium jewellery at prices that make sense</p>
+                        <p>Premium Jewelry at prices that make sense</p>
                     </div>
                     
                     <div class="feature-card">
@@ -2368,7 +2369,7 @@
 
     <!-- Categories -->
     <div class="container" id="categories">
-        <h2 class="section-title">Shop by Category</h2>
+        <h2 class="section-title"><span style="font-weight: 300;">Shop by Category</span></h2>
         <div class="categories">
             <button class="category-btn active" data-category="all">All</button>
             {% for category in categories %}
@@ -2378,7 +2379,7 @@
 
         <!-- Products Grid -->
         <div id="products">
-            <h2 class="section-title">Our Collection</h2>
+            <h2 class="section-title"><span style="font-weight: 300;">Our Collection</span></h2>
             <div class="products-grid">
                 {% for product in products %}
                 <div class="product-card" data-category="{{ product.category.slug }}" onclick="showProductModal({{ product.id }}, '{{ product.name }}', '{{ product.description }}', '{{ product.price }}', '{% if product.get_image_url %}{{ product.get_image_url }}{% endif %}')">
@@ -2393,7 +2394,7 @@
                         <div class="product-name">{{ product.name }}</div>
                         <div class="product-desc">{{ product.short_description }}</div>
                         <div class="product-footer">
-                            <div class="product-price">Ksh {{ product.price }}</div>
+                            <div class="product-price">Ksh {{ product.price|thousand_separator }}</div>
                             <button class="btn-add-cart" data-product-id="{{ product.id }}" onclick="event.stopPropagation(); addToCart({{ product.id }}, this)">
                                 <span class="btn-icon">+</span>
                                 <span class="btn-text">Add</span>
@@ -2599,7 +2600,7 @@
     <section class="faq-section" id="faq">
         <div class="faq-container">
             <h2>Frequently Asked Questions</h2>
-            <p class="faq-subtitle">Everything you need to know about ordering from The POPSHOP.KE</p>
+            <p class="faq-subtitle">Everything you need to know about ordering from The ThePopShop Kenya</p>
             
             <div class="faq-list">
                 <div class="faq-item">
@@ -2608,7 +2609,7 @@
                         <span class="faq-icon">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>Simply browse our collection, add items to your cart, and proceed to checkout. You'll be redirected to WhatsApp where you can confirm your order details, provide your delivery address, and complete your purchase with our team.</p>
+                        <p>Simply browse our collection, add items to your cart, and proceed to checkout. You'll be redirected to WhatsApp where you can confirm your order details and complete your purchase with our team.</p>
                     </div>
                 </div>
                 
@@ -2618,7 +2619,7 @@
                         <span class="faq-icon">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>We accept M-Pesa, bank transfers, and cash on delivery. Payment details will be shared via WhatsApp after you place your order. We'll guide you through the entire payment process.</p>
+                        <p>We accept M-PESA and Cash on Delivery if within Nairobi. Payment details will be shared via WhatsApp after you place your order. We'll guide you through the entire payment process.</p>
                     </div>
                 </div>
                 
@@ -2628,7 +2629,7 @@
                         <span class="faq-icon">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>Delivery within Nairobi takes 1-2 business days. For other locations in Kenya, delivery takes 2-4 business days. We'll provide tracking information once your order is dispatched.</p>
+                        <p>Place your order before 12:00 PM and enjoy express same-day delivery within 4 working hours (Nairobi only). For other locations in Kenya, delivery takes 2-3 business days. We'll provide tracking information once your order is dispatched.</p>
                     </div>
                 </div>
                 
@@ -2648,7 +2649,19 @@
                         <span class="faq-icon">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>Yes, we accept returns and exchanges within 7 days of delivery. Items must be in original condition with tags attached. Contact us via WhatsApp to initiate a return or exchange.</p>
+                        <p>
+                            We accept returns or exchanges within 24 hours of delivery (Nairobi only) in the rare case of a quality concern.
+                        Kindly note: </p>
+                        <ul>
+                            <li>If you are within Nairobi, you may check the size at the time of delivery. If it does not fit, you may return it immediately to the rider.</li>
+                            <li>Once the rider has left, size-related exchanges cannot be accommodated</li>
+                            <li>Items must remain in their original condition.</li>
+                            <li>To assist you quickly, please share a clear photo or video of the item highlighting the issue via WhatsApp within 24 hours of receiving your order</li>
+
+                        </ul>
+                        <p>Our team will carefully review your request and guide you through the next steps.
+
+Thank you for shopping with us ✨</p>
                     </div>
                 </div>
                 
@@ -2693,7 +2706,11 @@
             
             <div class="contact-methods">
                 <div class="contact-card" onclick="window.open('https://wa.me/254700840182', '_blank')">
-                    <span class="contact-icon">💬</span>
+                    <span class="contact-icon" style="color: #4CAF50;"><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path fill="currentColor" fill-rule="evenodd" d="M12 4a8 8 0 0 0-6.895 12.06l.569.718-.697 2.359 2.32-.648.379.243A8 8 0 1 0 12 4ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10a9.96 9.96 0 0 1-5.016-1.347l-4.948 1.382 1.426-4.829-.006-.007-.033-.055A9.958 9.958 0 0 1 2 12Z" clip-rule="evenodd"/>
+  <path fill="currentColor" d="M16.735 13.492c-.038-.018-1.497-.736-1.756-.83a1.008 1.008 0 0 0-.34-.075c-.196 0-.362.098-.49.291-.146.217-.587.732-.723.886-.018.02-.042.045-.057.045-.013 0-.239-.093-.307-.123-1.564-.68-2.751-2.313-2.914-2.589-.023-.04-.024-.057-.024-.057.005-.021.058-.074.085-.101.08-.079.166-.182.249-.283l.117-.14c.121-.14.175-.25.237-.375l.033-.066a.68.68 0 0 0-.02-.64c-.034-.069-.65-1.555-.715-1.711-.158-.377-.366-.552-.655-.552-.027 0 0 0-.112.005-.137.005-.883.104-1.213.311-.35.22-.94.924-.94 2.16 0 1.112.705 2.162 1.008 2.561l.041.06c1.161 1.695 2.608 2.951 4.074 3.537 1.412.564 2.081.63 2.461.63.16 0 .288-.013.4-.024l.072-.007c.488-.043 1.56-.599 1.804-1.276.192-.534.243-1.117.115-1.329-.088-.144-.239-.216-.43-.308Z"/>
+</svg>
+</span>
                     <h3>WhatsApp</h3>
                     <p>Chat with us instantly</p>
                     <a href="https://wa.me/254700840182" class="contact-link" onclick="event.stopPropagation()">+254 700 840 182</a>
@@ -2703,7 +2720,7 @@
                     <span class="contact-icon">📞</span>
                     <h3>Call Us</h3>
                     <p>Speak to our team</p>
-                    <a href="tel:+254700840182" class="contact-link" onclick="event.stopPropagation()">+254 700 840 182 / 0792267042</a>
+                    <a href="tel:+254700840182" class="contact-link" onclick="event.stopPropagation()">+254 700 840 182 / +254 792 267 042</a>
                 </div>
                 
                 <div class="contact-card" onclick="window.location.href='mailto:info@thepopshop.ke'">
@@ -2721,8 +2738,8 @@
             <div class="business-hours">
                 <h3>Business Hours</h3>
                 <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                <p>Saturday: 10:00 AM - 4:00 PM</p>
-                <p>Sunday: Closed</p>
+                <p>Saturday & Sunday: 10:00 AM - 4:00 PM</p>
+                <!-- <p>Sunday: Closed</p> -->
             </div>
         </div>
     </section>
@@ -2757,8 +2774,8 @@
             </div>
             
             <div class="footer-links">
-                <p>&copy; 2026 ThePOPSHOP Kenya. All rights reserved.</p>
-                <p>Contact us: <a href="https://wa.me/254700840182">+254 700 840 182</a></p>
+                <p>&copy; 2026 ThePopShop Kenya. All rights reserved.</p>
+                <p>Contact us: <a href="https://wa.me/254700840182">+254 700 840 182, +254 792 267 042</a></p>
             </div>
         </div>
     </footer>
@@ -3164,11 +3181,15 @@
         });
 
         // Product Modal
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
         function showProductModal(id, name, desc, price, image) {
             currentProductId = id;
             document.getElementById('productModalTitle').textContent = name;
             document.getElementById('productModalDesc').textContent = desc;
-            document.getElementById('productModalPrice').textContent = 'Ksh ' + price;
+            document.getElementById('productModalPrice').textContent = 'Ksh ' + formatNumber(price);
             
             // Optimize Cloudinary images on-the-fly
             let optimizedImage = image || '{% static "images/placeholder.svg" %}';
@@ -3352,7 +3373,7 @@
                                 <img src="${cartImage}" class="cart-item-image" loading="lazy" decoding="async">
                                 <div class="cart-item-info">
                                     <div class="cart-item-name">${item.name}</div>
-                                    <div class="cart-item-price">Ksh ${item.price} × ${item.quantity} = Ksh ${item.subtotal.toFixed(2)}</div>
+                                    <div class="cart-item-price">Ksh ${formatNumber(item.price)} × ${item.quantity} = Ksh ${formatNumber(item.subtotal.toFixed(2))}</div>
                                     <div class="cart-item-controls">
                                         <button class="qty-btn" onclick="updateCart(${item.id}, 'decrease')">-</button>
                                         <span>${item.quantity}</span>
@@ -3363,7 +3384,7 @@
                             </div>
                         `;
                     });
-                    document.getElementById('totalAmount').textContent = data.cart_total.toFixed(2);
+                    document.getElementById('totalAmount').textContent = formatNumber(data.cart_total.toFixed(2));
                     document.getElementById('cartTotal').style.display = 'block';
                     document.getElementById('checkoutBtn').style.display = 'block';
                 }

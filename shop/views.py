@@ -144,21 +144,16 @@ def checkout(request):
             )
         
         # Build WhatsApp message with basic ASCII characters only
-        message = "*THE POPSHOP.KE*\n"
-        message += "========================\n"
-        message += "*NEW ORDER RECEIVED*\n"
+        message = "*NEW ORDER - ThePopShopKe*\n"
+        # message += "========================\n"
+        # message += "*NEW ORDER RECEIVED*\n"
         message += f"Order #: {order.order_number}\n"
-        message += "========================\n\n"
-        
-        # Customer Information
-        message += "*CUSTOMER DETAILS*\n"
-        message += f"Name: {name}\n"
-        message += f"Phone: {phone}\n"
-        message += f"Address: {address}\n\n"
-        
+        message += "\n"
+       
+         
         # Order Items
         message += "*ORDER ITEMS*\n"
-        message += "------------------------\n"
+        # message += "------------------------\n"
         
         item_count = 0
         item_number = 1
@@ -171,22 +166,30 @@ def checkout(request):
             item_number += 1
         
         # Order Summary
-        message += "========================\n"
+        # message += "========================\n"
         message += "*ORDER SUMMARY*\n"
         message += f"Total Items: {item_count}\n"
-        message += f"*TOTAL AMOUNT: Ksh {total:,.2f}*\n"
-        message += "========================\n"
+        message += f"Total Amount: Ksh {total:,.2f}\n\n"
+        # message += "========================\n"
+
+            # Customer Information
+        message += "*CUSTOMER DETAILS*\n"
+        message += f"Name: {name}\n"
+        message += f"Phone: {phone}\n"
+        message += f"Address: {address}\n"
+        
         
         # Additional Notes
         if notes:
             message += f"\n*SPECIAL NOTES*\n{notes}\n"
-            message += "========================\n"
+            message += "--------------------------------\n"
         
         # Footer
-        message += "\nReady to process this order!\n"
-        message += "Delivery: 1-2 days (Nairobi)\n"
-        message += "Payment: M-Pesa/Bank/COD\n\n"
-        message += "Thank you for shopping with us!"
+        message += "\nUpon Order Placed, We'll send you Payment Details and Delivery Fees.\n"
+        # message += "Delivery: 1-2 days (Nairobi)\n"
+        # message += "Payment: M-Pesa/Bank/COD\n\n"
+        message += "\n"
+        message += "Thank you for shopping with ThePopShopKe!\n"
         
         # URL encode and create WhatsApp link
         encoded_message = quote(message)

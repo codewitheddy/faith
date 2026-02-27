@@ -1,4 +1,5 @@
 {% extends 'myadmin/base.html' %}
+{% load image_tags %}
 {% load static %}
 
 {% block title %}Analytics - MyAdmin{% endblock %}
@@ -42,7 +43,7 @@
 <div class="kpi-grid">
     <div class="kpi-card">
         <div class="kpi-label">Total Revenue</div>
-        <div class="kpi-value">KES {{ total_revenue|floatformat:2 }}</div>
+        <div class="kpi-value">KES {{ total_revenue|thousand_separator }}</div>
     </div>
     
     <div class="kpi-card">
@@ -103,7 +104,7 @@
                 <tr>
                     <td><strong>#{{ forloop.counter }}</strong></td>
                     <td>{{ item.product__name }}</td>
-                    <td><strong style="color: var(--primary-pink);">KES {{ item.total_revenue|floatformat:2 }}</strong></td>
+                    <td><strong style="color: var(--primary-pink);">KES {{ item.total_revenue|thousand_separator }}</strong></td>
                 </tr>
                 {% endfor %}
             </tbody>
