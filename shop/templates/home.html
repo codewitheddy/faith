@@ -3217,7 +3217,17 @@ Thank you for shopping with us ✨</p>
             fetch('{% url "shop:get_cart" %}')
             .then(response => response.json())
             .then(data => {
+                console.log('Cart data on page load:', data);
+                
+                // Update cart count in header
+                if (data.cart_count !== undefined) {
+                    document.getElementById('cartCount').textContent = data.cart_count;
+                    document.getElementById('navCartCount').textContent = data.cart_count;
+                }
+                
+                // Update product cards with cart quantities
                 data.cart_items.forEach(item => {
+                    console.log('Processing cart item:', item.id, 'quantity:', item.quantity);
                     const addButton = document.querySelector('.btn-add-cart[data-product-id="' + item.id + '"]');
                     if (addButton) {
                         const productFooter = addButton.parentElement;
@@ -3226,10 +3236,19 @@ Thank you for shopping with us ✨</p>
                         addButton.style.display = 'none';
                         if (quantitySelector) {
                             quantitySelector.classList.add('active');
-                            quantitySelector.querySelector('.qty-display').textContent = item.quantity;
+                            const qtyDisplay = quantitySelector.querySelector('.qty-display');
+                            qtyDisplay.textContent = item.quantity;
+                            console.log('Set quantity for product', item.id, 'to', item.quantity);
+                        } else {
+                            console.warn('Quantity selector not found for product', item.id);
                         }
+                    } else {
+                        console.warn('Add button not found for product', item.id);
                     }
                 });
+            })
+            .catch(error => {
+                console.error('Error loading cart on page load:', error);
             });
         });
 
