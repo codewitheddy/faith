@@ -9,6 +9,7 @@
 
 :root {
     --primary-pink: #F8C8DC;
+    --primary-pink-dark: #d946a6; /* Darker pink for better contrast */
     --light-pink: #fde4ec;
     --dark-pink: #f5b5d0;
     --black: #000000;
@@ -57,7 +58,7 @@ body {
 .admin-logo {
     font-size: 24px;
     font-weight: bold;
-    color: var(--primary-pink);
+    color: var(--primary-pink-dark);
     text-decoration: none;
 }
 
@@ -74,7 +75,7 @@ body {
 
 .btn-logout {
     padding: 8px 16px;
-    background: var(--primary-pink);
+    background: var(--primary-pink-dark);
     color: var(--white);
     border: none;
     border-radius: 4px;
@@ -85,7 +86,7 @@ body {
 }
 
 .btn-logout:hover {
-    background: var(--dark-pink);
+    background: #c2358a; /* Even darker on hover */
 }
 
 /* Sidebar */
@@ -121,10 +122,11 @@ body {
 
 .sidebar-nav a:hover {
     background: var(--light-pink);
+    color: var(--black); /* Ensure text stays readable */
 }
 
 .sidebar-nav a.active {
-    background: var(--primary-pink);
+    background: var(--primary-pink-dark);
     color: var(--white);
     font-weight: 500;
 }
@@ -154,7 +156,7 @@ body {
 }
 
 .breadcrumbs a {
-    color: var(--primary-pink);
+    color: var(--primary-pink-dark);
     text-decoration: none;
 }
 
@@ -194,12 +196,12 @@ body {
 }
 
 .btn-primary {
-    background: var(--primary-pink);
+    background: var(--primary-pink-dark);
     color: var(--white);
 }
 
 .btn-primary:hover {
-    background: var(--dark-pink);
+    background: #c2358a; /* Even darker on hover */
 }
 
 .btn-secondary {
@@ -275,7 +277,7 @@ body {
 .kpi-value {
     font-size: 32px;
     font-weight: bold;
-    color: var(--primary-pink);
+    color: var(--primary-pink-dark);
 }
 
 /* Forms */
@@ -311,7 +313,7 @@ body {
 .form-select:focus,
 .form-textarea:focus {
     outline: none;
-    border-color: var(--primary-pink);
+    border-color: var(--primary-pink-dark);
 }
 
 .form-input.error,
@@ -376,7 +378,7 @@ body {
 }
 
 .data-table tr:hover {
-    background: var(--light-pink);
+    background: #fff0f5; /* Slightly darker pink for better text contrast */
 }
 
 .table-thumbnail {
@@ -440,14 +442,14 @@ body {
 }
 
 .page-btn:hover:not(:disabled) {
-    background: var(--primary-pink);
-    border-color: var(--primary-pink);
+    background: var(--primary-pink-dark);
+    border-color: var(--primary-pink-dark);
     color: var(--white);
 }
 
 .page-btn.active {
-    background: var(--primary-pink);
-    border-color: var(--primary-pink);
+    background: var(--primary-pink-dark);
+    border-color: var(--primary-pink-dark);
     color: var(--white);
 }
 
@@ -606,7 +608,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--light-pink) 0%, var(--white) 100%);
+    background: linear-gradient(135deg, #f5d5e5 0%, var(--white) 100%); /* Slightly darker gradient */
 }
 
 .login-card {
@@ -622,7 +624,7 @@ body {
     text-align: center;
     font-size: 32px;
     font-weight: bold;
-    color: var(--primary-pink);
+    color: var(--primary-pink-dark);
     margin-bottom: 32px;
 }
 
