@@ -3100,15 +3100,33 @@ Thank you for shopping with us ✨</p>
             let newQty = currentQty;
             let newCount = currentCount;
             
+            // Sync with modal if it's open and showing the same product
+            const modal = document.getElementById('productModal');
+            const isModalOpen = modal && modal.classList.contains('active');
+            const modalQtyDisplay = document.getElementById('productModalQtyDisplay');
+            const modalQtySelector = document.getElementById('productModalQuantitySelector');
+            const modalBtn = document.getElementById('addToCartModalBtn');
+            const isSameProduct = currentProductId === productId;
+            
             if (action === 'increase') {
                 newQty = currentQty + 1;
                 newCount = currentCount + 1;
                 qtyDisplay.textContent = newQty;
+                
+                // Sync modal
+                if (isModalOpen && isSameProduct && modalQtyDisplay) {
+                    modalQtyDisplay.textContent = newQty;
+                }
             } else if (action === 'decrease') {
                 if (currentQty > 1) {
                     newQty = currentQty - 1;
                     newCount = currentCount - 1;
                     qtyDisplay.textContent = newQty;
+                    
+                    // Sync modal
+                    if (isModalOpen && isSameProduct && modalQtyDisplay) {
+                        modalQtyDisplay.textContent = newQty;
+                    }
                 } else {
                     // Will remove item
                     newCount = Math.max(0, currentCount - 1);
@@ -3117,6 +3135,12 @@ Thank you for shopping with us ✨</p>
                     const addButton = productFooter.querySelector('.btn-add-cart[data-product-id="' + productId + '"]');
                     if (addButton) {
                         addButton.style.display = 'flex';
+                    }
+                    
+                    // Sync modal
+                    if (isModalOpen && isSameProduct) {
+                        if (modalQtySelector) modalQtySelector.classList.remove('active');
+                        if (modalBtn) modalBtn.style.display = 'flex';
                     }
                 }
             }
@@ -3162,6 +3186,11 @@ Thank you for shopping with us ✨</p>
                 document.getElementById('navCartCount').textContent = currentCount;
                 qtyDisplay.textContent = currentQty;
                 
+                // Rollback modal too
+                if (isModalOpen && isSameProduct && modalQtyDisplay) {
+                    modalQtyDisplay.textContent = currentQty;
+                }
+                
                 if (action === 'decrease' && currentQty === 1) {
                     // Restore UI if removal failed
                     selectorElement.classList.add('active');
@@ -3169,6 +3198,12 @@ Thank you for shopping with us ✨</p>
                     const addButton = productFooter.querySelector('.btn-add-cart[data-product-id="' + productId + '"]');
                     if (addButton) {
                         addButton.style.display = 'none';
+                    }
+                    
+                    // Restore modal
+                    if (isModalOpen && isSameProduct) {
+                        if (modalQtySelector) modalQtySelector.classList.add('active');
+                        if (modalBtn) modalBtn.style.display = 'none';
                     }
                 }
                 
@@ -3283,10 +3318,23 @@ Thank you for shopping with us ✨</p>
             const modalQtySelector = document.getElementById('productModalQuantitySelector');
             const modalQtyDisplay = document.getElementById('productModalQtyDisplay');
             
-            // Optimistic UI update
+            // Optimistic UI update - Modal
             modalBtn.style.display = 'none';
             modalQtySelector.classList.add('active');
             modalQtyDisplay.textContent = '1';
+            
+            // Sync with product card immediately
+            const cardBtn = document.querySelector(`.btn-add-cart[data-product-id="${currentProductId}"]`);
+            if (cardBtn) {
+                const productFooter = cardBtn.parentElement;
+                const cardQtySelector = productFooter.querySelector(`.quantity-selector[data-product-id="${currentProductId}"]`);
+                if (cardQtySelector) {
+                    const cardQtyDisplay = cardQtySelector.querySelector('.qty-display');
+                    cardBtn.style.display = 'none';
+                    cardQtySelector.classList.add('active');
+                    cardQtyDisplay.textContent = '1';
+                }
+            }
             
             // Update cart count optimistically
             const currentCount = parseInt(document.getElementById('cartCount').textContent);
@@ -3323,9 +3371,19 @@ Thank you for shopping with us ✨</p>
                 showToast('Added to Cart', 'Product added successfully!', 'success');
             })
             .catch(error => {
-                // Rollback on error
+                // Rollback on error - both modal and card
                 modalBtn.style.display = 'flex';
                 modalQtySelector.classList.remove('active');
+                
+                if (cardBtn) {
+                    const productFooter = cardBtn.parentElement;
+                    const cardQtySelector = productFooter.querySelector(`.quantity-selector[data-product-id="${currentProductId}"]`);
+                    if (cardQtySelector) {
+                        cardBtn.style.display = 'flex';
+                        cardQtySelector.classList.remove('active');
+                    }
+                }
+                
                 document.getElementById('cartCount').textContent = currentCount;
                 document.getElementById('navCartCount').textContent = currentCount;
                 
@@ -3341,20 +3399,37 @@ Thank you for shopping with us ✨</p>
             let currentQty = parseInt(modalQtyDisplay.textContent);
             let newQty = action === 'increase' ? currentQty + 1 : currentQty - 1;
             
+            // Find the product card elements
+            const cardBtn = document.querySelector(`.btn-add-cart[data-product-id="${currentProductId}"]`);
+            const productFooter = cardBtn ? cardBtn.parentElement : null;
+            const cardQtySelector = productFooter ? productFooter.querySelector(`.quantity-selector[data-product-id="${currentProductId}"]`) : null;
+            const cardQtyDisplay = cardQtySelector ? cardQtySelector.querySelector('.qty-display') : null;
+            
             if (newQty < 1) {
-                // Remove from cart
+                // Remove from cart - update both modal and card
                 modalQtySelector.classList.remove('active');
                 modalBtn.style.display = 'flex';
+                
+                if (cardBtn && cardQtySelector) {
+                    cardQtySelector.classList.remove('active');
+                    cardBtn.style.display = 'flex';
+                }
+                
                 newQty = 0;
             } else {
+                // Update quantity - sync modal and card
                 modalQtyDisplay.textContent = newQty;
+                if (cardQtyDisplay) {
+                    cardQtyDisplay.textContent = newQty;
+                }
             }
             
             // Update cart count optimistically
             const currentCount = parseInt(document.getElementById('cartCount').textContent);
             const countChange = action === 'increase' ? 1 : -1;
-            document.getElementById('cartCount').textContent = currentCount + countChange;
-            document.getElementById('navCartCount').textContent = currentCount + countChange;
+            const newCount = Math.max(0, currentCount + countChange);
+            document.getElementById('cartCount').textContent = newCount;
+            document.getElementById('navCartCount').textContent = newCount;
             
             // Add animations
             const navCartIcon = document.querySelector('.nav-cart-icon');
@@ -3384,14 +3459,23 @@ Thank you for shopping with us ✨</p>
                 document.getElementById('navCartCount').textContent = data.cart_count;
             })
             .catch(error => {
-                // Rollback on error
+                // Rollback on error - both modal and card
                 modalQtyDisplay.textContent = currentQty;
+                if (cardQtyDisplay) {
+                    cardQtyDisplay.textContent = currentQty;
+                }
+                
                 document.getElementById('cartCount').textContent = currentCount;
                 document.getElementById('navCartCount').textContent = currentCount;
                 
                 if (newQty === 0) {
                     modalQtySelector.classList.add('active');
                     modalBtn.style.display = 'none';
+                    
+                    if (cardBtn && cardQtySelector) {
+                        cardQtySelector.classList.add('active');
+                        cardBtn.style.display = 'none';
+                    }
                 }
                 
                 showToast('Error', 'Failed to update cart', 'error');
