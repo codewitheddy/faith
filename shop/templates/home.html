@@ -3111,7 +3111,10 @@ Thank you for shopping with us ✨</p>
             const modalQtyDisplay = document.getElementById('productModalQtyDisplay');
             const modalQtySelector = document.getElementById('productModalQuantitySelector');
             const modalBtn = document.getElementById('addToCartModalBtn');
-            const isSameProduct = currentProductId === productId;
+            // Convert both to numbers for comparison
+            const isSameProduct = parseInt(currentProductId) === parseInt(productId);
+            
+            console.log('adjustQuantity - Product:', productId, 'Action:', action, 'Modal open:', isModalOpen, 'Same product:', isSameProduct);
             
             if (action === 'increase') {
                 newQty = currentQty + 1;
@@ -3121,6 +3124,7 @@ Thank you for shopping with us ✨</p>
                 // Sync modal
                 if (isModalOpen && isSameProduct && modalQtyDisplay) {
                     modalQtyDisplay.textContent = newQty;
+                    console.log('Synced modal quantity to:', newQty);
                 }
             } else if (action === 'decrease') {
                 if (currentQty > 1) {
@@ -3131,6 +3135,7 @@ Thank you for shopping with us ✨</p>
                     // Sync modal
                     if (isModalOpen && isSameProduct && modalQtyDisplay) {
                         modalQtyDisplay.textContent = newQty;
+                        console.log('Synced modal quantity to:', newQty);
                     }
                 } else {
                     // Will remove item
@@ -3146,6 +3151,7 @@ Thank you for shopping with us ✨</p>
                     if (isModalOpen && isSameProduct) {
                         if (modalQtySelector) modalQtySelector.classList.remove('active');
                         if (modalBtn) modalBtn.style.display = 'flex';
+                        console.log('Synced modal to show add button');
                     }
                 }
             }
@@ -3222,7 +3228,9 @@ Thank you for shopping with us ✨</p>
             fetch('{% url "shop:get_cart" %}')
             .then(response => response.json())
             .then(data => {
-                console.log('Cart data on page load:', data);
+                console.log('=== CART DATA ON PAGE LOAD ===');
+                console.log('Cart count:', data.cart_count);
+                console.log('Cart items:', data.cart_items);
                 
                 // Update cart count in header
                 if (data.cart_count !== undefined) {
@@ -3232,7 +3240,7 @@ Thank you for shopping with us ✨</p>
                 
                 // Update product cards with cart quantities
                 data.cart_items.forEach(item => {
-                    console.log('Processing cart item:', item.id, 'quantity:', item.quantity);
+                    console.log('Processing cart item - ID:', item.id, 'Quantity:', item.quantity);
                     const addButton = document.querySelector('.btn-add-cart[data-product-id="' + item.id + '"]');
                     if (addButton) {
                         const productFooter = addButton.parentElement;
@@ -3243,14 +3251,15 @@ Thank you for shopping with us ✨</p>
                             quantitySelector.classList.add('active');
                             const qtyDisplay = quantitySelector.querySelector('.qty-display');
                             qtyDisplay.textContent = item.quantity;
-                            console.log('Set quantity for product', item.id, 'to', item.quantity);
+                            console.log('✓ Set quantity for product', item.id, 'to', item.quantity);
                         } else {
-                            console.warn('Quantity selector not found for product', item.id);
+                            console.warn('✗ Quantity selector not found for product', item.id);
                         }
                     } else {
-                        console.warn('Add button not found for product', item.id);
+                        console.warn('✗ Add button not found for product', item.id);
                     }
                 });
+                console.log('=== CART SYNC COMPLETE ===');
             })
             .catch(error => {
                 console.error('Error loading cart on page load:', error);
@@ -3280,19 +3289,26 @@ Thank you for shopping with us ✨</p>
             fetch('{% url "shop:get_cart" %}')
             .then(response => response.json())
             .then(data => {
+                console.log('Modal opened for product:', id, 'Cart items:', data.cart_items);
+                
                 const modalBtn = document.getElementById('addToCartModalBtn');
                 const modalQtySelector = document.getElementById('productModalQuantitySelector');
                 const modalQtyDisplay = document.getElementById('productModalQtyDisplay');
                 
-                const cartItem = data.cart_items.find(item => item.id === id);
+                // Convert both to numbers for comparison
+                const cartItem = data.cart_items.find(item => parseInt(item.id) === parseInt(id));
+                
+                console.log('Cart item found:', cartItem);
                 
                 if (cartItem) {
                     // Product is in cart - show quantity selector
+                    console.log('Product in cart, showing quantity:', cartItem.quantity);
                     modalBtn.style.display = 'none';
                     modalQtySelector.classList.add('active');
                     modalQtyDisplay.textContent = cartItem.quantity;
                 } else {
                     // Product not in cart - show add button
+                    console.log('Product not in cart, showing add button');
                     modalBtn.style.display = 'flex';
                     modalQtySelector.classList.remove('active');
                 }
@@ -3346,6 +3362,8 @@ Thank you for shopping with us ✨</p>
         }
 
         function addToCartFromModal() {
+            console.log('addToCartFromModal - Product:', currentProductId);
+            
             const modalBtn = document.getElementById('addToCartModalBtn');
             const modalQtySelector = document.getElementById('productModalQuantitySelector');
             const modalQtyDisplay = document.getElementById('productModalQtyDisplay');
@@ -3365,7 +3383,10 @@ Thank you for shopping with us ✨</p>
                     cardBtn.style.display = 'none';
                     cardQtySelector.classList.add('active');
                     cardQtyDisplay.textContent = '1';
+                    console.log('Synced product card to show quantity selector');
                 }
+            } else {
+                console.warn('Card button not found for product:', currentProductId);
             }
             
             // Update cart count optimistically
@@ -3400,9 +3421,11 @@ Thank you for shopping with us ✨</p>
                 document.getElementById('cartCount').textContent = data.cart_count;
                 document.getElementById('navCartCount').textContent = data.cart_count;
                 
+                console.log('Added to cart successfully, new count:', data.cart_count);
                 showToast('Added to Cart', 'Product added successfully!', 'success');
             })
             .catch(error => {
+                console.error('Error adding to cart:', error);
                 // Rollback on error - both modal and card
                 modalBtn.style.display = 'flex';
                 modalQtySelector.classList.remove('active');
@@ -3424,6 +3447,8 @@ Thank you for shopping with us ✨</p>
         }
         
         function adjustModalQuantity(action) {
+            console.log('adjustModalQuantity - Product:', currentProductId, 'Action:', action);
+            
             const modalQtyDisplay = document.getElementById('productModalQtyDisplay');
             const modalQtySelector = document.getElementById('productModalQuantitySelector');
             const modalBtn = document.getElementById('addToCartModalBtn');
@@ -3439,20 +3464,24 @@ Thank you for shopping with us ✨</p>
             
             if (newQty < 1) {
                 // Remove from cart - update both modal and card
+                console.log('Removing product from cart');
                 modalQtySelector.classList.remove('active');
                 modalBtn.style.display = 'flex';
                 
                 if (cardBtn && cardQtySelector) {
                     cardQtySelector.classList.remove('active');
                     cardBtn.style.display = 'flex';
+                    console.log('Synced card to show add button');
                 }
                 
                 newQty = 0;
             } else {
                 // Update quantity - sync modal and card
+                console.log('Updating quantity to:', newQty);
                 modalQtyDisplay.textContent = newQty;
                 if (cardQtyDisplay) {
                     cardQtyDisplay.textContent = newQty;
+                    console.log('Synced card quantity to:', newQty);
                 }
             }
             
