@@ -3252,7 +3252,7 @@ Thank you for shopping with us ✨</p>
             
             document.getElementById('productModalImage').src = optimizedImage;
             
-            // Check if product is already in cart
+            // Check if product is already in cart BEFORE opening modal
             fetch('{% url "shop:get_cart" %}')
             .then(response => response.json())
             .then(data => {
@@ -3272,9 +3272,19 @@ Thank you for shopping with us ✨</p>
                     modalBtn.style.display = 'flex';
                     modalQtySelector.classList.remove('active');
                 }
+                
+                // Open modal AFTER setting the correct state
+                document.getElementById('productModal').classList.add('active');
+            })
+            .catch(error => {
+                // On error, show default state and open modal
+                console.error('Error fetching cart:', error);
+                const modalBtn = document.getElementById('addToCartModalBtn');
+                const modalQtySelector = document.getElementById('productModalQuantitySelector');
+                modalBtn.style.display = 'flex';
+                modalQtySelector.classList.remove('active');
+                document.getElementById('productModal').classList.add('active');
             });
-            
-            document.getElementById('productModal').classList.add('active');
         }
 
         function closeProductModal() {
