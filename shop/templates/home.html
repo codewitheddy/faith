@@ -995,14 +995,12 @@
             right: 30px;
             background: linear-gradient(135deg, #F8C8DC 0%, #FFB6D9 50%, #F8C8DC 100%);
             color: var(--black);
-            width: 70px;
-            height: 70px;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2px;
             cursor: pointer;
             box-shadow: 0 5px 20px rgba(248, 200, 220, 0.5);
             z-index: 1000;
@@ -1015,18 +1013,9 @@
         }
         
         .cart-icon svg {
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             color: var(--black);
-            flex-shrink: 0;
-        }
-        
-        .cart-icon .cart-text {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--black);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
         }
         
         .cart-count {
@@ -2210,17 +2199,13 @@
             .cart-icon {
                 bottom: 20px;
                 right: 20px;
-                width: 60px;
-                height: 60px;
+                width: 58px;
+                height: 58px;
             }
             
             .cart-icon svg {
-                width: 22px;
-                height: 22px;
-            }
-            
-            .cart-icon .cart-text {
-                font-size: 0.7rem;
+                width: 24px;
+                height: 24px;
             }
             
             .back-to-top {
@@ -2274,13 +2259,13 @@
             }
             
             .cart-icon {
-                width: 55px;
-                height: 55px;
+                width: 52px;
+                height: 52px;
             }
             
             .cart-icon svg {
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
             }
         }
     </style>
@@ -2559,7 +2544,6 @@ fill="currentColor" viewBox="0 0 24 24" >
         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
   <path fill-rule="evenodd" d="M4 4a1 1 0 0 1 1-1h1.5a1 1 0 0 1 .979.796L7.939 6H19a1 1 0 0 1 .979 1.204l-1.25 6a1 1 0 0 1-.979.796H9.605l.208 1H17a3 3 0 1 1-2.83 2h-2.34a3 3 0 1 1-4.009-1.76L5.686 5H5a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
 </svg>
-        <span class="cart-text">Cart</span>
         <span class="cart-count" id="cartCount">{{ cart_count }}</span>
     </div>
 
