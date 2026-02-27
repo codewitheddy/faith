@@ -196,19 +196,23 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'myadmin.log',
-            'formatter': 'verbose',
-        },
     },
     'loggers': {
         'myadmin': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
     },
 }
+
+# Add file logging only in development
+if DEBUG:
+    LOGGING['handlers']['file'] = {
+        'class': 'logging.FileHandler',
+        'filename': BASE_DIR / 'logs' / 'myadmin.log',
+        'formatter': 'verbose',
+    }
+    LOGGING['loggers']['myadmin']['handlers'].append('file')
 
 
