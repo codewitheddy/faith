@@ -3111,7 +3111,7 @@ Thank you for shopping with us ✨</p>
                     qtyDisplay.textContent = newQty;
                 } else {
                     // Will remove item
-                    newCount = currentCount - 1;
+                    newCount = Math.max(0, currentCount - 1);
                     selectorElement.classList.remove('active');
                     const productFooter = selectorElement.parentElement;
                     const addButton = productFooter.querySelector('.btn-add-cart[data-product-id="' + productId + '"]');
@@ -3121,9 +3121,22 @@ Thank you for shopping with us ✨</p>
                 }
             }
             
-            // Update cart count immediately
-            document.getElementById('cartCount').textContent = newCount;
-            document.getElementById('navCartCount').textContent = newCount;
+            // Update cart count immediately (ensure it doesn't go below 0)
+            document.getElementById('cartCount').textContent = Math.max(0, newCount);
+            document.getElementById('navCartCount').textContent = Math.max(0, newCount);
+            
+            // Add animations
+            const navCartIcon = document.querySelector('.nav-cart-icon');
+            if (navCartIcon) {
+                navCartIcon.classList.add('pulse');
+                setTimeout(() => navCartIcon.classList.remove('pulse'), 500);
+            }
+            
+            const navCartCount = document.getElementById('navCartCount');
+            if (navCartCount) {
+                navCartCount.classList.add('updated');
+                setTimeout(() => navCartCount.classList.remove('updated'), 500);
+            }
             
             // Send to server in background
             fetch('{% url "shop:update_cart" %}', {
@@ -3242,12 +3255,14 @@ Thank you for shopping with us ✨</p>
             const modalQtyDisplay = document.getElementById('productModalQtyDisplay');
             const isInCart = modalQtySelector.classList.contains('active');
             
-            // Find the corresponding product card
-            const productCard = document.querySelector(`.product-card[data-product-id="${productId}"]`);
-            if (!productCard) return;
+            // Find the corresponding product card by finding the button with matching product ID
+            const cardBtn = document.querySelector(`.btn-add-cart[data-product-id="${productId}"]`);
+            if (!cardBtn) return;
             
-            const cardBtn = productCard.querySelector('.btn-add-cart');
-            const cardQtySelector = productCard.querySelector('.quantity-selector');
+            const productFooter = cardBtn.parentElement;
+            const cardQtySelector = productFooter.querySelector(`.quantity-selector[data-product-id="${productId}"]`);
+            if (!cardQtySelector) return;
+            
             const cardQtyDisplay = cardQtySelector.querySelector('.qty-display');
             
             if (isInCart) {
