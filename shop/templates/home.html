@@ -2957,11 +2957,16 @@ Thank you for shopping with us ✨</p>
                     if (category === 'all' || card.dataset.category === category) {
                         card.style.display = 'block';
                         
-                        // Reset and re-trigger animation with staggered delay
-                        card.style.animation = 'none';
-                        setTimeout(() => {
-                            card.style.animation = `fadeInUp 0.6s ease-out ${visibleIndex * 0.1}s forwards`;
-                        }, 10);
+                        // Instant display for "All", quick animation for specific categories
+                        if (category === 'all') {
+                            card.style.animation = 'none';
+                            card.style.opacity = '1';
+                        } else {
+                            card.style.animation = 'none';
+                            setTimeout(() => {
+                                card.style.animation = `fadeInUp 0.4s ease-out ${visibleIndex * 0.05}s forwards`;
+                            }, 10);
+                        }
                         
                         visibleIndex++;
                         visibleCount++;
