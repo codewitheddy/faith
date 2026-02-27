@@ -3308,9 +3308,7 @@ Thank you for shopping with us ✨</p>
 
         function closeProductModal() {
             document.getElementById('productModal').classList.remove('active');
-            
-            // Sync the product card state with the modal state
-            syncProductCardState(currentProductId);
+            // Don't sync - the card state is already correct from real-time updates
         }
         
         function syncProductCardState(productId) {
