@@ -4,6 +4,7 @@ Custom template tags for optimized image rendering
 from django import template
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import stringfilter
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 import locale
 
 register = template.Library()
@@ -126,8 +127,6 @@ def thousand_separator(value):
         {{ product.price|thousand_separator }}
         {{ order.total_amount|thousand_separator }}
     """
-    from decimal import Decimal, ROUND_HALF_UP
-    
     if value is None:
         return ""
     try:
