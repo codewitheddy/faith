@@ -1012,10 +1012,10 @@
             box-shadow: 0 8px 25px rgba(248, 200, 220, 0.7);
         }
         
-        .cart-icon svg {
+        .cart-icon img {
             width: 28px;
             height: 28px;
-            color: var(--black);
+            filter: brightness(0);
         }
         
         .cart-count {
@@ -2203,7 +2203,7 @@
                 height: 58px;
             }
             
-            .cart-icon svg {
+            .cart-icon img {
                 width: 24px;
                 height: 24px;
             }
@@ -2263,7 +2263,7 @@
                 height: 52px;
             }
             
-            .cart-icon svg {
+            .cart-icon img {
                 width: 22px;
                 height: 22px;
             }
@@ -2541,9 +2541,7 @@ fill="currentColor" viewBox="0 0 24 24" >
 
     <!-- Cart Icon -->
     <div class="cart-icon" onclick="openCart()">
-        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-  <path fill-rule="evenodd" d="M4 4a1 1 0 0 1 1-1h1.5a1 1 0 0 1 .979.796L7.939 6H19a1 1 0 0 1 .979 1.204l-1.25 6a1 1 0 0 1-.979.796H9.605l.208 1H17a3 3 0 1 1-2.83 2h-2.34a3 3 0 1 1-4.009-1.76L5.686 5H5a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
-</svg>
+        <img src="{% static 'images/cart.svg' %}" alt="Cart">
         <span class="cart-count" id="cartCount">{{ cart_count }}</span>
     </div>
 
