@@ -1,3 +1,4 @@
+{% load image_tags %}
 {% load static %}
 {% load image_tags %}
 <!DOCTYPE html>
@@ -815,7 +816,7 @@
         
         .product-price {
             font-size: 1.2rem;
-            font-weight: 600;
+            font-weight: 400;
             color: var(--black);
         }
         
@@ -2195,7 +2196,7 @@
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="/">
-                <img src="{% static 'images/logo.png' %}" alt="ThePOPSHOP.KE" class="logo">
+                <img src="{% static 'images/plogo.png' %}" alt="ThePOPSHOP.KE" class="logo">
             </a>
             
             <ul class="nav-links">
@@ -2368,7 +2369,7 @@
 
     <!-- Categories -->
     <div class="container" id="categories">
-        <h2 class="section-title"><span style="font-weight: 350;">Shop by Category</span></h2>
+        <h2 class="section-title"><span style="font-weight: 300;">Shop by Category</span></h2>
         <div class="categories">
             <button class="category-btn active" data-category="all">All</button>
             {% for category in categories %}
@@ -2378,7 +2379,7 @@
 
         <!-- Products Grid -->
         <div id="products">
-            <h2 class="section-title"><span style="font-weight: 350;">Our Collection</span></h2>
+            <h2 class="section-title"><span style="font-weight: 300;">Our Collection</span></h2>
             <div class="products-grid">
                 {% for product in products %}
                 <div class="product-card" data-category="{{ product.category.slug }}" onclick="showProductModal({{ product.id }}, '{{ product.name }}', '{{ product.description }}', '{{ product.price }}', '{% if product.get_image_url %}{{ product.get_image_url }}{% endif %}')">
@@ -2393,7 +2394,7 @@
                         <div class="product-name">{{ product.name }}</div>
                         <div class="product-desc">{{ product.short_description }}</div>
                         <div class="product-footer">
-                            <div class="product-price">Ksh {{ product.price }}</div>
+                            <div class="product-price">Ksh {{ product.price|thousand_separator }}</div>
                             <button class="btn-add-cart" data-product-id="{{ product.id }}" onclick="event.stopPropagation(); addToCart({{ product.id }}, this)">
                                 <span class="btn-icon">+</span>
                                 <span class="btn-text">Add</span>
@@ -3180,11 +3181,15 @@ Thank you for shopping with us ✨</p>
         });
 
         // Product Modal
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
         function showProductModal(id, name, desc, price, image) {
             currentProductId = id;
             document.getElementById('productModalTitle').textContent = name;
             document.getElementById('productModalDesc').textContent = desc;
-            document.getElementById('productModalPrice').textContent = 'Ksh ' + price;
+            document.getElementById('productModalPrice').textContent = 'Ksh ' + formatNumber(price);
             
             // Optimize Cloudinary images on-the-fly
             let optimizedImage = image || '{% static "images/placeholder.svg" %}';
@@ -3368,7 +3373,7 @@ Thank you for shopping with us ✨</p>
                                 <img src="${cartImage}" class="cart-item-image" loading="lazy" decoding="async">
                                 <div class="cart-item-info">
                                     <div class="cart-item-name">${item.name}</div>
-                                    <div class="cart-item-price">Ksh ${item.price} × ${item.quantity} = Ksh ${item.subtotal.toFixed(2)}</div>
+                                    <div class="cart-item-price">Ksh ${formatNumber(item.price)} × ${item.quantity} = Ksh ${formatNumber(item.subtotal.toFixed(2))}</div>
                                     <div class="cart-item-controls">
                                         <button class="qty-btn" onclick="updateCart(${item.id}, 'decrease')">-</button>
                                         <span>${item.quantity}</span>
@@ -3379,7 +3384,7 @@ Thank you for shopping with us ✨</p>
                             </div>
                         `;
                     });
-                    document.getElementById('totalAmount').textContent = data.cart_total.toFixed(2);
+                    document.getElementById('totalAmount').textContent = formatNumber(data.cart_total.toFixed(2));
                     document.getElementById('cartTotal').style.display = 'block';
                     document.getElementById('checkoutBtn').style.display = 'block';
                 }

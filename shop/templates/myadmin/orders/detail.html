@@ -1,4 +1,5 @@
 {% extends 'myadmin/base.html' %}
+{% load image_tags %}
 {% load static %}
 
 {% block title %}Order {{ order.order_number }} - MyAdmin{% endblock %}
@@ -132,13 +133,13 @@
                     </td>
                     <td><strong>{{ item.product.name }}</strong></td>
                     <td>{{ item.quantity }}</td>
-                    <td>KES {{ item.price|floatformat:2 }}</td>
-                    <td><strong>KES {{ item.get_subtotal|floatformat:2 }}</strong></td>
+                    <td>KES {{ item.price|thousand_separator }}</td>
+                    <td><strong>KES {{ item.get_subtotal|thousand_separator }}</strong></td>
                 </tr>
                 {% endfor %}
                 <tr style="background: var(--gray-light); font-weight: bold;">
                     <td colspan="4" style="text-align: right; padding-right: 24px;">Total:</td>
-                    <td><strong style="font-size: 18px; color: var(--primary-pink);">KES {{ order.total_amount|floatformat:2 }}</strong></td>
+                    <td><strong style="font-size: 18px; color: var(--primary-pink);">KES {{ order.total_amount|thousand_separator }}</strong></td>
                 </tr>
             </tbody>
         </table>
@@ -148,7 +149,7 @@
     {% if subtotal_sum != order.total_amount %}
     <div style="margin-top: 16px; padding: 12px; background: var(--warning); border-left: 4px solid var(--warning-dark); border-radius: 4px;">
         <p style="margin: 0; color: var(--warning-dark); font-weight: 500;">
-            ⚠️ Warning: Order total (KES {{ order.total_amount|floatformat:2 }}) does not match sum of item subtotals (KES {{ subtotal_sum|floatformat:2 }})
+            ⚠️ Warning: Order total (KES {{ order.total_amount|thousand_separator }}) does not match sum of item subtotals (KES {{ subtotal_sum|thousand_separator }})
         </p>
     </div>
     {% endif %}

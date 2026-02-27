@@ -3,6 +3,8 @@ Custom template tags for optimized image rendering
 """
 from django import template
 from django.utils.safestring import mark_safe
+from django.template.defaultfilters import stringfilter
+import locale
 
 register = template.Library()
 
@@ -113,3 +115,31 @@ def picture_element(image_url, alt_text="", css_class="", lazy=True):
         html = f'<img src="{image_url}" alt="{alt_text}" class="{css_class}" {lazy_attr} decoding="async">'
     
     return mark_safe(html)
+
+
+@register.filter
+def thousand_separator(value):
+    """
+    Format a number with thousand separators (commas) and 2 decimal places
+    
+    Usage:
+        {{ product.price|thousand_separator }}
+        {{ order.total_amount|thousand_separator }}
+    """
+    from decimal import Decimal, ROUND_HALF_UP
+    
+    if value is None:
+        return ""
+    try:
+        # Handle Decimal values directly to avoid float precision issues
+        if isinstance(value, Decimal):
+            # Round to 2 decimal places using ROUND_HALF_UP
+            value = value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+            # Format with commas and 2 decimal places
+            return f"{value:,}"
+        else:
+            # Convert to Decimal first, then format
+            dec_value = Decimal(str(value)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+            return f"{dec_value:,}"
+    except (ValueError, TypeError, InvalidOperation):
+        return value

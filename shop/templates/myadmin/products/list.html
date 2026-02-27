@@ -1,4 +1,5 @@
 {% extends 'myadmin/base.html' %}
+{% load image_tags %}
 {% load static %}
 
 {% block title %}Products - MyAdmin{% endblock %}
@@ -95,7 +96,7 @@
                         </td>
                         <td><strong>{{ product.name }}</strong></td>
                         <td>{{ product.category.name }}</td>
-                        <td>KES {{ product.price|floatformat:2 }}</td>
+                        <td>KES {{ product.price|thousand_separator }}</td>
                         <td>
                             {% if product.is_available %}
                             <span class="badge badge-success">Available</span>
