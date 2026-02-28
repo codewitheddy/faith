@@ -52,6 +52,7 @@ def add_to_cart(request):
         }
     
     request.session['cart'] = cart
+    request.session.modified = True  # Explicitly mark session as modified
     cart_count = sum(item['quantity'] for item in cart.values())
     
     return JsonResponse({'success': True, 'cart_count': cart_count})
@@ -76,6 +77,7 @@ def update_cart(request):
             del cart[str(product_id)]
     
     request.session['cart'] = cart
+    request.session.modified = True  # Explicitly mark session as modified
     cart_count = sum(item['quantity'] for item in cart.values())
     cart_total = sum(float(item['price']) * item['quantity'] for item in cart.values())
     
