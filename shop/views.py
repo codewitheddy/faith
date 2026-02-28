@@ -30,32 +30,43 @@ def home(request):
 
 @require_POST
 def add_to_cart(request):
-    # Handle both JSON and form data
-    if request.content_type == 'application/json':
-        data = json.loads(request.body)
-        product_id = data.get('product_id')
-    else:
-        product_id = request.POST.get('product_id')
+    import logging
+    logger = logging.getLogger(__name__)
     
-    product = get_object_or_404(Product, id=product_id)
-    
-    cart = request.session.get('cart', {})
-    
-    if str(product_id) in cart:
-        cart[str(product_id)]['quantity'] += 1
-    else:
-        cart[str(product_id)] = {
-            'name': product.name,
-            'price': str(product.price),
-            'quantity': 1,
-            'image': product.get_image_url() or ''
-        }
-    
-    request.session['cart'] = cart
-    request.session.modified = True  # Explicitly mark session as modified
-    cart_count = sum(item['quantity'] for item in cart.values())
-    
-    return JsonResponse({'success': True, 'cart_count': cart_count})
+    try:
+        # Handle both JSON and form data
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            product_id = data.get('product_id')
+        else:
+            product_id = request.POST.get('product_id')
+        
+        logger.info(f"Adding product {product_id} to cart")
+        product = get_object_or_404(Product, id=product_id)
+        
+        cart = request.session.get('cart', {})
+        logger.info(f"Current cart before add: {cart}")
+        
+        if str(product_id) in cart:
+            cart[str(product_id)]['quantity'] += 1
+        else:
+            cart[str(product_id)] = {
+                'name': product.name,
+                'price': str(product.price),
+                'quantity': 1,
+                'image': product.get_image_url() or ''
+            }
+        
+        request.session['cart'] = cart
+        request.session.modified = True  # Explicitly mark session as modified
+        
+        cart_count = sum(item['quantity'] for item in cart.values())
+        logger.info(f"Cart after add: {cart}, Count: {cart_count}")
+        
+        return JsonResponse({'success': True, 'cart_count': cart_count})
+    except Exception as e:
+        logger.error(f"Error adding to cart: {e}", exc_info=True)
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 @require_POST
 def update_cart(request):
