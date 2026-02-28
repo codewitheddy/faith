@@ -1,0 +1,122 @@
+{% extends 'myadmin/base.html' %}
+
+{% block title %}Users - MyAdmin{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <span class="breadcrumbs-separator">/</span>
+    <span>Users</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Users</h1>
+    <a href="{% url 'myadmin:user_add' %}" class="btn btn-primary">+ Add User</a>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar">
+    <form method="get" class="filters-row">
+        <div class="filter-group">
+            <label class="form-label">Search</label>
+            <input type="text" name="q" class="form-input" placeholder="Search users..." value="{{ search_query }}">
+        </div>
+        
+        <div class="filter-group">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select">
+                <option value="">All Status</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label class="form-label">Role</label>
+            <select name="role" class="form-select">
+                <option value="">All Roles</option>
+                <option value="superuser" {% if role_filter == 'superuser' %}selected{% endif %}>Superuser</option>
+                <option value="staff" {% if role_filter == 'staff' %}selected{% endif %}>Staff</option>
+            </select>
+        </div>
+        
+        <div class="filter-group" style="align-self: end;">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+            <a href="{% url 'myadmin:user_list' %}" class="btn btn-secondary">Clear</a>
+        </div>
+    </form>
+</div>
+
+<!-- Users Table -->
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user_obj in users %}
+            <tr>
+                <td><strong>{{ user_obj.username }}</strong></td>
+                <td>{{ user_obj.get_full_name|default:"-" }}</td>
+                <td>{{ user_obj.email|default:"-" }}</td>
+                <td>
+                    {% if user_obj.is_superuser %}
+                        <span class="badge badge-danger">Superuser</span>
+                    {% else %}
+                        <span class="badge badge-secondary">Staff</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user_obj.is_active %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge badge-warning">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>{{ user_obj.date_joined|date:"M d, Y" }}</td>
+                <td>
+                    <div class="table-actions">
+                        <a href="{% url 'myadmin:user_edit' user_obj.pk %}" class="btn-icon" title="Edit">✏️</a>
+                        <a href="{% url 'myadmin:user_password_change' user_obj.pk %}" class="btn-icon" title="Change Password">🔑</a>
+                        {% if user_obj != user %}
+                        <a href="{% url 'myadmin:user_delete' user_obj.pk %}" class="btn-icon" title="Delete">🗑️</a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No users found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" class="page-btn">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" class="page-btn">Previous</a>
+    {% endif %}
+    
+    <span class="page-btn active">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" class="page-btn">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" class="page-btn">Last</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -32,4 +32,11 @@ urlpatterns = [
     # Analytics
     path('analytics/', views_admin.AnalyticsView.as_view(), name='analytics'),
     path('analytics/export/', views_admin.AnalyticsExportView.as_view(), name='analytics_export'),
+    
+    # User Management
+    path('users/', views_admin.UserListView.as_view(), name='user_list'),
+    path('users/add/', views_admin.UserCreateView.as_view(), name='user_add'),
+    path('users/<int:pk>/edit/', views_admin.UserUpdateView.as_view(), name='user_edit'),
+    path('users/<int:pk>/password/', views_admin.UserPasswordChangeView.as_view(), name='user_password_change'),
+    path('users/<int:pk>/delete/', views_admin.UserDeleteView.as_view(), name='user_delete'),
 ]

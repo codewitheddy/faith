@@ -78,28 +78,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('adminSidebar');
     const overlay = document.getElementById('sidebarOverlay');
     
-    console.log('Menu elements:', {
-        menuToggle: menuToggle,
-        sidebar: sidebar,
-        overlay: overlay
-    });
-    
+    // Only set up mobile menu if elements exist (not on login page)
     if (menuToggle && sidebar && overlay) {
         console.log('Setting up mobile menu...');
         
         // Toggle menu
         menuToggle.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Menu toggle clicked');
             sidebar.classList.toggle('open');
             overlay.classList.toggle('active');
-            console.log('Sidebar classes:', sidebar.className);
-            console.log('Overlay classes:', overlay.className);
         });
         
         // Close menu when clicking overlay
         overlay.addEventListener('click', function() {
-            console.log('Overlay clicked');
             sidebar.classList.remove('open');
             overlay.classList.remove('active');
         });
@@ -114,8 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
-    } else {
-        console.error('Mobile menu elements not found!');
     }
     
     // Select all checkbox functionality

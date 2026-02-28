@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
 from django.views.generic import (
@@ -66,14 +66,30 @@ class AdminLoginView(LoginView):
         return super().form_invalid(form)
 
 
-class AdminLogoutView(LogoutView):
+class AdminLogoutView(View):
     """Custom logout view for MyAdmin"""
-    next_page = '/myadmin/login/'
     
-    def dispatch(self, request, *args, **kwargs):
+    def get(self, request):
+        """Handle GET request for logout"""
+        from django.contrib.auth import logout
+        
         if request.user.is_authenticated:
-            messages.success(request, 'You have been logged out successfully.')
-        return super().dispatch(request, *args, **kwargs)
+            username = request.user.username
+            
+            # Log logout
+            import logging
+            logger = logging.getLogger('myadmin')
+            logger.info(f"User {username} logged out from IP {request.META.get('REMOTE_ADDR')}")
+            
+            # Logout user
+            logout(request)
+            messages.success(request, f'You have been logged out successfully.')
+        
+        return redirect('/myadmin/login/')
+    
+    def post(self, request):
+        """Handle POST request for logout (for CSRF-protected forms)"""
+        return self.get(request)
 
 
 # Dashboard View
@@ -524,3 +540,238 @@ class AnalyticsExportView(View):
             ])
         
         return response
+
+
+
+# User Management Views
+@staff_required
+class UserListView(ListView):
+    """List all staff users"""
+    model = None  # Will use User model
+    template_name = 'myadmin/users/list.html'
+    context_object_name = 'users'
+    paginate_by = 20
+    
+    def get_queryset(self):
+        from django.contrib.auth.models import User
+        queryset = User.objects.filter(is_staff=True).order_by('-date_joined')
+        
+        # Search functionality
+        search_query = self.request.GET.get('q', '').strip()
+        if search_query:
+            queryset = queryset.filter(
+                Q(username__icontains=search_query) |
+                Q(email__icontains=search_query) |
+                Q(first_name__icontains=search_query) |
+                Q(last_name__icontains=search_query)
+            )
+        
+        # Filter by status
+        status_filter = self.request.GET.get('status', '')
+        if status_filter == 'active':
+            queryset = queryset.filter(is_active=True)
+        elif status_filter == 'inactive':
+            queryset = queryset.filter(is_active=False)
+        
+        # Filter by role
+        role_filter = self.request.GET.get('role', '')
+        if role_filter == 'superuser':
+            queryset = queryset.filter(is_superuser=True)
+        elif role_filter == 'staff':
+            queryset = queryset.filter(is_superuser=False)
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('q', '')
+        context['status_filter'] = self.request.GET.get('status', '')
+        context['role_filter'] = self.request.GET.get('role', '')
+        return context
+
+
+@staff_required
+class UserCreateView(View):
+    """Create a new staff user"""
+    template_name = 'myadmin/users/form.html'
+    
+    def get(self, request):
+        from .forms_admin import UserCreateForm
+        form = UserCreateForm()
+        return render(request, self.template_name, {
+            'form': form,
+            'title': 'Create New User',
+            'action': 'Create'
+        })
+    
+    def post(self, request):
+        from django.contrib.auth.models import User
+        from .forms_admin import UserCreateForm
+        
+        form = UserCreateForm(request.POST)
+        
+        if form.is_valid():
+            # Create user
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=form.cleaned_data.get('email', ''),
+                password=form.cleaned_data['password1'],
+                first_name=form.cleaned_data.get('first_name', ''),
+                last_name=form.cleaned_data.get('last_name', '')
+            )
+            
+            user.is_staff = form.cleaned_data.get('is_staff', True)
+            user.is_superuser = form.cleaned_data.get('is_superuser', False)
+            user.save()
+            
+            # Log action
+            import logging
+            logger = logging.getLogger('myadmin')
+            logger.info(f"User {request.user.username} created new user: {user.username}")
+            
+            messages.success(request, f'User "{user.username}" created successfully.')
+            return redirect('myadmin:user_list')
+        
+        return render(request, self.template_name, {
+            'form': form,
+            'title': 'Create New User',
+            'action': 'Create'
+        })
+
+
+@staff_required
+class UserUpdateView(View):
+    """Update an existing staff user"""
+    template_name = 'myadmin/users/form.html'
+    
+    def get(self, request, pk):
+        from django.contrib.auth.models import User
+        from .forms_admin import UserEditForm
+        
+        user = get_object_or_404(User, pk=pk, is_staff=True)
+        
+        form = UserEditForm(initial={
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'is_active': user.is_active,
+            'is_staff': user.is_staff,
+            'is_superuser': user.is_superuser,
+        })
+        
+        return render(request, self.template_name, {
+            'form': form,
+            'user_obj': user,
+            'title': f'Edit User: {user.username}',
+            'action': 'Update'
+        })
+    
+    def post(self, request, pk):
+        from django.contrib.auth.models import User
+        from .forms_admin import UserEditForm
+        
+        user = get_object_or_404(User, pk=pk, is_staff=True)
+        form = UserEditForm(request.POST)
+        
+        if form.is_valid():
+            user.email = form.cleaned_data.get('email', '')
+            user.first_name = form.cleaned_data.get('first_name', '')
+            user.last_name = form.cleaned_data.get('last_name', '')
+            user.is_active = form.cleaned_data.get('is_active', True)
+            user.is_staff = form.cleaned_data.get('is_staff', True)
+            user.is_superuser = form.cleaned_data.get('is_superuser', False)
+            user.save()
+            
+            # Log action
+            import logging
+            logger = logging.getLogger('myadmin')
+            logger.info(f"User {request.user.username} updated user: {user.username}")
+            
+            messages.success(request, f'User "{user.username}" updated successfully.')
+            return redirect('myadmin:user_list')
+        
+        return render(request, self.template_name, {
+            'form': form,
+            'user_obj': user,
+            'title': f'Edit User: {user.username}',
+            'action': 'Update'
+        })
+
+
+@staff_required
+class UserPasswordChangeView(View):
+    """Change user password"""
+    template_name = 'myadmin/users/password_change.html'
+    
+    def get(self, request, pk):
+        from django.contrib.auth.models import User
+        from .forms_admin import UserPasswordChangeForm
+        
+        user = get_object_or_404(User, pk=pk, is_staff=True)
+        form = UserPasswordChangeForm()
+        
+        return render(request, self.template_name, {
+            'form': form,
+            'user_obj': user
+        })
+    
+    def post(self, request, pk):
+        from django.contrib.auth.models import User
+        from .forms_admin import UserPasswordChangeForm
+        
+        user = get_object_or_404(User, pk=pk, is_staff=True)
+        form = UserPasswordChangeForm(request.POST)
+        
+        if form.is_valid():
+            user.set_password(form.cleaned_data['new_password1'])
+            user.save()
+            
+            # Log action
+            import logging
+            logger = logging.getLogger('myadmin')
+            logger.info(f"User {request.user.username} changed password for user: {user.username}")
+            
+            messages.success(request, f'Password for "{user.username}" changed successfully.')
+            return redirect('myadmin:user_list')
+        
+        return render(request, self.template_name, {
+            'form': form,
+            'user_obj': user
+        })
+
+
+@staff_required
+class UserDeleteView(View):
+    """Delete a staff user"""
+    template_name = 'myadmin/users/delete_confirm.html'
+    
+    def get(self, request, pk):
+        from django.contrib.auth.models import User
+        user = get_object_or_404(User, pk=pk, is_staff=True)
+        
+        # Prevent deleting yourself
+        if user == request.user:
+            messages.error(request, 'You cannot delete your own account.')
+            return redirect('myadmin:user_list')
+        
+        return render(request, self.template_name, {'user_obj': user})
+    
+    def post(self, request, pk):
+        from django.contrib.auth.models import User
+        user = get_object_or_404(User, pk=pk, is_staff=True)
+        
+        # Prevent deleting yourself
+        if user == request.user:
+            messages.error(request, 'You cannot delete your own account.')
+            return redirect('myadmin:user_list')
+        
+        username = user.username
+        user.delete()
+        
+        # Log action
+        import logging
+        logger = logging.getLogger('myadmin')
+        logger.info(f"User {request.user.username} deleted user: {username}")
+        
+        messages.success(request, f'User "{username}" deleted successfully.')
+        return redirect('myadmin:user_list')

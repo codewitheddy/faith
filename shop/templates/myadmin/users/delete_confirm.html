@@ -1,0 +1,48 @@
+{% extends 'myadmin/base.html' %}
+
+{% block title %}Delete User - MyAdmin{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <span class="breadcrumbs-separator">/</span>
+    <a href="{% url 'myadmin:user_list' %}">Users</a>
+    <span class="breadcrumbs-separator">/</span>
+    <span>Delete</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Delete User</h1>
+</div>
+
+<div class="card">
+    <h2 class="card-header">Confirm Deletion</h2>
+    
+    <p>Are you sure you want to delete the user <strong>{{ user_obj.username }}</strong>?</p>
+    
+    <div style="background: #FFF3CD; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <strong>⚠️ Warning:</strong> This action cannot be undone. The user will be permanently deleted.
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <p><strong>User Details:</strong></p>
+        <ul>
+            <li>Username: {{ user_obj.username }}</li>
+            <li>Name: {{ user_obj.get_full_name|default:"N/A" }}</li>
+            <li>Email: {{ user_obj.email|default:"N/A" }}</li>
+            <li>Role: {% if user_obj.is_superuser %}Superuser{% else %}Staff{% endif %}</li>
+            <li>Joined: {{ user_obj.date_joined|date:"F d, Y" }}</li>
+        </ul>
+    </div>
+    
+    <form method="post" style="margin-top: 30px;">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">Yes, Delete User</button>
+            <a href="{% url 'myadmin:user_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

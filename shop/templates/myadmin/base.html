@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MyAdmin - POPSHOP.KE{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'myadmin/css/admin.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'myadmin/css/admin.css' %}?v=3">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -21,6 +21,12 @@
             <a href="{% url 'myadmin:dashboard' %}" class="admin-logo">POPSHOP.KE MyAdmin</a>
         </div>
         <div class="admin-user-menu">
+            <a href="/" class="btn-back-to-site" target="_blank" title="View Main Website">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+                <span class="btn-text">Back to Site</span>
+            </a>
             <span class="admin-username">{{ user.username }}</span>
             <a href="{% url 'myadmin:logout' %}" class="btn-logout">Logout</a>
         </div>
@@ -73,6 +79,14 @@
                         Analytics
                     </a>
                 </li>
+                <li>
+                    <a href="{% url 'myadmin:user_list' %}" class="{% if 'user' in request.resolver_match.url_name %}active{% endif %}">
+                        <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        Users
+                    </a>
+                </li>
             </ul>
         </nav>
     </aside>
@@ -109,7 +123,7 @@
     {% block login_content %}{% endblock %}
     {% endif %}
 
-    <script src="{% static 'myadmin/js/admin.js' %}?v=2"></script>
+    <script src="{% static 'myadmin/js/admin.js' %}?v=3"></script>
     {% block extra_js %}{% endblock %}
     
     <script>

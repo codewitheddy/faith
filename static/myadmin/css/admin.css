@@ -73,6 +73,30 @@ body {
     color: var(--black);
 }
 
+.btn-back-to-site {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: var(--white);
+    color: var(--black);
+    border: 2px solid var(--gray-medium);
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-back-to-site:hover {
+    background: var(--gray-light);
+    border-color: var(--primary-pink-dark);
+    color: var(--primary-pink-dark);
+}
+
+.btn-back-to-site svg {
+    flex-shrink: 0;
+}
+
 .btn-logout {
     padding: 8px 16px;
     background: var(--primary-pink-dark);
@@ -694,6 +718,14 @@ body {
     
     .admin-username {
         display: none;
+    }
+    
+    .btn-back-to-site .btn-text {
+        display: none;
+    }
+    
+    .btn-back-to-site {
+        padding: 8px;
     }
     
     .btn-logout {

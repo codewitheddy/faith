@@ -12,8 +12,8 @@ def home(request):
     # Optimize query with select_related to avoid N+1 queries
     products_list = Product.objects.filter(is_available=True).select_related('category')
     
-    # Pagination - 8 products per page
-    paginator = Paginator(products_list, 8)
+    # Pagination - 16 products per page
+    paginator = Paginator(products_list, 16)
     page_number = request.GET.get('page', 1)
     products = paginator.get_page(page_number)
     
@@ -79,10 +79,24 @@ def update_cart(request):
     cart_count = sum(item['quantity'] for item in cart.values())
     cart_total = sum(float(item['price']) * item['quantity'] for item in cart.values())
     
+    # Build cart_items array for frontend sync
+    cart_items = []
+    for pid, item in cart.items():
+        subtotal = float(item['price']) * item['quantity']
+        cart_items.append({
+            'id': pid,
+            'name': item['name'],
+            'price': float(item['price']),
+            'quantity': item['quantity'],
+            'subtotal': subtotal,
+            'image': item.get('image', '')
+        })
+    
     return JsonResponse({
         'success': True,
         'cart_count': cart_count,
-        'cart_total': cart_total
+        'cart_total': cart_total,
+        'cart_items': cart_items
     })
 
 def get_cart(request):

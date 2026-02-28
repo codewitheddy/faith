@@ -261,3 +261,205 @@ class OrderStatusForm(forms.ModelForm):
                 )
         
         return new_status
+
+
+
+class UserCreateForm(forms.Form):
+    """Form for creating new staff users"""
+    
+    username = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Enter username'
+        }),
+        label='Username',
+        help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'
+    )
+    
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'user@example.com'
+        }),
+        label='Email Address',
+        required=False
+    )
+    
+    first_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'First name'
+        }),
+        label='First Name',
+        required=False
+    )
+    
+    last_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Last name'
+        }),
+        label='Last Name',
+        required=False
+    )
+    
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Enter password'
+        }),
+        label='Password',
+        help_text='Password must be at least 8 characters long.'
+    )
+    
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Confirm password'
+        }),
+        label='Confirm Password'
+    )
+    
+    is_staff = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+        label='Staff Status',
+        help_text='Designates whether the user can log into MyAdmin.',
+        initial=True,
+        required=False
+    )
+    
+    is_superuser = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+        label='Superuser Status',
+        help_text='Designates that this user has all permissions without explicitly assigning them.',
+        initial=False,
+        required=False
+    )
+    
+    def clean_username(self):
+        """Validate username is unique"""
+        from django.contrib.auth.models import User
+        username = self.cleaned_data.get('username')
+        
+        if User.objects.filter(username=username).exists():
+            raise ValidationError('A user with that username already exists.')
+        
+        return username
+    
+    def clean_password1(self):
+        """Validate password strength"""
+        password = self.cleaned_data.get('password1')
+        
+        if len(password) < 8:
+            raise ValidationError('Password must be at least 8 characters long.')
+        
+        return password
+    
+    def clean(self):
+        """Validate passwords match"""
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
+        
+        if password1 and password2 and password1 != password2:
+            raise ValidationError('The two password fields must match.')
+        
+        return cleaned_data
+
+
+class UserEditForm(forms.Form):
+    """Form for editing existing staff users"""
+    
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'user@example.com'
+        }),
+        label='Email Address',
+        required=False
+    )
+    
+    first_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'First name'
+        }),
+        label='First Name',
+        required=False
+    )
+    
+    last_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Last name'
+        }),
+        label='Last Name',
+        required=False
+    )
+    
+    is_active = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+        label='Active',
+        help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.',
+        required=False
+    )
+    
+    is_staff = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+        label='Staff Status',
+        help_text='Designates whether the user can log into MyAdmin.',
+        required=False
+    )
+    
+    is_superuser = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+        label='Superuser Status',
+        help_text='Designates that this user has all permissions without explicitly assigning them.',
+        required=False
+    )
+
+
+class UserPasswordChangeForm(forms.Form):
+    """Form for changing user password"""
+    
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Enter new password'
+        }),
+        label='New Password',
+        help_text='Password must be at least 8 characters long.'
+    )
+    
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Confirm new password'
+        }),
+        label='Confirm New Password'
+    )
+    
+    def clean_new_password1(self):
+        """Validate password strength"""
+        password = self.cleaned_data.get('new_password1')
+        
+        if len(password) < 8:
+            raise ValidationError('Password must be at least 8 characters long.')
+        
+        return password
+    
+    def clean(self):
+        """Validate passwords match"""
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('new_password1')
+        password2 = cleaned_data.get('new_password2')
+        
+        if password1 and password2 and password1 != password2:
+            raise ValidationError('The two password fields must match.')
+        
+        return cleaned_data
