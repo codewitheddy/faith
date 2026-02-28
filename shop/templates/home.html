@@ -3309,8 +3309,48 @@ fill="currentColor" viewBox="0 0 24 24" >
         }
         
         // Initialize quantity selectors on page load
+        // Function to sync cart with product cards
+        function syncCartWithProductCards(cartItems, retryCount = 0) {
+            console.log(`Syncing cart (attempt ${retryCount + 1})...`);
+            
+            let syncedCount = 0;
+            let notFoundCount = 0;
+            
+            cartItems.forEach(item => {
+                const itemId = String(item.id);
+                const addButton = document.querySelector(`.btn-add-cart[data-product-id="${itemId}"]`);
+                
+                if (addButton) {
+                    const productFooter = addButton.parentElement;
+                    const quantitySelector = productFooter.querySelector(`.quantity-selector[data-product-id="${itemId}"]`);
+                    
+                    if (quantitySelector) {
+                        addButton.style.display = 'none';
+                        quantitySelector.classList.add('active');
+                        const qtyDisplay = quantitySelector.querySelector('.qty-display');
+                        if (qtyDisplay) {
+                            qtyDisplay.textContent = item.quantity;
+                            syncedCount++;
+                            console.log('✓ Synced product', itemId, 'quantity:', item.quantity);
+                        }
+                    }
+                } else {
+                    notFoundCount++;
+                    console.warn('✗ Product', itemId, 'not found on page');
+                }
+            });
+            
+            console.log(`Sync complete: ${syncedCount} synced, ${notFoundCount} not on page`);
+            
+            // Retry once if some items weren't found and this is first attempt
+            if (notFoundCount > 0 && retryCount === 0) {
+                console.log('Retrying sync in 200ms...');
+                setTimeout(() => syncCartWithProductCards(cartItems, 1), 200);
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
-            // Check cart and show quantity selectors for items already in cart
+            // Fetch cart and sync
             fetch('{% url "shop:get_cart" %}')
             .then(response => response.json())
             .then(data => {
@@ -3324,42 +3364,10 @@ fill="currentColor" viewBox="0 0 24 24" >
                     document.getElementById('navCartCount').textContent = data.cart_count;
                 }
                 
-                // Update product cards with cart quantities
-                data.cart_items.forEach(item => {
-                    console.log('Processing cart item - ID:', item.id, 'Type:', typeof item.id, 'Quantity:', item.quantity);
-                    
-                    // Normalize ID to string for consistent comparison
-                    const itemId = String(item.id);
-                    
-                    // Try to find the button - log all attempts
-                    const addButton = document.querySelector('.btn-add-cart[data-product-id="' + itemId + '"]');
-                    console.log('Looking for button with data-product-id="' + itemId + '"', addButton ? 'FOUND' : 'NOT FOUND');
-                    
-                    if (addButton) {
-                        const productFooter = addButton.parentElement;
-                        const quantitySelector = productFooter.querySelector('.quantity-selector[data-product-id="' + itemId + '"]');
-                        
-                        console.log('Found quantity selector:', quantitySelector ? 'YES' : 'NO');
-                        
-                        addButton.style.display = 'none';
-                        if (quantitySelector) {
-                            quantitySelector.classList.add('active');
-                            const qtyDisplay = quantitySelector.querySelector('.qty-display');
-                            if (qtyDisplay) {
-                                qtyDisplay.textContent = item.quantity;
-                                console.log('✓ Set quantity for product', itemId, 'to', item.quantity);
-                            }
-                        } else {
-                            console.warn('✗ Quantity selector not found for product', itemId);
-                        }
-                    } else {
-                        console.warn('✗ Add button not found for product', itemId);
-                        // Log all available product IDs on page
-                        const allButtons = document.querySelectorAll('.btn-add-cart');
-                        console.log('Available product IDs on page:', Array.from(allButtons).map(btn => btn.getAttribute('data-product-id')));
-                    }
-                });
-                console.log('=== CART SYNC COMPLETE ===');
+                // Sync product cards
+                if (data.cart_items && data.cart_items.length > 0) {
+                    syncCartWithProductCards(data.cart_items);
+                }
             })
             .catch(error => {
                 console.error('Error loading cart on page load:', error);
