@@ -3330,23 +3330,33 @@ fill="currentColor" viewBox="0 0 24 24" >
                     
                     // Normalize ID to string for consistent comparison
                     const itemId = String(item.id);
+                    
+                    // Try to find the button - log all attempts
                     const addButton = document.querySelector('.btn-add-cart[data-product-id="' + itemId + '"]');
+                    console.log('Looking for button with data-product-id="' + itemId + '"', addButton ? 'FOUND' : 'NOT FOUND');
                     
                     if (addButton) {
                         const productFooter = addButton.parentElement;
                         const quantitySelector = productFooter.querySelector('.quantity-selector[data-product-id="' + itemId + '"]');
                         
+                        console.log('Found quantity selector:', quantitySelector ? 'YES' : 'NO');
+                        
                         addButton.style.display = 'none';
                         if (quantitySelector) {
                             quantitySelector.classList.add('active');
                             const qtyDisplay = quantitySelector.querySelector('.qty-display');
-                            qtyDisplay.textContent = item.quantity;
-                            console.log('✓ Set quantity for product', itemId, 'to', item.quantity);
+                            if (qtyDisplay) {
+                                qtyDisplay.textContent = item.quantity;
+                                console.log('✓ Set quantity for product', itemId, 'to', item.quantity);
+                            }
                         } else {
                             console.warn('✗ Quantity selector not found for product', itemId);
                         }
                     } else {
                         console.warn('✗ Add button not found for product', itemId);
+                        // Log all available product IDs on page
+                        const allButtons = document.querySelectorAll('.btn-add-cart');
+                        console.log('Available product IDs on page:', Array.from(allButtons).map(btn => btn.getAttribute('data-product-id')));
                     }
                 });
                 console.log('=== CART SYNC COMPLETE ===');
