@@ -11,5 +11,9 @@ env/
 *.swp
 *.swo
 staticfiles/
-*.md
 .kiro/
+
+# Allow deployment documentation
+!CPANEL_GITHUB_DEPLOYMENT.md
+!DEPLOYMENT_CHECKLIST.md
+!README.md
