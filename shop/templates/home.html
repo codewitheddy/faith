@@ -1,6 +1,6 @@
 {% load image_tags %}
-{% load static %}
 {% load image_tags %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>ThePOPSHOP.KE - Elegant Handcrafted Jewellery</title>
+    <title>Wyatt Collection - Premium Menswear</title>
     <!-- Version 3.1 - Image Optimization System -->
     <style>
         * {
@@ -19,7 +19,7 @@
         }
         
         :root {
-            --pastel-pink: #F8C8DC;
+            --pastel-pink: #C9A84C;
             --white: #FFFFFF;
             --black: #000000;
             --light-gray: #f5f5f5;
@@ -105,7 +105,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(248, 200, 220, 0.15) 0%, rgba(253, 228, 236, 0.15) 100%);
+            background: linear-gradient(135deg, rgba(201, 168, 76, 0.15) 0%, rgba(226, 192, 106, 0.15) 100%);
             border-radius: 8px;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -143,13 +143,13 @@
             gap: 8px;
             padding: 10px 18px;
             border-radius: 25px;
-            background: linear-gradient(135deg, #F8C8DC 0%, #FFB6D9 50%, #F8C8DC 100%);
-            box-shadow: 0 4px 15px rgba(248, 200, 220, 0.4);
+            background: linear-gradient(135deg, #C9A84C 0%, #E2C06A 50%, #C9A84C 100%);
+            box-shadow: 0 4px 15px rgba(201, 168, 76, 0.4);
         }
         
         .nav-cart-icon:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(248, 200, 220, 0.6);
+            box-shadow: 0 6px 20px rgba(201, 168, 76, 0.6);
         }
         
         .nav-cart-icon svg {
@@ -260,7 +260,7 @@
         /* Hero Section */
         .hero {
             position: relative;
-            background: linear-gradient(135deg, #fde4ec 0%, var(--pastel-pink) 50%, #fde4ec 100%);
+            background: linear-gradient(135deg, #FAF7F2 0%, var(--pastel-pink) 50%, #FAF7F2 100%);
             padding: 80px 20px;
             overflow: hidden;
             min-height: 85vh;
@@ -317,11 +317,12 @@
         .hero h1 {
             font-size: 3.5rem;
             margin-bottom: 20px;
-            font-weight: 300;
+            font-weight: 100;
             letter-spacing: 4px;
             color: var(--black);
             animation: fadeInUp 1s ease-out;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            font-family: Georgia, 'Times New Roman', Times, serif;
         }
         
         .hero-subtitle {
@@ -370,13 +371,13 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 3px 10px rgba(248, 200, 220, 0.3);
+            box-shadow: 0 3px 10px rgba(201, 168, 76, 0.3);
             transition: all 0.3s ease;
         }
         
         .feature-pill:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(248, 200, 220, 0.5);
+            box-shadow: 0 5px 15px rgba(201, 168, 76, 0.5);
         }
         
         .hero-buttons {
@@ -620,7 +621,7 @@
         
         /* About Section */
         .about-section {
-            background: linear-gradient(135deg, #fde4ec 0%, var(--white) 50%, #fde4ec 100%);
+            background: linear-gradient(135deg, #FAF7F2 0%, var(--white) 50%, #FAF7F2 100%);
             padding: 80px 20px;
             position: relative;
             overflow: hidden;
@@ -732,7 +733,7 @@
             justify-content: space-around;
             margin-top: 50px;
             padding: 40px;
-            background: rgba(248, 200, 220, 0.2);
+            background: rgba(201, 168, 76, 0.2);
             border-radius: 20px;
         }
         
@@ -782,7 +783,7 @@
         }
         
         .category-btn:hover, .category-btn.active {
-            background: var(--pastel-pink);
+            background: var(--accent);
             color: var(--black);
         }
         
@@ -876,7 +877,7 @@
         }
         
         .btn-add-cart {
-            background: var(--pastel-pink);
+            background: var(--accent);
             color: var(--black);
             padding: 8px 16px;
             border: none;
@@ -893,7 +894,7 @@
         }
         
         .btn-add-cart:hover {
-            background: #f5b5d0;
+            background: #B8922E;
             transform: translateY(-2px);
         }
         
@@ -934,7 +935,7 @@
         }
         
         .qty-control-btn {
-            background: var(--pastel-pink);
+            background: var(--accent);
             color: var(--black);
             border: none;
             width: 28px;
@@ -951,7 +952,7 @@
         }
         
         .qty-control-btn:hover {
-            background: #f5b5d0;
+            background: #B8922E;
             transform: scale(1.1);
         }
         
@@ -991,9 +992,9 @@
         }
         
         .pagination a:hover {
-            background: var(--pastel-pink);
+            background: var(--accent);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(248, 200, 220, 0.4);
+            box-shadow: 0 4px 12px rgba(201, 168, 76, 0.4);
         }
         
         .pagination .current {
@@ -1015,13 +1016,13 @@
             font-size: 0.95rem;
         }
         
-        /* Cart Icon */
-        .cart-icon {
+        /* WhatsApp Floating Button */
+        .whatsapp-float {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: linear-gradient(135deg, #F8C8DC 0%, #FFB6D9 50%, #F8C8DC 100%);
-            color: var(--black);
+            background: #25D366;
+            color: white;
             width: 65px;
             height: 65px;
             border-radius: 50%;
@@ -1029,20 +1030,22 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 5px 20px rgba(248, 200, 220, 0.5);
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
             z-index: 1000;
             transition: all 0.3s;
+            text-decoration: none;
         }
         
-        .cart-icon:hover {
+        .whatsapp-float:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(248, 200, 220, 0.7);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.6);
+            background: #20ba5a;
         }
         
-        .cart-icon img {
-            width: 28px;
-            height: 28px;
-            filter: brightness(0);
+        .whatsapp-float svg {
+            width: 34px;
+            height: 34px;
+            fill: white;
         }
         
         .cart-count {
@@ -1176,7 +1179,7 @@
             position: fixed;
             bottom: 100px;
             right: 30px;
-            background: var(--pastel-pink);
+            background: var(--accent);
             color: var(--black);
             width: 50px;
             height: 50px;
@@ -1185,7 +1188,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 5px 20px rgba(248, 200, 220, 0.4);
+            box-shadow: 0 5px 20px rgba(201, 168, 76, 0.4);
             z-index: 999;
             opacity: 0;
             visibility: hidden;
@@ -1200,9 +1203,9 @@
         }
         
         .back-to-top:hover {
-            background: #f5b5d0;
+            background: #B8922E;
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(248, 200, 220, 0.6);
+            box-shadow: 0 8px 25px rgba(201, 168, 76, 0.6);
         }
         
         .back-to-top:active {
@@ -1218,7 +1221,7 @@
         
         /* Testimonials Section */
         .testimonials-section {
-            background: linear-gradient(135deg, #fde4ec 0%, var(--white) 50%, #fde4ec 100%);
+            background: linear-gradient(135deg, #FAF7F2 0%, var(--white) 50%, #FAF7F2 100%);
             padding: 80px 20px;
             position: relative;
             overflow: hidden;
@@ -1268,7 +1271,7 @@
         
         .testimonial-quote {
             font-size: 3rem;
-            color: var(--pastel-pink);
+            color: var(--accent);
             line-height: 1;
             margin-bottom: 15px;
             opacity: 0.5;
@@ -1292,7 +1295,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: var(--pastel-pink);
+            background: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1354,7 +1357,7 @@
         }
         
         .faq-item:hover {
-            border-color: var(--pastel-pink);
+            border-color: var(--accent);
         }
         
         .faq-question {
@@ -1371,12 +1374,12 @@
         }
         
         .faq-question:hover {
-            color: var(--pastel-pink);
+            color: var(--accent);
         }
         
         .faq-icon {
             font-size: 1.5rem;
-            color: var(--pastel-pink);
+            color: var(--accent);
             transition: transform 0.3s ease;
             flex-shrink: 0;
             margin-left: 15px;
@@ -1495,7 +1498,7 @@
         }
         
         .product-modal-add-btn {
-            background: var(--pastel-pink);
+            background: var(--accent);
             color: var(--black);
             padding: 15px 35px;
             border: none;
@@ -1511,9 +1514,9 @@
         }
         
         .product-modal-add-btn:hover {
-            background: #f5b5d0;
+            background: #B8922E;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(248, 200, 220, 0.4);
+            box-shadow: 0 5px 15px rgba(201, 168, 76, 0.4);
         }
         
         .product-modal-add-btn:active {
@@ -1552,7 +1555,7 @@
         }
         
         .product-modal-quantity-selector .qty-control-btn {
-            background: var(--pastel-pink);
+            background: var(--accent);
             color: var(--black);
             border: none;
             width: 32px;
@@ -1569,7 +1572,7 @@
         }
         
         .product-modal-quantity-selector .qty-control-btn:hover {
-            background: #f5b5d0;
+            background: #B8922E;
             transform: scale(1.1);
         }
         
@@ -1637,14 +1640,14 @@
             background: rgba(255, 255, 255, 0.05);
             padding: 40px 30px;
             border-radius: 20px;
-            border: 2px solid rgba(248, 200, 220, 0.2);
+            border: 2px solid rgba(201, 168, 76, 0.2);
             transition: all 0.3s ease;
             cursor: pointer;
         }
         
         .contact-card:hover {
-            background: rgba(248, 200, 220, 0.1);
-            border-color: var(--pastel-pink);
+            background: rgba(201, 168, 76, 0.1);
+            border-color: var(--accent);
             transform: translateY(-5px);
         }
         
@@ -1673,7 +1676,7 @@
         }
         
         .contact-link {
-            color: var(--pastel-pink);
+            color: var(--accent);
             text-decoration: none;
             font-weight: 500;
             font-size: 1rem;
@@ -1685,7 +1688,7 @@
         }
         
         .contact-cta {
-            background: var(--pastel-pink);
+            background: var(--accent);
             color: var(--black);
             padding: 18px 50px;
             border: none;
@@ -1700,9 +1703,9 @@
         }
         
         .contact-cta:hover {
-            background: #f5b5d0;
+            background: #B8922E;
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(248, 200, 220, 0.4);
+            box-shadow: 0 10px 30px rgba(201, 168, 76, 0.4);
         }
         
         .business-hours {
@@ -1715,7 +1718,7 @@
             font-size: 1.2rem;
             margin-bottom: 15px;
             font-weight: 400;
-            color: var(--pastel-pink);
+            color: var(--accent);
         }
         
         .business-hours p {
@@ -1725,7 +1728,7 @@
         }
         
         .modal-header {
-            background: var(--pastel-pink);
+            background: var(--accent);
             padding: 20px;
             border-radius: 20px 20px 0 0;
             display: flex;
@@ -1785,7 +1788,7 @@
         }
         
         .qty-btn {
-            background: var(--pastel-pink);
+            background: var(--accent);
             border: none;
             width: 30px;
             height: 30px;
@@ -1843,7 +1846,7 @@
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: var(--pastel-pink);
+            border-color: var(--accent);
         }
         
         .btn-checkout {
@@ -1886,7 +1889,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: rgba(248, 200, 220, 0.1);
+            background: rgba(201, 168, 76, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1897,10 +1900,10 @@
         }
         
         .social-link:hover {
-            background: var(--pastel-pink);
+            background: var(--accent);
             color: var(--black);
             transform: translateY(-3px);
-            border-color: var(--pastel-pink);
+            border-color: var(--accent);
         }
         
         .social-link svg {
@@ -1917,7 +1920,7 @@
         }
         
         footer a {
-            color: var(--pastel-pink);
+            color: var(--accent);
             text-decoration: none;
         }
         
@@ -2232,16 +2235,16 @@
                 min-width: auto;
             }
             
-            .cart-icon {
+            .whatsapp-float {
                 bottom: 20px;
                 right: 20px;
                 width: 58px;
                 height: 58px;
             }
             
-            .cart-icon img {
-                width: 24px;
-                height: 24px;
+            .whatsapp-float svg {
+                width: 28px;
+                height: 28px;
             }
             
             .back-to-top {
@@ -2294,14 +2297,14 @@
                 padding: 8px 12px;
             }
             
-            .cart-icon {
+            .whatsapp-float {
                 width: 52px;
                 height: 52px;
             }
             
-            .cart-icon img {
-                width: 22px;
-                height: 22px;
+            .whatsapp-float svg {
+                width: 26px;
+                height: 26px;
             }
         }
     </style>
@@ -2311,7 +2314,7 @@
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="/">
-                <img src="{% static 'images/plogo.png' %}" alt="ThePOPSHOP.KE" class="logo">
+                <img src="{% static 'images/wyatt.png' %}" alt="Wyatt Collection" class="logo">
             </a>
             
             <ul class="nav-links">
@@ -2370,6 +2373,8 @@ fill="currentColor" viewBox="0 0 24 24" >
                 <span class="cart-text">Cart</span>
                 <span class="nav-cart-count" id="navCartCount">{{ cart_count }}</span>
             </div>
+            <!-- Hidden element to maintain cartCount compatibility -->
+            <span id="cartCount" style="display:none;">{{ cart_count }}</span>
             
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
         </div>
@@ -2401,9 +2406,9 @@ fill="currentColor" viewBox="0 0 24 24" >
         
         <div class="hero-container">
             <div class="hero-content">
-                <h1>Timeless Elegance. Grafted to Shine</h1>
-                <p class="hero-subtitle">Where Elegance Meets Craftsmanship</p>
-                <p>Discover handcrafted Jewelry esigned to celebrate Your beauty, your story, and your moments. Each piece is thoughtfully made to add effortless elegance to your style</p>
+                <h1>Timeless Elegance, Grafted to Shine</h1>
+                <p class="hero-subtitle">Where Luxury Meets Everyday Confidence.</p>
+                <p>Discover Exquisite Jewelry designed to celebrate your beauty, your story and your moments. Each piece is thoughtfully selected to add effortless elegance to your style.</p>
                 
                 <div class="hero-features">
                     <span class="feature-pill">✓ Fade Free</span>
@@ -2412,8 +2417,8 @@ fill="currentColor" viewBox="0 0 24 24" >
                 </div>
                 
                 <div class="hero-buttons">
-                    <a href="#products" class="btn-primary">Explore Collection</a>
-                    <a href="https://wa.me/254700840182" class="btn-secondary">Contact Us</a>
+                    <a href="{% url 'shop:shop' %}" class="btn-primary">Explore Collection</a>
+                    <a href="https://wa.me/254706105967" class="btn-secondary">Contact Us</a>
                 </div>
             </div>
             
@@ -2432,9 +2437,9 @@ fill="currentColor" viewBox="0 0 24 24" >
         <div class="about-container">
             <div class="about-content">
                 <div class="about-text">
-                    <h2>About ThePopShop Kenya</h2>
+                    <h2>About Wyatt Collection</h2>
                     <p>
-                        Welcome to <span style="font-weight: 600;">ThePopShop Kenya</span>, your premier destination for exquisite Jewelry in Kenya. 
+                        Welcome to <span style="font-weight: 600;">Wyatt Collection</span>, your premier destination for exquisite Jewelry in Kenya. 
                         We believe that every piece of Jewelry tells a story, and we're here to help you find yours.
                     </p>
                     <p>
@@ -2499,16 +2504,16 @@ fill="currentColor" viewBox="0 0 24 24" >
     <div class="container" id="categories">
         <h2 class="section-title"><span style="font-weight: 300;">Shop by Category</span></h2>
         <div class="categories">
-            <button class="category-btn active" data-category="all">All</button>
+            <button class="category-btn {% if selected_category == 'all' or not selected_category %}active{% endif %}" data-category="all">All</button>
             {% for category in categories %}
-            <button class="category-btn" data-category="{{ category.slug }}">{{ category.name }}</button>
+            <button class="category-btn {% if selected_category == category.slug %}active{% endif %}" data-category="{{ category.slug }}">{{ category.name }}</button>
             {% endfor %}
         </div>
 
         <!-- Products Grid -->
         <div id="products">
             <h2 class="section-title"><span style="font-weight: 300;">Our Collection</span></h2>
-            <div class="products-grid">
+            <div class="products-grid" id="productsGrid">
                 {% for product in products %}
                 <div class="product-card" data-category="{{ product.category.slug }}" onclick="showProductModal({{ product.id }}, '{{ product.name|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{% if product.get_image_url %}{{ product.get_image_url }}{% endif %}')">
                     <div class="product-image">
@@ -2522,7 +2527,7 @@ fill="currentColor" viewBox="0 0 24 24" >
                         <div class="product-name">{{ product.name }}</div>
                         <div class="product-desc">{{ product.short_description }}</div>
                         <div class="product-footer">
-                            <div class="product-price">Ksh {{ product.price|thousand_separator }}</div>
+                            <div class="product-price">KSh {{ product.price|thousand_separator }}</div>
                             <button class="btn-add-cart" data-product-id="{{ product.id }}" onclick="event.stopPropagation(); addToCart({{ product.id }}, this)">
                                 <span class="btn-icon">+</span>
                                 <span class="btn-text">Add</span>
@@ -2541,14 +2546,15 @@ fill="currentColor" viewBox="0 0 24 24" >
             </div>
             
             <!-- Pagination -->
+            <div id="paginationContainer">
             {% if products.has_other_pages %}
             <div class="pagination-info">
                 Showing {{ products.start_index }} - {{ products.end_index }} of {{ products.paginator.count }} products
             </div>
             <div class="pagination">
                 {% if products.has_previous %}
-                    <a href="?page=1#products" title="First Page">⟪</a>
-                    <a href="?page={{ products.previous_page_number }}#products" title="Previous Page">‹</a>
+                    <a href="#" data-page="1" class="pagination-link" title="First Page">⟪</a>
+                    <a href="#" data-page="{{ products.previous_page_number }}" class="pagination-link" title="Previous Page">‹</a>
                 {% else %}
                     <span class="disabled">⟪</span>
                     <span class="disabled">‹</span>
@@ -2558,19 +2564,20 @@ fill="currentColor" viewBox="0 0 24 24" >
                     {% if products.number == num %}
                         <span class="current">{{ num }}</span>
                     {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
-                        <a href="?page={{ num }}#products">{{ num }}</a>
+                        <a href="#" data-page="{{ num }}" class="pagination-link">{{ num }}</a>
                     {% endif %}
                 {% endfor %}
                 
                 {% if products.has_next %}
-                    <a href="?page={{ products.next_page_number }}#products" title="Next Page">›</a>
-                    <a href="?page={{ products.paginator.num_pages }}#products" title="Last Page">⟫</a>
+                    <a href="#" data-page="{{ products.next_page_number }}" class="pagination-link" title="Next Page">›</a>
+                    <a href="#" data-page="{{ products.paginator.num_pages }}" class="pagination-link" title="Last Page">⟫</a>
                 {% else %}
                     <span class="disabled">›</span>
                     <span class="disabled">⟫</span>
                 {% endif %}
             </div>
             {% endif %}
+            </div>
         </div>
     </div>
 
@@ -2582,11 +2589,12 @@ fill="currentColor" viewBox="0 0 24 24" >
         ↑
     </button>
 
-    <!-- Cart Icon -->
-    <div class="cart-icon" onclick="openCart()">
-        <img src="{% static 'images/cart.svg' %}" alt="Cart">
-        <span class="cart-count" id="cartCount">{{ cart_count }}</span>
-    </div>
+    <!-- WhatsApp Floating Button -->
+    <a class="whatsapp-float" href="https://wa.me/254706105967" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
 
     <!-- Cart Modal -->
     <div class="modal" id="cartModal">
@@ -2695,7 +2703,7 @@ fill="currentColor" viewBox="0 0 24 24" >
                     <div class="testimonial-quote">"</div>
                     <div class="testimonial-stars">★★★★★</div>
                     <p class="testimonial-text">
-                        The POPSHOP has become my go-to for all jewellery needs. Beautiful designs, affordable prices, and excellent customer service. The team is very responsive on WhatsApp!
+                        The Wyatt Collection has become my go-to for all jewellery needs. Beautiful designs, affordable prices, and excellent customer service. The team is very responsive on WhatsApp!
                     </p>
                     <div class="testimonial-author">
                         <div class="testimonial-avatar">M</div>
@@ -2710,7 +2718,7 @@ fill="currentColor" viewBox="0 0 24 24" >
                     <div class="testimonial-quote">"</div>
                     <div class="testimonial-stars">★★★★★</div>
                     <p class="testimonial-text">
-                        I bought earrings and a bracelet set as a gift. The packaging was elegant and the recipient was thrilled! Will definitely order again. Thank you POPSHOP!
+                        I bought earrings and a bracelet set as a gift. The packaging was elegant and the recipient was thrilled! Will definitely order again. Thank you Wyatt Collection!
                     </p>
                     <div class="testimonial-author">
                         <div class="testimonial-avatar">J</div>
@@ -2728,7 +2736,7 @@ fill="currentColor" viewBox="0 0 24 24" >
     <section class="faq-section" id="faq">
         <div class="faq-container">
             <h2>Frequently Asked Questions</h2>
-            <p class="faq-subtitle">Everything you need to know about ordering from The ThePopShop Kenya</p>
+            <p class="faq-subtitle">Everything you need to know about ordering from The Wyatt Collection</p>
             
             <div class="faq-list">
                 <div class="faq-item">
@@ -2806,7 +2814,7 @@ fill="currentColor" viewBox="0 0 24 24" >
             <p class="contact-subtitle">We'd love to hear from you! Reach out for inquiries, custom orders, or just to say hello.</p>
             
             <div class="contact-methods">
-                <div class="contact-card" onclick="window.open('https://wa.me/254700840182', '_blank')">
+                <div class="contact-card" onclick="window.open('https://wa.me/254706105967', '_blank')">
                     <span class="contact-icon" style="color: #25D366;">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
@@ -2814,25 +2822,25 @@ fill="currentColor" viewBox="0 0 24 24" >
                     </span>
                     <h3>WhatsApp</h3>
                     <p>Chat with us instantly</p>
-                    <a href="https://wa.me/254700840182" class="contact-link" onclick="event.stopPropagation()">+254 700 840 182</a>
+                    <a href="https://wa.me/254706105967" class="contact-link" onclick="event.stopPropagation()">+254 706 105 967</a>
                 </div>
                 
-                <div class="contact-card" onclick="window.location.href='tel:+254700840182'">
+                <div class="contact-card" onclick="window.location.href='tel:+254706105967'">
                     <span class="contact-icon">📞</span>
                     <h3>Call Us</h3>
                     <p>Speak to our team</p>
-                    <a href="tel:+254700840182" class="contact-link" onclick="event.stopPropagation()">+254 700 840 182 / +254 792 267 042</a>
+                    <a href="tel:+254706105967" class="contact-link" onclick="event.stopPropagation()">+254 706 105 967 / +254 792 267 042</a>
                 </div>
                 
-                <div class="contact-card" onclick="window.location.href='mailto:info@thepopshop.ke'">
+                <div class="contact-card" onclick="window.location.href='mailto:info@Wyatt Collection'">
                     <span class="contact-icon">✉️</span>
                     <h3>Email</h3>
                     <p>Send us a message</p>
-                    <a href="mailto:info@thepopshop.ke" class="contact-link" onclick="event.stopPropagation()">info@thepopshop.ke</a>
+                    <a href="mailto:info@Wyatt Collection" class="contact-link" onclick="event.stopPropagation()">info@theWyatt Collection.co.ke</a>
                 </div>
             </div>
             
-            <a href="https://wa.me/254700840182?text=Hi!%20I'm%20interested%20in%20your%20jewellery%20collection" class="contact-cta" target="_blank">
+            <a href="https://wa.me/254706105967?text=Hi!%20I'm%20interested%20in%20your%20jewellery%20collection" class="contact-cta" target="_blank">
                 Start a Conversation
             </a>
             
@@ -2849,7 +2857,7 @@ fill="currentColor" viewBox="0 0 24 24" >
     <footer>
         <div class="footer-content">
             <div class="footer-social">
-                <a href="https://www.instagram.com/thepopshop.ke?igsh=MXBlM25sMXl3OWljdw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" class="social-link" title="Follow us on Instagram">
+                <a href="https://www.instagram.com/Wyatt Collection?igsh=MXBlM25sMXl3OWljdw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" class="social-link" title="Follow us on Instagram">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                     </svg>
@@ -2865,7 +2873,7 @@ fill="currentColor" viewBox="0 0 24 24" >
             </div>
             
             <div class="footer-links">
-                <p>&copy; 2026 ThePopShop Kenya. All rights reserved.</p>
+                <p>&copy; 2026 Wyatt Collection. All rights reserved.</p>
             
             </div>
         </div>
@@ -3033,80 +3041,259 @@ fill="currentColor" viewBox="0 0 24 24" >
         // Initial check for reveals
         document.addEventListener('DOMContentLoaded', revealOnScroll);
 
-        // Category Filter
-        document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                const category = this.dataset.category;
-                const productCards = document.querySelectorAll('.product-card');
-                let visibleCount = 0;
-                let visibleIndex = 0;
-                
-                productCards.forEach(card => {
-                    if (category === 'all' || card.dataset.category === category) {
-                        card.style.display = 'block';
-                        
-                        // Instant display for "All", quick animation for specific categories
-                        if (category === 'all') {
-                            card.style.animation = 'none';
-                            card.style.opacity = '1';
-                        } else {
-                            card.style.animation = 'none';
-                            setTimeout(() => {
-                                card.style.animation = `fadeInUp 0.4s ease-out ${visibleIndex * 0.05}s forwards`;
-                            }, 10);
-                        }
-                        
-                        visibleIndex++;
-                        visibleCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
+        // Category Filter - AJAX with seamless loading
+        let currentCategory = '{{ selected_category }}' || 'all';
+        let isLoading = false;
+        
+        // Debug function to check setup
+        function debugCategoryFilter() {
+            console.log('🔧 Category Filter Debug Info:');
+            console.log('- Current category:', currentCategory);
+            console.log('- Filter URL:', '{% url "shop:filter_products" %}');
+            console.log('- Cart URL:', '{% url "shop:get_cart" %}');
+            console.log('- CSRF Token:', '{{ csrf_token }}');
+            console.log('- Category buttons:', document.querySelectorAll('.category-btn').length);
+            console.log('- Products grid:', !!document.getElementById('productsGrid'));
+            console.log('- Pagination container:', !!document.getElementById('paginationContainer'));
+            
+            // Test categories
+            const categories = [];
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                categories.push({
+                    text: btn.textContent.trim(),
+                    category: btn.dataset.category,
+                    active: btn.classList.contains('active')
                 });
-                
-                // Hide pagination when filtering
-                const pagination = document.querySelector('.pagination');
-                const paginationInfo = document.querySelector('.pagination-info');
-                if (pagination) {
-                    if (category === 'all') {
-                        pagination.style.display = 'flex';
-                        if (paginationInfo) paginationInfo.style.display = 'block';
+            });
+            console.log('- Available categories:', categories);
+        }
+        
+        // Run debug on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            debugCategoryFilter();
+        });
+        
+        // Sync cart state with product cards
+        function syncCartState() {
+            console.log('🔄 Syncing cart state...');
+            
+            fetch('{% url "shop:get_cart" %}')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('🛒 Cart data received:', data);
+                    
+                    if (data.success) {
+                        const cart = data.cart;
+                        console.log(`🛒 Cart items: ${Object.keys(cart).length}`);
+                        
+                        // Update all product cards
+                        document.querySelectorAll('.product-card').forEach(card => {
+                            const productFooter = card.querySelector('.product-footer');
+                            if (!productFooter) return;
+                            
+                            const addBtn = productFooter.querySelector('.btn-add-cart');
+                            const quantitySelector = productFooter.querySelector('.quantity-selector');
+                            
+                            if (!addBtn || !quantitySelector) return;
+                            
+                            const productId = addBtn.dataset.productId;
+                            
+                            if (cart[productId]) {
+                                // Product is in cart - show quantity selector
+                                addBtn.style.display = 'none';
+                                quantitySelector.classList.add('active');
+                                quantitySelector.querySelector('.qty-display').textContent = cart[productId].quantity;
+                                console.log(`✅ Product ${productId} synced with quantity ${cart[productId].quantity}`);
+                            } else {
+                                // Product not in cart - show add button
+                                addBtn.style.display = '';
+                                quantitySelector.classList.remove('active');
+                                quantitySelector.querySelector('.qty-display').textContent = '1';
+                            }
+                        });
+                        
+                        console.log('✅ Cart state synchronized successfully');
                     } else {
-                        pagination.style.display = 'none';
-                        if (paginationInfo) paginationInfo.style.display = 'none';
+                        console.error('❌ Cart sync failed:', data.error || 'Unknown error');
                     }
-                }
-                
-                // Show message if no products in category
-                const noProductsMsg = document.getElementById('noProductsMsg');
-                if (visibleCount === 0 && category !== 'all') {
-                    if (!noProductsMsg) {
-                        const msg = document.createElement('p');
-                        msg.id = 'noProductsMsg';
-                        msg.style.cssText = 'text-align: center; grid-column: 1/-1; color: #999; padding: 40px;';
-                        msg.textContent = 'No products in this category yet.';
-                        document.querySelector('.products-grid').appendChild(msg);
-                    }
-                } else if (noProductsMsg) {
-                    noProductsMsg.remove();
+                })
+                .catch(error => {
+                    console.error('❌ Error syncing cart:', error);
+                });
+        }
+        
+        // Filter products by category
+        async function filterByCategory(category, page = 1) {
+            if (isLoading) return;
+            
+            console.log(`🔍 Filtering by category: ${category}, page: ${page}`);
+            
+            isLoading = true;
+            currentCategory = category;
+            
+            // Update active button immediately
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if (btn.dataset.category === category) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
                 }
             });
+            
+            // Show loading state
+            const productsGrid = document.getElementById('productsGrid');
+            const paginationContainer = document.getElementById('paginationContainer');
+            
+            if (!productsGrid || !paginationContainer) {
+                console.error('❌ Required DOM elements not found:', {
+                    productsGrid: !!productsGrid,
+                    paginationContainer: !!paginationContainer
+                });
+                isLoading = false;
+                return;
+            }
+            
+            productsGrid.style.opacity = '0.5';
+            productsGrid.style.pointerEvents = 'none';
+            
+            try {
+                // Build URL with category and page
+                const filterUrl = '{% url "shop:filter_products" %}';
+                const url = new URL(filterUrl, window.location.origin);
+                url.searchParams.set('category', category);
+                url.searchParams.set('page', page);
+                
+                console.log(`📡 Making AJAX request to: ${url.toString()}`);
+                
+                // Add CSRF token to headers
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    credentials: 'same-origin'
+                });
+                
+                console.log(`📡 Response status: ${response.status}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('📦 Response data:', data.debug_info || data);
+                
+                if (data.success) {
+                    console.log(`✅ Successfully loaded ${data.total_count} products`);
+                    
+                    // Update products grid
+                    productsGrid.innerHTML = data.products_html;
+                    
+                    // Update pagination
+                    paginationContainer.innerHTML = data.pagination_html;
+                    
+                    // Sync cart state with new products
+                    setTimeout(() => {
+                        syncCartState();
+                    }, 100);
+                    
+                    // Attach pagination click handlers
+                    attachPaginationHandlers();
+                    
+                    // Update URL without reload
+                    const newUrl = new URL(window.location);
+                    if (category === 'all') {
+                        newUrl.searchParams.delete('category');
+                    } else {
+                        newUrl.searchParams.set('category', category);
+                    }
+                    if (page === 1) {
+                        newUrl.searchParams.delete('page');
+                    } else {
+                        newUrl.searchParams.set('page', page);
+                    }
+                    window.history.pushState({category, page}, '', newUrl);
+                    
+                    // Scroll to products section smoothly
+                    document.getElementById('products').scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                } else {
+                    console.error('❌ Server returned error:', data.error || 'Unknown error');
+                    console.error('Response data:', data);
+                    showToast('Error', data.error || 'Failed to load products', 'error');
+                }
+            } catch (error) {
+                console.error('❌ Error filtering products:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    category: category,
+                    page: page
+                });
+                
+                // Show error but don't auto-refresh - let user decide
+                showToast('Error', 'Failed to load products. Please check console for details.', 'error');
+            } finally {
+                productsGrid.style.opacity = '1';
+                productsGrid.style.pointerEvents = 'auto';
+                isLoading = false;
+            }
+        }
+        
+        // Attach pagination click handlers
+        function attachPaginationHandlers() {
+            document.querySelectorAll('.pagination-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.dataset.page;
+                    filterByCategory(currentCategory, page);
+                });
+            });
+        }
+        
+        // Category button click handlers
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const category = this.dataset.category;
+                filterByCategory(category, 1);
+            });
+        });
+        
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function(event) {
+            if (event.state) {
+                filterByCategory(event.state.category || 'all', event.state.page || 1);
+            }
+        });
+        
+        // Initialize pagination handlers on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            attachPaginationHandlers();
         });
 
         // Add to Cart with Quantity Selector
         function addToCart(productId, buttonElement) {
             // Optimistic UI update - update immediately before server response
-            const currentCount = parseInt(document.getElementById('cartCount').textContent) || 0;
+            const cartCountEl = document.getElementById('cartCount');
+            const currentCount = cartCountEl ? parseInt(cartCountEl.textContent) || 0 : 0;
             const newCount = currentCount + 1;
             
             // Update UI instantly with animation
             const cartIcon = document.querySelector('.nav-cart-icon');
             const cartCountBadge = document.getElementById('navCartCount');
             
-            document.getElementById('cartCount').textContent = newCount;
-            cartCountBadge.textContent = newCount;
+            if (cartCountEl) cartCountEl.textContent = newCount;
+            if (cartCountBadge) cartCountBadge.textContent = newCount;
             
             // Trigger animations
             cartIcon.classList.add('pulse');
@@ -3336,14 +3523,19 @@ fill="currentColor" viewBox="0 0 24 24" >
                     }
                 } else {
                     notFoundCount++;
-                    console.warn('✗ Product', itemId, 'not found on page');
+                    // Product not on current page (different category) - this is normal, don't warn
                 }
             });
             
-            console.log(`Sync complete: ${syncedCount} synced, ${notFoundCount} not on page`);
+            if (syncedCount > 0) {
+                console.log(`✅ Synced ${syncedCount} product(s) on current page`);
+            }
+            if (notFoundCount > 0) {
+                console.log(`ℹ️ ${notFoundCount} cart item(s) not in current view (different category)`);
+            }
             
             // Retry once if some items weren't found and this is first attempt
-            if (notFoundCount > 0 && retryCount === 0) {
+            if (notFoundCount > 0 && syncedCount === 0 && retryCount === 0) {
                 console.log('Retrying sync in 200ms...');
                 setTimeout(() => syncCartWithProductCards(cartItems, 1), 200);
             }

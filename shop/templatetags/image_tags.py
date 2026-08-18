@@ -134,7 +134,7 @@ def thousand_separator(value):
         if isinstance(value, Decimal):
             # Round to 2 decimal places using ROUND_HALF_UP
             value = value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-            # Format with commas and 2 decimal places
+            # Format with commas and 2 decimal places (no space)
             return f"{value:,}"
         else:
             # Convert to Decimal first, then format

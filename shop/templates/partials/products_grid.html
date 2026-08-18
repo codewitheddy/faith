@@ -1,0 +1,55 @@
+{% load static %}
+{% load image_tags %}
+
+{% for product in products %}
+<div class="product-card" style="animation-delay:{{ forloop.counter0 }}00ms">
+    <a href="/products/{{ product.slug }}/" class="product-card-link">
+        <div class="product-image">
+            {% if product.get_image_url %}
+                {% optimized_img product.get_image_url product.name width=600 css_class="" lazy=True %}
+            {% else %}
+                <img src="{% static 'images/placeholder.svg' %}" alt="{{ product.name }}" loading="lazy">
+            {% endif %}
+            {% if product.on_sale %}
+            <span style="position:absolute;top:10px;left:10px;background:#e53935;color:#fff;font-size:0.72rem;font-weight:700;padding:4px 10px;border-radius:20px;z-index:2;letter-spacing:0.5px;">
+                -{{ product.discount_percent }}%
+            </span>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <button class="wishlist-btn" onclick="toggleWishlist(event, {{ product.id }}, this)"
+                data-product-id="{{ product.id }}"
+                title="{% if product.id in wishlist_ids %}Remove from wishlist{% else %}Add to wishlist{% endif %}">
+                {% if product.id in wishlist_ids %}❤️{% else %}🤍{% endif %}
+            </button>
+            {% else %}
+            <a href="/login/" class="wishlist-btn" title="Login to save">🤍</a>
+            {% endif %}
+        </div>
+        <div class="product-info">
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-desc">{{ product.short_description }}</div>
+        </div>
+    </a>
+    <div class="product-info-footer">
+        <div class="product-price">
+            {% if product.on_sale and product.sale_price %}
+            <div style="font-size:1.3rem;font-weight:700;color:#C9A84C;line-height:1.1;">KSh {{ product.sale_price|thousand_separator }}</div>
+            <div style="font-size:0.78rem;color:#999;text-decoration:line-through;margin-top:2px;">KSh {{ product.price|thousand_separator }}</div>
+            {% else %}
+            <div style="font-size:1.1rem;font-weight:600;color:#1a1a1a;">KSh {{ product.price|thousand_separator }}</div>
+            {% endif %}
+        </div>
+        <button class="btn-add-cart" data-product-id="{{ product.id }}" onclick="addToCart({{ product.id }}, this)">
+            <span class="btn-icon">+</span>
+            <span class="btn-text">Add</span>
+        </button>
+        <div class="quantity-selector" data-product-id="{{ product.id }}">
+            <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'decrease', this.parentElement)" aria-label="Decrease quantity">−</button>
+            <span class="qty-display">1</span>
+            <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'increase', this.parentElement)" aria-label="Increase quantity">+</button>
+        </div>
+    </div>
+</div>
+{% empty %}
+<p style="text-align:center; grid-column:1/-1; color:#999; padding:60px 0;">No products available in this category.</p>
+{% endfor %}

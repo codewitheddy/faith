@@ -1,15 +1,15 @@
 {% extends 'myadmin/base.html' %}
 {% load static %}
 
-{% block title %}Add Product - MyAdmin{% endblock %}
+{% block title %}Add Product — Wyatt Collection Admin{% endblock %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
     <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
-    <span class="breadcrumbs-separator">›</span>
+    <span class="breadcrumbs-separator">/</span>
     <a href="{% url 'myadmin:product_list' %}">Products</a>
-    <span class="breadcrumbs-separator">›</span>
-    <span>Add Product</span>
+    <span class="breadcrumbs-separator">/</span>
+    <span class="text-gold">Add Product</span>
 </div>
 {% endblock %}
 
@@ -18,140 +18,190 @@
     <h1 class="page-title">Add Product</h1>
 </div>
 
-<div class="card">
-    <form method="post" enctype="multipart/form-data" action="{% url 'myadmin:product_add' %}">
-        {% csrf_token %}
-        
+<div style="display:grid;grid-template-columns:1fr 320px;gap:24px;">
+<div>
+<form method="post" enctype="multipart/form-data" id="productForm">
+    {% csrf_token %}
+
+    <!-- Basic Info -->
+    <div class="card">
+        <div class="card-header">Basic Info</div>
         <div class="form-group">
-            <label for="{{ form.name.id_for_label }}" class="form-label form-label-required">{{ form.name.label }}</label>
+            <label class="form-label form-label-required">Product Name</label>
             {{ form.name }}
-            {% if form.name.errors %}
-            <div class="form-error">{{ form.name.errors.0 }}</div>
-            {% endif %}
-            {% if form.name.help_text %}
-            <div class="form-help">{{ form.name.help_text }}</div>
-            {% endif %}
+            {% if form.name.errors %}<div class="form-error">{{ form.name.errors.0 }}</div>{% endif %}
         </div>
-        
         <div class="form-group">
-            <label for="{{ form.category.id_for_label }}" class="form-label form-label-required">{{ form.category.label }}</label>
+            <label class="form-label form-label-required">Category</label>
             {{ form.category }}
-            {% if form.category.errors %}
-            <div class="form-error">{{ form.category.errors.0 }}</div>
-            {% endif %}
-            {% if form.category.help_text %}
-            <div class="form-help">{{ form.category.help_text }}</div>
-            {% endif %}
+            {% if form.category.errors %}<div class="form-error">{{ form.category.errors.0 }}</div>{% endif %}
         </div>
-        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group">
+                <label class="form-label form-label-required">Price (KES)</label>
+                {{ form.price }}
+                {% if form.price.errors %}<div class="form-error">{{ form.price.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="form-group">
+                <label class="form-label">Sale Price (KES)</label>
+                {{ form.sale_price }}
+                <div class="form-help">Leave blank if not on sale</div>
+                {% if form.sale_price.errors %}<div class="form-error">{{ form.sale_price.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
         <div class="form-group">
-            <label for="{{ form.short_description.id_for_label }}" class="form-label form-label-required">{{ form.short_description.label }}</label>
+            <label class="form-label">Short Description</label>
             {{ form.short_description }}
-            {% if form.short_description.errors %}
-            <div class="form-error">{{ form.short_description.errors.0 }}</div>
-            {% endif %}
-            {% if form.short_description.help_text %}
-            <div class="form-help">{{ form.short_description.help_text }}</div>
-            {% endif %}
+            <div class="form-help">Shown on product cards (max 150 chars)</div>
+            {% if form.short_description.errors %}<div class="form-error">{{ form.short_description.errors.0 }}</div>{% endif %}
         </div>
-        
         <div class="form-group">
-            <label for="{{ form.description.id_for_label }}" class="form-label form-label-required">{{ form.description.label }}</label>
+            <label class="form-label">Full Description</label>
             {{ form.description }}
-            {% if form.description.errors %}
-            <div class="form-error">{{ form.description.errors.0 }}</div>
-            {% endif %}
-            {% if form.description.help_text %}
-            <div class="form-help">{{ form.description.help_text }}</div>
-            {% endif %}
+            {% if form.description.errors %}<div class="form-error">{{ form.description.errors.0 }}</div>{% endif %}
         </div>
-        
+    </div>
+
+    <!-- Product Image -->
+    <div class="card">
+        <div class="card-header">Product Image</div>
         <div class="form-group">
-            <label for="{{ form.price.id_for_label }}" class="form-label form-label-required">{{ form.price.label }}</label>
-            {{ form.price }}
-            {% if form.price.errors %}
-            <div class="form-error">{{ form.price.errors.0 }}</div>
-            {% endif %}
-            {% if form.price.help_text %}
-            <div class="form-help">{{ form.price.help_text }}</div>
-            {% endif %}
-        </div>
-        
-        <div class="card" style="background: var(--gray-light); padding: 20px; margin-bottom: 20px;">
-            <h3 style="margin-bottom: 16px; font-size: 18px;">Product Image (Choose One Option)</h3>
-            
-            <div class="form-group">
-                <label for="{{ form.image_url.id_for_label }}" class="form-label">{{ form.image_url.label }}</label>
-                {{ form.image_url }}
-                {% if form.image_url.errors %}
-                <div class="form-error">{{ form.image_url.errors.0 }}</div>
-                {% endif %}
-                {% if form.image_url.help_text %}
-                <div class="form-help">{{ form.image_url.help_text }}</div>
-                {% endif %}
-            </div>
-            
-            <div class="form-group">
-                <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
-                {{ form.image }}
-                {% if form.image.errors %}
-                <div class="form-error">{{ form.image.errors.0 }}</div>
-                {% endif %}
-                {% if form.image.help_text %}
-                <div class="form-help">{{ form.image.help_text }}</div>
-                {% endif %}
-                <div id="imagePreview" style="margin-top: 12px; display: none;">
-                    <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid var(--gray-medium);">
-                </div>
-            </div>
-            
-            <div class="form-group" style="margin-bottom: 0;">
-                <label for="{{ form.image_base64.id_for_label }}" class="form-label">{{ form.image_base64.label }}</label>
-                {{ form.image_base64 }}
-                {% if form.image_base64.errors %}
-                <div class="form-error">{{ form.image_base64.errors.0 }}</div>
-                {% endif %}
-                {% if form.image_base64.help_text %}
-                <div class="form-help">{{ form.image_base64.help_text }}</div>
-                {% endif %}
+            <label class="form-label">Upload Image</label>
+            {{ form.image }}
+            <div class="form-help">JPEG, PNG or WebP — max 5MB</div>
+            {% if form.image.errors %}<div class="form-error">{{ form.image.errors.0 }}</div>{% endif %}
+            <div class="img-preview-wrap" id="imagePreviewWrap" style="display:none;">
+                <img id="imagePreview" src="" alt="Preview">
             </div>
         </div>
-        
         <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                {{ form.is_available }}
-                <span class="form-label" style="margin-bottom: 0;">{{ form.is_available.label }}</span>
-            </label>
-            {% if form.is_available.errors %}
-            <div class="form-error">{{ form.is_available.errors.0 }}</div>
-            {% endif %}
+            <label class="form-label">Or Image URL</label>
+            {{ form.image_url }}
+            <div class="form-help">Link to an external image</div>
+            {% if form.image_url.errors %}<div class="form-error">{{ form.image_url.errors.0 }}</div>{% endif %}
         </div>
-        
-        {% if form.non_field_errors %}
-        <div class="form-error mb-2">{{ form.non_field_errors.0 }}</div>
-        {% endif %}
-        
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Save Product</button>
-            <a href="{% url 'myadmin:product_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+
+    <!-- Inventory -->
+    <div class="card">
+        <div class="card-header">Inventory Management</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group">
+                <label class="form-label form-label-required">Stock Quantity</label>
+                {{ form.stock_quantity }}
+                <div class="form-help">Total units available</div>
+                {% if form.stock_quantity.errors %}<div class="form-error">{{ form.stock_quantity.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="form-group">
+                <label class="form-label form-label-required">Reorder Level</label>
+                {{ form.reorder_level }}
+                <div class="form-help">Alert when stock falls below this</div>
+                {% if form.reorder_level.errors %}<div class="form-error">{{ form.reorder_level.errors.0 }}</div>{% endif %}
+            </div>
         </div>
-    </form>
+    </div>
+
+    <!-- Variants -->
+    <div class="card">
+        <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+            Variants <span style="font-size:12px;color:var(--text-muted);font-weight:400;">(optional)</span>
+            <button type="button" onclick="addVariantRow()" class="btn btn-secondary btn-sm">+ Add Variant</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">
+            Use variants for size, colour, material etc. Each variant can adjust the base price up or down.
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 130px;gap:8px;margin-bottom:6px;padding:0 2px;">
+            <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;">Variant Name</span>
+            <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;">Variant Price (KES)</span>
+        </div>
+        <div id="variantRows"></div>
+        <p id="noVariantsMsg" style="font-size:13px;color:var(--text-muted);margin:0 0 4px;">No variants yet — click "+ Add Variant" to add one.</p>
+        <!-- Hidden field carries variants JSON on submit -->
+        <input type="hidden" name="variants_json" id="variantsJson">
+    </div>
+
+    <!-- Availability (MUST be inside form for checkbox to submit) -->
+    <div class="card">
+        <div class="card-header">Availability</div>
+        <div class="checkbox-row">
+            <input type="checkbox" name="is_available" id="id_is_available" class="form-checkbox" 
+                   {% if form.is_available.value %}checked{% endif %} value="on">
+            <label>Available for purchase - <span style="color:#666;font-size:0.9rem;">Always checked by default. Stock limits are enforced separately.</span></label>
+        </div>
+        {% if form.is_available.errors %}<div class="form-error">{{ form.is_available.errors.0 }}</div>{% endif %}
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary" onclick="serializeVariants()">Save Product</button>
+        <a href="{% url 'myadmin:product_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+
+    <!-- Display all form errors at the top -->
+    {% if form.non_field_errors %}
+    <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:12px 14px;margin-top:16px;color:#991b1b;">
+        <strong style="display:block;margin-bottom:6px;">Form Errors:</strong>
+        {% for error in form.non_field_errors %}
+        <div>{{ error }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</form>
+</div>
+
+<!-- Sidebar -->
+<div>
+    <div class="card">
+        <div class="card-header">Tips</div>
+        <ul style="font-size:13px;color:var(--text-muted);line-height:2.2;padding-left:16px;">
+            <li>Use a clear, unique product name</li>
+            <li>Price in Kenyan Shillings</li>
+            <li>Set a Sale Price to show a discount badge</li>
+            <li>Short description shows on product cards</li>
+            <li>Upload an image or paste an image URL</li>
+            <li>Add variants for size / colour / material</li>
+        </ul>
+    </div>
+</div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Image preview functionality
-    document.getElementById('{{ form.image.id_for_label }}').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                document.getElementById('previewImg').src = event.target.result;
-                document.getElementById('imagePreview').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
+document.querySelector('input[type="file"]')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        document.getElementById('imagePreview').src = ev.target.result;
+        document.getElementById('imagePreviewWrap').style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+});
+
+function addVariantRow() {
+    document.getElementById('noVariantsMsg')?.remove();
+    const row = document.createElement('div');
+    row.className = 'variant-row';
+    row.style.cssText = 'display:grid;grid-template-columns:1fr 130px 60px 36px;gap:8px;align-items:center;margin-bottom:8px;';
+    row.innerHTML = `
+        <input type="text" class="form-input v-name" placeholder="e.g. Gold / Size S / Red">
+        <input type="number" class="form-input v-adj" placeholder="price" step="0.01" value="0">
+        <input type="checkbox" class="form-checkbox v-avail" checked style="justify-self:center;">
+        <button type="button" onclick="this.closest('.variant-row').remove()" title="Remove" style="background:#fee2e2;border:none;border-radius:6px;width:36px;height:36px;cursor:pointer;color:#dc2626;font-size:1.2rem;display:flex;align-items:center;justify-content:center;">×</button>
+    `;
+    document.getElementById('variantRows').appendChild(row);
+}
+
+function serializeVariants() {
+    const rows = document.querySelectorAll('.variant-row');
+    const variants = [];
+    rows.forEach((row, i) => {
+        const name = row.querySelector('.v-name').value.trim();
+        const adj = parseFloat(row.querySelector('.v-adj').value) || 0;
+        const avail = row.querySelector('.v-avail') ? row.querySelector('.v-avail').checked : true;
+        if (name) variants.push({ name, price_adjustment: adj, is_available: avail, sort_order: i });
     });
+    document.getElementById('variantsJson').value = JSON.stringify(variants);
+}
 </script>
 {% endblock %}

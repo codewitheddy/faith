@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}About Us - Wyatt Collection{% endblock %}
+{% block nav_about %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #FAF7F2 0%, #C9A84C 60%, #FAF7F2 100%);
+        padding: 80px 20px 70px; text-align: center; position: relative; overflow: hidden;
+    }
+    .page-hero::before { content:'✨'; position:absolute; top:20px; right:10%; font-size:3rem; opacity:0.2; animation: float 6s ease-in-out infinite; }
+    .page-hero::after { content:'💎'; position:absolute; bottom:20px; left:10%; font-size:3rem; opacity:0.2; animation: float 6s ease-in-out infinite 3s; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+    .page-hero h1 { font-size: 3.2rem; font-weight: 300; letter-spacing: 3px; margin-bottom: 15px; font-family: Georgia, serif; }
+    .page-hero p { color: #555; font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+    .about-section { padding: 80px 20px; }
+    .about-container { max-width: 1100px; margin: 0 auto; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; margin-bottom: 80px; }
+    .about-grid.reverse { direction: rtl; }
+    .about-grid.reverse > * { direction: ltr; }
+    .about-img-wrap { position: relative; }
+    .about-img-wrap img { width: 100%; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
+    .about-img-panel {
+        width: 100%; aspect-ratio: 4/3; border-radius: 20px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+    }
+    .about-img-panel.p1 { background: linear-gradient(135deg, #0f3460 0%, #16213e 55%, #0f3460 100%); }
+    .about-img-panel.p2 { background: linear-gradient(135deg, #C9A84C 0%, #B8922E 55%, #8a6d24 100%); }
+    .about-img-panel .monogram {
+        font-family: Georgia, serif; font-size: 7rem; font-weight: 400;
+        letter-spacing: 6px; color: rgba(255,255,255,0.92); line-height: 1;
+    }
+    .about-img-panel .panel-label {
+        color: rgba(255,255,255,0.75); font-size: 0.8rem;
+        text-transform: uppercase; letter-spacing: 3px;
+    }
+    .about-img-badge {
+        position: absolute; bottom: -20px; right: -20px;
+        background: var(--accent); padding: 20px 25px;
+        border-radius: 15px; text-align: center;
+        box-shadow: 0 10px 30px rgba(201,168,76,0.4);
+    }
+    .about-img-badge .num { font-size: 2rem; font-weight: 700; display: block; }
+    .about-img-badge .lbl { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+    .about-text h2 { font-size: 2.3rem; font-weight: 300; letter-spacing: 2px; margin-bottom: 20px; }
+    .about-text p { font-size: 1.05rem; line-height: 1.9; color: #555; margin-bottom: 18px; }
+    .about-text .highlight { color: var(--black); font-weight: 600; font-style: italic; }
+    .about-text .btn-primary { margin-top: 10px; }
+
+    /* Values */
+    .values-section { background: var(--light-gray); padding: 80px 20px; }
+    .values-container { max-width: 1100px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 50px; }
+    .section-header h2 { font-size: 2.3rem; font-weight: 300; letter-spacing: 2px; margin-bottom: 10px; }
+    .section-header p { color: #666; font-size: 1rem; }
+    .section-header .divider { width: 60px; height: 3px; background: var(--accent); margin: 15px auto 0; border-radius: 2px; }
+    .values-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 30px; }
+    .value-card {
+        background: var(--white); padding: 35px 25px; border-radius: 18px;
+        text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+        transition: all 0.3s;
+    }
+    .value-card:hover { transform: translateY(-6px); box-shadow: 0 12px 35px rgba(0,0,0,0.12); }
+    .value-icon { font-size: 2.8rem; margin-bottom: 18px; display: block; }
+    .value-card h3 { font-size: 1.15rem; margin-bottom: 10px; font-weight: 600; }
+    .value-card p { font-size: 0.9rem; color: #666; line-height: 1.6; }
+
+    /* Stats */
+    .stats-section { background: var(--dark); color: var(--white); padding: 70px 20px; }
+    .stats-container { max-width: 900px; margin: 0 auto; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 30px; text-align: center; }
+    .stat-item .num { font-size: 3rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: 8px; }
+    .stat-item .lbl { font-size: 0.9rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Team / Story */
+    .story-section { padding: 80px 20px; }
+    .story-container { max-width: 800px; margin: 0 auto; text-align: center; }
+    .story-container h2 { font-size: 2.3rem; font-weight: 300; letter-spacing: 2px; margin-bottom: 25px; }
+    .story-container p { font-size: 1.05rem; line-height: 1.9; color: #555; margin-bottom: 20px; }
+    .story-cta { margin-top: 40px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+
+    @media (max-width: 900px) {
+        .about-grid, .about-grid.reverse { grid-template-columns: 1fr; gap: 40px; direction: ltr; }
+        .values-grid { grid-template-columns: repeat(2,1fr); }
+        .stats-grid { grid-template-columns: repeat(2,1fr); gap: 40px; }
+        .about-img-badge { bottom: -10px; right: 10px; }
+    }
+    @media (max-width: 480px) {
+        .values-grid { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: repeat(2,1fr); }
+        .page-hero h1 { font-size: 2.2rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <h1>About Us</h1>
+    <p>The story behind Kenya's premium menswear destination</p>
+</div>
+
+<!-- Our Story -->
+<section class="about-section">
+    <div class="about-container">
+        <div class="about-grid">
+            <div class="about-img-wrap">
+                <div class="about-img-panel p1" role="img" aria-label="Wyatt Collection premium menswear">
+                    <span class="monogram">W</span>
+                    <span class="panel-label">Premium Menswear</span>
+                </div>
+                <div class="about-img-badge">
+                    <span class="num">1000+</span>
+                    <span class="lbl">Happy Customers</span>
+                </div>
+            </div>
+            <div class="about-text">
+                <h2>Our Story</h2>
+                <p>Welcome to <span class="highlight">Wyatt Collection</span>, your premier destination for premium menswear in Kenya. We believe that every piece tells a story, and we're here to help you find yours.</p>
+                <p>Our carefully curated collection blends timeless classics with contemporary style. From tailored shirts and sharp trousers to standout accessories, each piece is selected with love and attention to detail.</p>
+                <p>We're passionate about making premium menswear accessible to everyone, offering quality pieces at prices that won't break the bank. <span class="highlight">Your satisfaction is our priority.</span></p>
+                <a href="{% url 'shop:shop' %}" class="btn-primary">Shop Our Collection</a>
+            </div>
+        </div>
+
+        <div class="about-grid reverse">
+            <div class="about-img-wrap">
+                <div class="about-img-panel p2" role="img" aria-label="Quality menswear crafted to last">
+                    <span class="monogram">W</span>
+                    <span class="panel-label">Nairobi, Kenya</span>
+                </div>
+                <div class="about-img-badge">
+                    <span class="num">500+</span>
+                    <span class="lbl">Styles Curated</span>
+                </div>
+            </div>
+            <div class="about-text">
+                <h2>Our Promise</h2>
+                <p>Every piece in our collection is carefully vetted for quality, durability and fit. We source only the finest fabrics and materials to ensure your wardrobe stays sharp for years to come.</p>
+                <p>Our menswear is <span class="highlight">built for real life</span> — from boardroom meetings to weekend outings. Whether you're dressing up for a special occasion or upgrading your everyday look, we have the perfect piece for you.</p>
+                <p>We stand behind every product we sell. If you're not completely satisfied, we'll make it right.</p>
+                <a href="{% url 'shop:contact' %}" class="btn-secondary">Get in Touch</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values -->
+<section class="values-section">
+    <div class="values-container">
+        <div class="section-header">
+            <h2>Why Choose Us</h2>
+            <p>What makes Wyatt Collection different</p>
+            <div class="divider"></div>
+        </div>
+        <div class="values-grid">
+            <div class="value-card">
+                <span class="value-icon">✨</span>
+                <h3>Quality Craftsmanship</h3>
+                <p>Each piece is carefully selected for its quality, beauty and durability. We never compromise on standards.</p>
+            </div>
+            <div class="value-card">
+                <span class="value-icon">💎</span>
+                <h3>Affordable Luxury</h3>
+                <p>Premium menswear at prices that make sense. Luxury shouldn't be out of reach for anyone.</p>
+            </div>
+            <div class="value-card">
+                <span class="value-icon">🚚</span>
+                <h3>Fast Delivery</h3>
+                <p>Quick and reliable delivery across Kenya. 1-2 days in Nairobi, nationwide delivery available.</p>
+            </div>
+            <div class="value-card">
+                <span class="value-icon">💬</span>
+                <h3>Easy Ordering</h3>
+                <p>Simple WhatsApp checkout process. Order in minutes and we'll handle the rest.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="stats-section">
+    <div class="stats-container">
+        <div class="stats-grid">
+            <div class="stat-item"><span class="num">1000+</span><span class="lbl">Happy Customers</span></div>
+            <div class="stat-item"><span class="num">500+</span><span class="lbl">Styles Curated</span></div>
+            <div class="stat-item"><span class="num">5★</span><span class="lbl">Customer Rating</span></div>
+            <div class="stat-item"><span class="num">2+</span><span class="lbl">Years in Business</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="story-section">
+    <div class="story-container">
+        <h2>Ready to Find Your Perfect Look?</h2>
+        <p>Browse our full collection of handpicked menswear and find something that speaks to you. Every piece is unique, just like you.</p>
+        <div class="story-cta">
+            <a href="{% url 'shop:shop' %}" class="btn-primary">Browse Collection</a>
+            <a href="{% url 'shop:contact' %}" class="btn-secondary">Contact Us</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

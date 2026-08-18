@@ -1,15 +1,16 @@
 LOGO SETUP INSTRUCTIONS
 ========================
 
-Please save your logo image as:
-static/images/logo.png
+The system logo is configured as:
+static/images/wyatt.png
 
-The logo you provided should be saved in this directory with the filename "logo.png"
-
-Recommended specifications:
+Logo Specifications:
 - Format: PNG (with transparent background)
 - Width: 400-600px
 - Height: 100-150px
 - File size: < 200KB for fast loading
 
-The navigation bar will automatically display your logo at 50px height on desktop and 40px on mobile.
+Usage:
+- The logo displays at 50px height on desktop and 40px on mobile in the navigation bar
+- The logo appears in the footer, checkout page, login/register pages, and admin panel
+- The logo is also used as the favicon (browser tab icon) across all pages including admin

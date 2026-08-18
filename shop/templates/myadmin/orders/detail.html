@@ -1,157 +1,156 @@
 {% extends 'myadmin/base.html' %}
 {% load image_tags %}
-{% load static %}
-
-{% block title %}Order {{ order.order_number }} - MyAdmin{% endblock %}
+{% block title %}Order {{ order.order_number }} — Wyatt Collection Admin{% endblock %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
     <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
-    <span class="breadcrumbs-separator">›</span>
+    <span class="breadcrumbs-separator">/</span>
     <a href="{% url 'myadmin:order_list' %}">Orders</a>
-    <span class="breadcrumbs-separator">›</span>
-    <span>{{ order.order_number }}</span>
+    <span class="breadcrumbs-separator">/</span>
+    <span class="text-gold">{{ order.order_number }}</span>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1 class="page-title">Order {{ order.order_number }}</h1>
-    <a href="{% url 'myadmin:order_list' %}" class="btn btn-secondary">Back to Orders</a>
+    <div>
+        <h1 class="page-title">{{ order.order_number }}</h1>
+        <span style="font-size:13px;color:var(--text-muted);">{{ order.created_at|date:"F d, Y — H:i" }}</span>
+    </div>
+    <a href="https://wa.me/254{{ order.customer_phone|cut:'+254'|cut:'0'|cut:' ' }}?text=Hello%20{{ order.customer_name }}%2C%20regarding%20your%20order%20{{ order.order_number }}" target="_blank" class="btn btn-success">
+        📱 WhatsApp Customer
+    </a>
 </div>
 
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
-    <!-- Customer Information -->
-    <div class="card">
-        <h2 class="card-header">Customer Information</h2>
-        <div style="display: grid; gap: 12px;">
-            <div>
-                <label class="form-label">Name:</label>
-                <p style="margin: 0; font-weight: 500;">{{ order.customer_name }}</p>
-            </div>
-            <div>
-                <label class="form-label">Phone:</label>
-                <p style="margin: 0; font-weight: 500;">{{ order.customer_phone }}</p>
-            </div>
-            <div>
-                <label class="form-label">Delivery Address:</label>
-                <p style="margin: 0; white-space: pre-line;">{{ order.customer_address }}</p>
-            </div>
-            {% if order.notes %}
-            <div>
-                <label class="form-label">Order Notes:</label>
-                <p style="margin: 0; white-space: pre-line; font-style: italic; color: var(--gray-dark);">{{ order.notes }}</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    
-    <!-- Order Status -->
-    <div class="card">
-        <h2 class="card-header">Order Status</h2>
-        <div style="display: grid; gap: 12px;">
-            <div>
-                <label class="form-label">Current Status:</label>
-                <p style="margin: 0;">
-                    {% if order.status == 'pending' %}
-                    <span class="badge badge-warning" style="font-size: 14px; padding: 6px 12px;">Pending</span>
-                    {% elif order.status == 'confirmed' %}
-                    <span class="badge badge-success" style="font-size: 14px; padding: 6px 12px;">Confirmed</span>
-                    {% elif order.status == 'processing' %}
-                    <span class="badge badge-success" style="font-size: 14px; padding: 6px 12px;">Processing</span>
-                    {% elif order.status == 'shipped' %}
-                    <span class="badge badge-success" style="font-size: 14px; padding: 6px 12px;">Shipped</span>
-                    {% elif order.status == 'delivered' %}
-                    <span class="badge badge-success" style="font-size: 14px; padding: 6px 12px;">Delivered</span>
-                    {% elif order.status == 'cancelled' %}
-                    <span class="badge badge-danger" style="font-size: 14px; padding: 6px 12px;">Cancelled</span>
-                    {% else %}
-                    <span class="badge badge-secondary" style="font-size: 14px; padding: 6px 12px;">{{ order.get_status_display }}</span>
-                    {% endif %}
-                </p>
-            </div>
-            
-            <div>
-                <label class="form-label">Created:</label>
-                <p style="margin: 0;">{{ order.created_at|date:"M d, Y H:i" }}</p>
-            </div>
-            
-            <div>
-                <label class="form-label">Last Updated:</label>
-                <p style="margin: 0;">{{ order.updated_at|date:"M d, Y H:i" }}</p>
-            </div>
-            
-            <!-- Update Status Form -->
-            {% if order.status != 'delivered' and order.status != 'cancelled' %}
-            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-medium);">
-                <form method="post" action="{% url 'myadmin:order_update_status' order.pk %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="{{ status_form.status.id_for_label }}" class="form-label">Update Status:</label>
-                        {{ status_form.status }}
-                        {% if status_form.status.errors %}
-                        <div class="form-error">{{ status_form.status.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Update Status</button>
-                </form>
-            </div>
-            {% else %}
-            <div style="margin-top: 12px; padding: 12px; background: var(--gray-light); border-radius: 4px;">
-                <p style="margin: 0; font-size: 14px; color: var(--gray-dark);">
-                    This order status is final and cannot be changed.
-                </p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
-<!-- Order Items -->
+<!-- Status Timeline -->
+{% with s=order.status %}
 <div class="card">
-    <h2 class="card-header">Order Items</h2>
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th style="width: 80px;">Image</th>
-                    <th>Product</th>
-                    <th style="width: 100px;">Quantity</th>
-                    <th style="width: 120px;">Unit Price</th>
-                    <th style="width: 120px;">Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in order_items %}
-                <tr>
-                    <td>
-                        {% if item.product.get_image_url %}
-                        <img src="{{ item.product.get_image_url }}" alt="{{ item.product.name }}" class="table-thumbnail">
-                        {% else %}
-                        <div class="table-thumbnail" style="background: var(--gray-light); display: flex; align-items: center; justify-content: center; color: var(--gray-dark); font-size: 10px;">No Image</div>
-                        {% endif %}
-                    </td>
-                    <td><strong>{{ item.product.name }}</strong></td>
-                    <td>{{ item.quantity }}</td>
-                    <td>KES {{ item.price|thousand_separator }}</td>
-                    <td><strong>KES {{ item.get_subtotal|thousand_separator }}</strong></td>
-                </tr>
-                {% endfor %}
-                <tr style="background: var(--gray-light); font-weight: bold;">
-                    <td colspan="4" style="text-align: right; padding-right: 24px;">Total:</td>
-                    <td><strong style="font-size: 18px; color: var(--primary-pink);">KES {{ order.total_amount|thousand_separator }}</strong></td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="card-header">Order Progress</div>
+    <div class="status-timeline">
+        <div class="timeline-step">
+            <div class="timeline-dot {% if s == 'pending' %}active{% elif s == 'confirmed' or s == 'processing' or s == 'shipped' or s == 'delivered' %}done{% endif %}">1</div>
+            <div class="timeline-label {% if s == 'confirmed' or s == 'processing' or s == 'shipped' or s == 'delivered' %}done{% endif %}">Pending</div>
+        </div>
+        <div class="timeline-step">
+            <div class="timeline-dot {% if s == 'confirmed' %}active{% elif s == 'processing' or s == 'shipped' or s == 'delivered' %}done{% endif %}">2</div>
+            <div class="timeline-label {% if s == 'processing' or s == 'shipped' or s == 'delivered' %}done{% endif %}">Confirmed</div>
+        </div>
+        <div class="timeline-step">
+            <div class="timeline-dot {% if s == 'processing' %}active{% elif s == 'shipped' or s == 'delivered' %}done{% endif %}">3</div>
+            <div class="timeline-label {% if s == 'shipped' or s == 'delivered' %}done{% endif %}">Processing</div>
+        </div>
+        <div class="timeline-step">
+            <div class="timeline-dot {% if s == 'shipped' %}active{% elif s == 'delivered' %}done{% endif %}">4</div>
+            <div class="timeline-label {% if s == 'delivered' %}done{% endif %}">Shipped</div>
+        </div>
+        <div class="timeline-step">
+            <div class="timeline-dot {% if s == 'delivered' %}done{% endif %}">5</div>
+            <div class="timeline-label {% if s == 'delivered' %}done{% endif %}">Delivered</div>
+        </div>
     </div>
-    
-    <!-- Verification -->
-    {% if subtotal_sum != order.total_amount %}
-    <div style="margin-top: 16px; padding: 12px; background: var(--warning); border-left: 4px solid var(--warning-dark); border-radius: 4px;">
-        <p style="margin: 0; color: var(--warning-dark); font-weight: 500;">
-            ⚠️ Warning: Order total (KES {{ order.total_amount|thousand_separator }}) does not match sum of item subtotals (KES {{ subtotal_sum|thousand_separator }})
-        </p>
+    {% if s == 'cancelled' %}
+    <div style="text-align:center;margin-top:12px;"><span class="badge badge-danger" style="font-size:13px;padding:6px 16px;">Order Cancelled</span></div>
+    {% endif %}
+</div>
+{% endwith %}
+
+<div class="detail-grid">
+<!-- Left: Items + Update Status -->
+<div>
+    <!-- Order Items -->
+    <div class="card">
+        <div class="card-header">Order Items</div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order_items %}
+                    <tr>
+                        <td style="color:var(--text);">
+                            {% if item.product %}
+                                {{ item.product.name }}
+                            {% else %}
+                                <span style="color:#999;font-style:italic;">[Deleted Product]</span>
+                            {% endif %}
+                        </td>
+                        <td>KES {{ item.price|thousand_separator }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td class="fw-600 text-gold">KES {{ item.get_subtotal|thousand_separator }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align:right;font-weight:600;color:var(--text-muted);padding:14px 16px;">Total</td>
+                        <td class="fw-600 text-gold" style="font-size:16px;padding:14px 16px;">KES {{ order.total_amount|thousand_separator }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% if order.notes %}
+        <div style="margin-top:16px;padding:14px;background:var(--dark-3);border-radius:var(--radius);">
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Customer Notes</p>
+            <p style="font-size:14px;color:var(--text);">{{ order.notes }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Update Status -->
+    {% if order.status != 'delivered' and order.status != 'cancelled' %}
+    <div class="card">
+        <div class="card-header">Update Status</div>
+        <form method="post" action="{% url 'myadmin:order_update_status' order.pk %}">
+            {% csrf_token %}
+            <div style="display:flex;gap:12px;align-items:flex-end;">
+                <div style="flex:1;">
+                    {{ status_form.status }}
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+            {% if status_form.status.errors %}
+            <div class="form-error mt-1">{{ status_form.status.errors.0 }}</div>
+            {% endif %}
+        </form>
     </div>
     {% endif %}
+</div>
+
+<!-- Right: Customer Info -->
+<div>
+    <div class="card">
+        <div class="card-header">Customer</div>
+        <div class="info-row"><span class="info-label">Name</span><span class="info-value">{{ order.customer_name }}</span></div>
+        <div class="info-row"><span class="info-label">Phone</span><span class="info-value">{{ order.customer_phone }}</span></div>
+        <div class="info-row"><span class="info-label">Address</span><span class="info-value" style="max-width:180px;text-align:right;">{{ order.customer_address }}</span></div>
+        {% if order.user %}
+        <div class="info-row"><span class="info-label">Account</span><span class="info-value text-gold">{{ order.user.username }}</span></div>
+        {% endif %}
+    </div>
+    <div class="card">
+        <div class="card-header">Order Info</div>
+        <div class="info-row"><span class="info-label">Order #</span><span class="info-value text-gold">{{ order.order_number }}</span></div>
+        <div class="info-row"><span class="info-label">Status</span>
+            <span class="info-value">
+                {% if order.status == 'pending' %}<span class="badge badge-warning">Pending</span>
+                {% elif order.status == 'confirmed' %}<span class="badge badge-info">Confirmed</span>
+                {% elif order.status == 'processing' %}<span class="badge badge-info">Processing</span>
+                {% elif order.status == 'shipped' %}<span class="badge badge-gold">Shipped</span>
+                {% elif order.status == 'delivered' %}<span class="badge badge-success">Delivered</span>
+                {% elif order.status == 'cancelled' %}<span class="badge badge-danger">Cancelled</span>{% endif %}
+            </span>
+        </div>
+        <div class="info-row"><span class="info-label">Created</span><span class="info-value">{{ order.created_at|date:"M d, Y" }}</span></div>
+        <div class="info-row"><span class="info-label">Updated</span><span class="info-value">{{ order.updated_at|date:"M d, Y" }}</span></div>
+        <div class="info-row"><span class="info-label">Total</span><span class="info-value fw-600 text-gold">KES {{ order.total_amount|thousand_separator }}</span></div>
+    </div>
+</div>
 </div>
 {% endblock %}

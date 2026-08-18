@@ -1,145 +1,192 @@
 {% extends 'myadmin/base.html' %}
-{% load image_tags %}
-{% load static %}
+{% load admin_tags %}
 
-{% block title %}Orders - MyAdmin{% endblock %}
+{% block title %}Orders — Wyatt Collection Admin{% endblock %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
     <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
-    <span class="breadcrumbs-separator">›</span>
-    <span>Orders</span>
+    <span class="breadcrumbs-separator">/</span>
+    <span class="text-gold">Orders</span>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">Orders</h1>
+    <span style="font-size:13px;color:var(--text-muted);">{{ status_counts_total }} total</span>
+    <a href="{% url 'myadmin:order_export' %}?search={{ search_query }}&status={{ status_filter }}&date_from={{ date_from }}&date_to={{ date_to }}"
+       class="btn btn-secondary btn-sm" style="margin-left:auto;">⬇ Export CSV</a>
 </div>
 
-<!-- Search and Filters -->
+<!-- Status quick-filter chips -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <a href="?search={{ search_query }}&date_from={{ date_from }}&date_to={{ date_to }}"
+       class="badge {% if not status_filter %}badge-gold{% else %}badge-secondary{% endif %}" style="text-decoration:none;padding:6px 12px;">
+        All · {{ status_counts_total }}
+    </a>
+    {% for val, label in status_choices %}
+    <a href="?status={{ val }}&search={{ search_query }}&date_from={{ date_from }}&date_to={{ date_to }}"
+       class="badge {% if status_filter == val %}badge-gold{% else %}badge-secondary{% endif %}" style="text-decoration:none;padding:6px 12px;">
+        {{ label }} · {{ status_counts|get_item:val|default:0 }}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Filters -->
 <div class="filters-bar">
-    <form method="get" action="{% url 'myadmin:order_list' %}">
+    <form method="get">
         <div class="filters-row">
             <div class="filter-group">
-                <label for="search" class="form-label">Search</label>
-                <input type="text" id="search" name="search" class="form-input" placeholder="Order number or customer name" value="{{ search_query }}">
+                <label>Search</label>
+                <input type="text" name="search" value="{{ search_query }}" class="form-input" placeholder="Order #, customer, phone, address...">
             </div>
-            
             <div class="filter-group">
-                <label for="status" class="form-label">Status</label>
-                <select id="status" name="status" class="form-select">
+                <label>Status</label>
+                <select name="status" class="form-select">
                     <option value="">All Statuses</option>
-                    {% for value, label in status_choices %}
-                    <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                    {% for val, label in status_choices %}
+                    <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                 </select>
             </div>
-            
             <div class="filter-group">
-                <label for="date_from" class="form-label">Date From</label>
-                <input type="date" id="date_from" name="date_from" class="form-input" value="{{ date_from }}">
+                <label>From</label>
+                <input type="date" name="date_from" value="{{ date_from }}" class="form-input">
             </div>
-            
             <div class="filter-group">
-                <label for="date_to" class="form-label">Date To</label>
-                <input type="date" id="date_to" name="date_to" class="form-input" value="{{ date_to }}">
+                <label>To</label>
+                <input type="date" name="date_to" value="{{ date_to }}" class="form-input">
             </div>
-            
-            <div class="filter-group" style="display: flex; align-items: end; gap: 8px;">
-                <button type="submit" class="btn btn-primary">Apply Filters</button>
+            <div style="display:flex;gap:8px;align-items:flex-end;">
+                <button type="submit" class="btn btn-primary">Filter</button>
                 <a href="{% url 'myadmin:order_list' %}" class="btn btn-secondary">Clear</a>
             </div>
         </div>
     </form>
 </div>
 
-<!-- Orders Table -->
-<div class="card">
-    <div style="margin-bottom: 16px;">
-        <span class="text-muted">{{ page_obj.paginator.count }} order(s) total</span>
+<!-- Bulk Actions -->
+<form method="post" action="{% url 'myadmin:order_bulk_action' %}" id="bulkForm">
+    {% csrf_token %}
+    <input type="hidden" name="search" value="{{ search_query }}">
+    <input type="hidden" name="status" value="{{ status_filter }}">
+    <input type="hidden" name="date_from" value="{{ date_from }}">
+    <input type="hidden" name="date_to" value="{{ date_to }}">
+    <div class="card" style="padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+        <select name="action" class="form-select" style="width:auto;min-width:200px;">
+            <option value="">Bulk Action</option>
+            <option value="set_status_confirmed">Mark as Confirmed</option>
+            <option value="set_status_processing">Mark as Processing</option>
+            <option value="set_status_shipped">Mark as Shipped</option>
+            <option value="set_status_delivered">Mark as Delivered</option>
+            <option value="set_status_cancelled">Cancel Selected</option>
+            <option value="delete">Delete Selected</option>
+        </select>
+        <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirmBulkAction(document.querySelector('#bulkForm [name=action]').value, 'order_ids')">Apply</button>
+        <span id="bulkCount" style="font-size:13px;color:var(--text-muted);margin-left:8px;"></span>
+        <span style="margin-left:auto;font-size:13px;color:var(--text-muted);">{{ page_obj.paginator.count }} order(s) shown</span>
     </div>
-    
+
+    {% if orders %}
     <div class="table-container">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Order Number</th>
+                    <th><input type="checkbox" id="selectAll" class="form-checkbox"></th>
+                    <th>Order #</th>
                     <th>Customer</th>
                     <th>Phone</th>
-                    <th>Total Amount</th>
+                    <th>Items</th>
+                    <th>Amount</th>
                     <th>Status</th>
                     <th>Date</th>
-                    <th style="width: 100px;">Actions</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for order in orders %}
                 <tr>
-                    <td><strong>{{ order.order_number }}</strong></td>
-                    <td>{{ order.customer_name }}</td>
-                    <td>{{ order.customer_phone }}</td>
-                    <td>KES {{ order.total_amount|thousand_separator }}</td>
+                    <td><input type="checkbox" name="order_ids" value="{{ order.id }}" class="form-checkbox bulk-item"></td>
+                    <td class="fw-600 text-gold">{{ order.order_number }}</td>
+                    <td style="color:var(--text);">{{ order.customer_name }}</td>
                     <td>
-                        {% if order.status == 'pending' %}
-                        <span class="badge badge-warning">Pending</span>
-                        {% elif order.status == 'confirmed' %}
-                        <span class="badge badge-success">Confirmed</span>
-                        {% elif order.status == 'processing' %}
-                        <span class="badge badge-success">Processing</span>
-                        {% elif order.status == 'shipped' %}
-                        <span class="badge badge-success">Shipped</span>
-                        {% elif order.status == 'delivered' %}
-                        <span class="badge badge-success">Delivered</span>
-                        {% elif order.status == 'cancelled' %}
-                        <span class="badge badge-danger">Cancelled</span>
-                        {% else %}
-                        <span class="badge badge-secondary">{{ order.get_status_display }}</span>
-                        {% endif %}
+                        <a href="https://wa.me/{{ order.customer_phone|cut:'+' }}" target="_blank" style="color:var(--success);font-size:13px;text-decoration:none;">
+                            📱 {{ order.customer_phone }}
+                        </a>
                     </td>
-                    <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
+                    <td style="color:var(--text-muted);">{{ order.items.all|length }}</td>
+                    <td class="fw-600">KES {{ order.total_amount|floatformat:0 }}</td>
                     <td>
-                        <a href="{% url 'myadmin:order_detail' order.pk %}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 14px;">View</a>
+                        {% if order.status == 'pending' %}<span class="badge badge-warning">Pending</span>
+                        {% elif order.status == 'confirmed' %}<span class="badge badge-info">Confirmed</span>
+                        {% elif order.status == 'processing' %}<span class="badge badge-info">Processing</span>
+                        {% elif order.status == 'shipped' %}<span class="badge badge-gold">Shipped</span>
+                        {% elif order.status == 'delivered' %}<span class="badge badge-success">Delivered</span>
+                        {% elif order.status == 'cancelled' %}<span class="badge badge-danger">Cancelled</span>
+                        {% else %}<span class="badge badge-secondary">{{ order.get_status_display }}</span>{% endif %}
                     </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7" class="text-center text-muted" style="padding: 32px;">
-                        No orders found.
+                    <td style="color:var(--text-muted);font-size:13px;">{{ order.created_at|date:"M d, Y H:i" }}</td>
+                    <td>
+                        <div class="table-actions" style="display:flex;gap:6px;align-items:center;">
+                            <form method="post" action="{% url 'myadmin:order_update_status' order.pk %}" style="display:flex;" class="inline-status-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <select name="status" class="form-select" style="width:auto;font-size:12px;padding:5px 8px;height:auto;"
+                                        onchange="this.form.submit()" aria-label="Update status for {{ order.order_number }}">
+                                    {% for val, label in status_choices %}
+                                    <option value="{{ val }}" {% if order.status == val %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                            <a href="{% url 'myadmin:order_detail' order.pk %}" class="btn btn-secondary btn-sm">View</a>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+</form>
+{% else %}
+</form>
+<div class="empty-state">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    <p>No orders found.</p>
 </div>
+{% endif %}
 
-<!-- Pagination -->
 {% if page_obj.has_other_pages %}
 <div class="pagination">
     {% if page_obj.has_previous %}
-    <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="page-btn">« First</a>
-    <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="page-btn">‹ Previous</a>
-    {% else %}
-    <button class="page-btn" disabled>« First</button>
-    <button class="page-btn" disabled>‹ Previous</button>
+    <a href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&status={{ status_filter }}&date_from={{ date_from }}&date_to={{ date_to }}" class="page-btn">‹</a>
     {% endif %}
-    
     {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-        <span class="page-btn active">{{ num }}</span>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-        <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="page-btn">{{ num }}</a>
-        {% endif %}
+    {% if page_obj.number == num %}
+    <span class="page-btn active">{{ num }}</span>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+    <a href="?page={{ num }}&search={{ search_query }}&status={{ status_filter }}&date_from={{ date_from }}&date_to={{ date_to }}" class="page-btn">{{ num }}</a>
+    {% endif %}
     {% endfor %}
-    
     {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="page-btn">Next ›</a>
-    <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="page-btn">Last »</a>
-    {% else %}
-    <button class="page-btn" disabled>Next ›</button>
-    <button class="page-btn" disabled>Last »</button>
+    <a href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&status={{ status_filter }}&date_from={{ date_from }}&date_to={{ date_to }}" class="page-btn">›</a>
     {% endif %}
 </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Update "N selected" counter for bulk bar
+function updateBulkCount() {
+    const n = document.querySelectorAll('input[name="order_ids"]:checked').length;
+    const el = document.getElementById('bulkCount');
+    if (el) el.textContent = n ? `${n} selected` : '';
+}
+document.addEventListener('change', e => {
+    if (e.target.name === 'order_ids') updateBulkCount();
+});
+document.getElementById('selectAll')?.addEventListener('bulk:change', updateBulkCount);
+updateBulkCount();
+</script>
 {% endblock %}

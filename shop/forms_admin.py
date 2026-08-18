@@ -8,12 +8,26 @@ from io import BytesIO
 
 class ProductForm(forms.ModelForm):
     """Form for creating and updating products"""
-    
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Always ensure is_available defaults to True
+        # For new products: set initial to True
+        # For existing products: preserve current database value
+        if not self.instance.pk:
+            # New product - default to available
+            self.fields['is_available'].initial = True
+        else:
+            # Existing product - keep current value from database
+            self.fields['is_available'].initial = self.instance.is_available
+
     class Meta:
         model = Product
         fields = [
             'name', 'category', 'short_description', 'description',
-            'price', 'image_url', 'image_base64', 'image', 'is_available'
+            'price', 'sale_price', 'is_on_sale',
+            'image_url', 'image_base64', 'image', 'is_available',
+            'stock_quantity', 'reorder_level'
         ]
         widgets = {
             'name': forms.TextInput(attrs={
@@ -37,6 +51,13 @@ class ProductForm(forms.ModelForm):
                 'min': '0',
                 'placeholder': '0.00'
             }),
+            'sale_price': forms.NumberInput(attrs={
+                'class': 'form-input',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': '0.00'
+            }),
+            'is_on_sale': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
             'image_url': forms.URLInput(attrs={
                 'class': 'form-input',
                 'placeholder': 'https://example.com/image.jpg'
@@ -51,31 +72,59 @@ class ProductForm(forms.ModelForm):
                 'accept': 'image/jpeg,image/png,image/webp'
             }),
             'is_available': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+            'stock_quantity': forms.NumberInput(attrs={
+                'class': 'form-input',
+                'min': '0',
+                'placeholder': '0'
+            }),
+            'reorder_level': forms.NumberInput(attrs={
+                'class': 'form-input',
+                'min': '0',
+                'placeholder': '5'
+            }),
         }
         labels = {
             'name': 'Product Name',
             'category': 'Category',
             'short_description': 'Short Description',
             'description': 'Full Description',
-            'price': 'Price (KES)',
+            'price': 'Original Price (KES)',
+            'sale_price': 'Sale Price (KES)',
+            'is_on_sale': 'On Sale',
             'image_url': 'Image URL (Optional)',
             'image_base64': 'Base64 Image (Optional)',
             'image': 'Upload Image (Optional)',
             'is_available': 'Available for Purchase',
+            'stock_quantity': 'Stock Quantity',
+            'reorder_level': 'Reorder Level',
         }
         help_texts = {
             'short_description': 'This appears in product cards (max 150 characters)',
-            'price': 'Enter price in Kenyan Shillings',
+            'price': 'Original price in Kenyan Shillings',
+            'sale_price': 'Discounted price — leave blank if not on sale',
             'image_url': 'Provide a URL to an external image',
             'image_base64': 'Or paste base64 encoded image data',
             'image': 'Or upload an image file (JPEG, PNG, WebP, max 5MB)',
+            'stock_quantity': 'Total units available in stock',
+            'reorder_level': 'Low stock alert threshold (shows "Only X left!" badge)',
         }
     
     def clean_name(self):
-        """Validate and clean product name"""
+        """Validate and clean product name - check for duplicates"""
         name = self.cleaned_data.get('name', '').strip()
+        if not name:
+            raise ValidationError('Product name cannot be empty.')
         if len(name) < 3:
             raise ValidationError('Product name must be at least 3 characters long.')
+        
+        # Check for duplicate names (case-insensitive)
+        existing = Product.objects.filter(name__iexact=name)
+        if self.instance.pk:
+            existing = existing.exclude(pk=self.instance.pk)
+        
+        if existing.exists():
+            raise ValidationError(f'⚠️ A product named "{name}" already exists. Please use a different name or update the existing product.')
+        
         return name
     
     def clean_price(self):
@@ -179,10 +228,19 @@ class CategoryForm(forms.ModelForm):
         }
     
     def clean_name(self):
-        """Validate and clean category name"""
+        """Validate and clean category name - check for duplicates"""
         name = self.cleaned_data.get('name', '').strip()
         if len(name) < 2:
             raise ValidationError('Category name must be at least 2 characters long.')
+        
+        # Check for duplicate names (case-insensitive)
+        existing = Category.objects.filter(name__iexact=name)
+        if self.instance.pk:
+            existing = existing.exclude(pk=self.instance.pk)
+        
+        if existing.exists():
+            raise ValidationError(f'A category with the name "{name}" already exists. Please use a different name.')
+        
         return name
     
     def clean(self):

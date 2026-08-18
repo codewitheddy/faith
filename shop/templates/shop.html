@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+{% load static %}
+{% load image_tags %}
+{% block title %}Shop - Wyatt Collection{% endblock %}
+{% block nav_shop %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #FAF7F2 0%, #C9A84C 50%, #FAF7F2 100%);
+        padding: 60px 20px 50px;
+        text-align: center;
+    }
+    .page-hero h1 { font-size: 3rem; font-weight: 300; letter-spacing: 3px; margin-bottom: 10px; font-family: Georgia, serif; }
+    .page-hero p { color: #555; font-size: 1.05rem; }
+    .shop-layout { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+    .shop-toolbar {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 30px; flex-wrap: wrap; gap: 15px;
+    }
+    .categories { display: flex; gap: 10px; flex-wrap: wrap; }
+    .category-btn {
+        padding: 9px 22px; border: 2px solid #eee;
+        background: var(--white); border-radius: 25px;
+        cursor: pointer; transition: all 0.3s; font-size: 0.9rem; font-weight: 500;
+    }
+    .category-btn:hover, .category-btn.active { background: var(--accent); border-color: var(--accent); }
+    .results-count { color: #777; font-size: 0.9rem; }
+    .active-search {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        background: var(--accent-bg); border: 1px solid rgba(201,168,76,0.35);
+        border-radius: 12px; padding: 12px 18px; margin-bottom: 25px;
+        font-size: 0.95rem; color: #555;
+    }
+    .clear-search {
+        color: #777; text-decoration: none; font-size: 0.85rem; font-weight: 600;
+        padding: 5px 12px; border-radius: 999px; border: 1px solid #ddd;
+        transition: all 0.2s; white-space: nowrap;
+    }
+    .clear-search:hover { border-color: #e53935; color: #e53935; background: #fff; }
+    .products-grid {
+        display: grid; grid-template-columns: repeat(4,1fr);
+        gap: 25px; margin-bottom: 50px;
+    }
+    .product-card {
+        background: var(--white); border-radius: 15px;
+        overflow: hidden; box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+        transition: all 0.3s; display: flex; flex-direction: column;
+        opacity: 0; animation: fadeInUp 0.5s ease-out forwards;
+    }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.13); }
+    .product-card-link { text-decoration: none; color: inherit; display: flex; flex-direction: column; flex: 1; }
+    /* Wishlist heart on card */
+    .product-image { width: 100%; padding-bottom: 100%; position: relative; background: var(--light-gray); overflow: hidden; }
+    .product-image img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+    .product-card:hover .product-image img { transform: scale(1.05); }
+    .wishlist-btn {
+        position: absolute; top: 10px; right: 10px; z-index: 2;
+        width: 34px; height: 34px; border-radius: 50%;
+        background: rgba(255,255,255,0.92); border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        transition: all 0.25s; text-decoration: none;
+    }
+    .wishlist-btn:hover { transform: scale(1.15); background: #fff; }
+    .product-info { padding: 15px 18px 10px; flex: 1; }
+    .product-name { font-size: 1rem; margin-bottom: 5px; font-weight: 500; line-height: 1.3; }
+    .product-desc { color: #777; font-size: 0.85rem; line-height: 1.4; }
+    .product-info-footer {
+        padding: 10px 18px 18px;
+        display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+    }
+    .product-price { display: flex; flex-direction: column; gap: 2px; }
+    .btn-add-cart {
+        background: var(--accent); color: var(--dark);
+        padding: 8px 16px; border: none; border-radius: 20px;
+        cursor: pointer; transition: all 0.3s; font-size: 0.85rem; font-weight: 500;
+        display: flex; align-items: center; gap: 6px; min-width: 90px; justify-content: center;
+    }
+    .btn-add-cart:hover { background: #B8922E; transform: translateY(-2px); }
+    .quantity-selector {
+        display: none; align-items: center; gap: 8px;
+        background: var(--white); border: 2px solid var(--pastel-pink);
+        border-radius: 20px; padding: 4px 8px; min-width: 90px; justify-content: space-between;
+    }
+    .quantity-selector.active { display: flex; }
+    .qty-control-btn {
+        background: var(--accent); border: none; width: 26px; height: 26px;
+        border-radius: 50%; cursor: pointer; font-size: 1rem; font-weight: 600;
+        display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+    }
+    .qty-control-btn:hover { background: #B8922E; transform: scale(1.1); }
+    .qty-display { font-weight: 600; font-size: 0.95rem; min-width: 18px; text-align: center; }
+    /* Pagination */
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px 0 60px; flex-wrap: wrap; }
+    .pagination a, .pagination span {
+        padding: 10px 16px; border: 2px solid var(--pastel-pink);
+        border-radius: 8px; text-decoration: none; color: var(--black);
+        transition: all 0.3s; font-weight: 500; min-width: 44px; text-align: center;
+    }
+    .pagination a:hover { background: var(--accent); transform: translateY(-2px); }
+    .pagination .current { background: var(--dark); color: var(--white); border-color: var(--black); }
+    .pagination .disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+    .pagination-info { text-align: center; color: #666; margin-bottom: 15px; font-size: 0.9rem; }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    @media (max-width: 1200px) { .products-grid { grid-template-columns: repeat(3,1fr); } }
+    @media (max-width: 768px) {
+        .products-grid { grid-template-columns: repeat(2,1fr); gap: 15px; }
+        .page-hero h1 { font-size: 2rem; }
+        .product-info-footer { flex-direction: column; align-items: stretch; gap: 10px; }
+        .product-price { text-align: center; }
+        .btn-add-cart, .quantity-selector { width: 100%; }
+    }
+    @media (max-width: 480px) { .products-grid { grid-template-columns: repeat(2,1fr); gap: 12px; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <h1>Our Collection</h1>
+    <p>Discover our curated collection of premium menswear</p>
+</div>
+
+    <div class="shop-layout">
+        <div class="shop-toolbar">
+            <div class="categories" id="categoryFilters">
+                <button class="category-btn {% if selected_category == 'all' or not selected_category %}{% if not sale_filter and not search_query %}active{% endif %}{% endif %}" data-category="all" data-filter="">All</button>
+                <button class="category-btn {% if sale_filter == 'sale' %}active{% endif %}" data-category="all" data-filter="sale" style="{% if sale_filter == 'sale' %}background:#e53935;border-color:#e53935;color:#fff;{% else %}border-color:#e53935;color:#e53935;{% endif %}">🔥 On Sale</button>
+                {% for category in categories %}
+                <button class="category-btn {% if selected_category == category.slug and not sale_filter %}active{% endif %}" data-category="{{ category.slug }}" data-filter="">{{ category.name }}</button>
+                {% endfor %}
+            </div>
+            <div class="results-count" id="resultsCount">{{ products.paginator.count }} items</div>
+        </div>
+
+        {% if search_query %}
+        <div class="active-search" id="activeSearch">
+            <span>Results for <strong>“{{ search_query }}”</strong></span>
+            <a href="{% url 'shop:shop' %}" class="clear-search" aria-label="Clear search">✕ Clear</a>
+        </div>
+        {% endif %}
+
+    <div class="products-grid" id="productsGrid">
+        {% for product in products %}
+        <div class="product-card" style="animation-delay:{{ forloop.counter0 }}00ms">
+            <a href="{% url 'shop:product_detail' product.slug %}" class="product-card-link">
+                <div class="product-image">
+                    {% if product.get_image_url %}
+                        {% optimized_img product.get_image_url product.name width=600 css_class="" lazy=True %}
+                    {% else %}
+                        <img src="{% static 'images/placeholder.svg' %}" alt="{{ product.name }}" loading="lazy">
+                    {% endif %}
+                    {% if product.on_sale %}
+                    <span style="position:absolute;top:10px;left:10px;background:#e53935;color:#fff;font-size:0.72rem;font-weight:700;padding:4px 10px;border-radius:20px;z-index:2;letter-spacing:0.5px;">-{{ product.discount_percent }}%</span>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                    <button class="wishlist-btn" onclick="toggleWishlist(event, {{ product.id }}, this)"
+                        data-product-id="{{ product.id }}"
+                        title="{% if product.id in wishlist_ids %}Remove from wishlist{% else %}Add to wishlist{% endif %}">
+                        {% if product.id in wishlist_ids %}❤️{% else %}🤍{% endif %}
+                    </button>
+                    {% else %}
+                    <a href="{% url 'shop:login' %}" class="wishlist-btn" title="Login to save">🤍</a>
+                    {% endif %}
+                </div>
+            <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-desc">{{ product.short_description }}</div>
+                    {% if product.is_low_stock and not product.is_out_of_stock %}
+                    <div style="margin-top:6px;padding:4px 8px;background:#fff3cd;border-radius:4px;font-size:0.75rem;font-weight:600;color:#856404;">
+                        ⚠️ Only {{ product.stock_quantity }} left!
+                    </div>
+                    {% elif product.is_out_of_stock %}
+                    <div style="margin-top:6px;padding:4px 8px;background:#f8d7da;border-radius:4px;font-size:0.75rem;font-weight:600;color:#721c24;">
+                        ❌ Out of Stock
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+            <div class="product-info-footer">
+                <div class="product-price">
+                    {% if product.on_sale and product.sale_price %}
+                    <div style="font-size:1.3rem;font-weight:700;color:#C9A84C;line-height:1.1;">KSh {{ product.sale_price|thousand_separator }}</div>
+                    <div style="font-size:0.78rem;color:#999;text-decoration:line-through;margin-top:2px;">KSh {{ product.price|thousand_separator }}</div>
+                    {% else %}
+                    <div style="font-size:1.1rem;font-weight:600;color:#1a1a1a;">KSh {{ product.price|thousand_separator }}</div>
+                    {% endif %}
+                </div>
+                <button class="btn-add-cart" data-product-id="{{ product.id }}" onclick="addToCart({{ product.id }}, this)" {% if product.is_out_of_stock %}disabled style="opacity:0.5;cursor:not-allowed;"{% endif %}>
+                    <span>+</span><span>{% if product.is_out_of_stock %}Out of Stock{% else %}Add{% endif %}</span>
+                </button>
+                <div class="quantity-selector" data-product-id="{{ product.id }}">
+                    <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'decrease', this.parentElement)" aria-label="Decrease quantity">−</button>
+                    <span class="qty-display">1</span>
+                    <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'increase', this.parentElement)" aria-label="Increase quantity">+</button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p style="grid-column:1/-1;text-align:center;color:#999;padding:60px 0;">No products found in this category.</p>
+        {% endfor %}
+    </div>
+
+    <div id="paginationContainer">
+        {% if products.has_other_pages %}
+        <div class="pagination-info">Showing {{ products.start_index }}–{{ products.end_index }} of {{ products.paginator.count }} products</div>
+        <div class="pagination">
+            {% if products.has_previous %}
+                <a href="#" data-page="1" class="pagination-link">⟪</a>
+                <a href="#" data-page="{{ products.previous_page_number }}" class="pagination-link">‹</a>
+            {% else %}
+                <span class="disabled">⟪</span><span class="disabled">‹</span>
+            {% endif %}
+            {% for num in products.paginator.page_range %}
+                {% if products.number == num %}<span class="current">{{ num }}</span>
+                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                    <a href="#" data-page="{{ num }}" class="pagination-link">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if products.has_next %}
+                <a href="#" data-page="{{ products.next_page_number }}" class="pagination-link">›</a>
+                <a href="#" data-page="{{ products.paginator.num_pages }}" class="pagination-link">⟫</a>
+            {% else %}
+                <span class="disabled">›</span><span class="disabled">⟫</span>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentCategory = '{{ selected_category|default:"all" }}';
+    let currentFilter = '{{ sale_filter|default:"" }}';
+    let currentQuery = '{{ search_query|default:""|escapejs }}';
+    let isLoading = false;
+
+    async function filterByCategory(category, page = 1, filter = '', query = null) {
+        if (isLoading) return;
+        isLoading = true;
+        currentCategory = category;
+        currentFilter = filter;
+        if (query !== null) currentQuery = query;
+        document.querySelectorAll('.category-btn').forEach(b => {
+            const matchCat = b.dataset.category === category;
+            const matchFilter = (b.dataset.filter || '') === filter;
+            b.classList.toggle('active', matchCat && matchFilter && !currentQuery);
+            if (b.dataset.filter === 'sale') {
+                b.style.background = (matchCat && matchFilter) ? '#e53935' : '';
+                b.style.borderColor = '#e53935';
+                b.style.color = (matchCat && matchFilter) ? '#fff' : '#e53935';
+            }
+        });
+        const grid = document.getElementById('productsGrid');
+        grid.style.opacity = '0.4';
+        try {
+            const params = new URLSearchParams({ category, page });
+            if (filter) params.set('filter', filter);
+            if (currentQuery) params.set('q', currentQuery);
+            const res = await fetch(`{% url 'shop:filter_products' %}?${params}`);
+            const data = await res.json();
+            if (data.success) {
+                grid.innerHTML = data.products_html;
+                document.getElementById('paginationContainer').innerHTML = data.pagination_html;
+                document.getElementById('resultsCount').textContent = `${data.total_count} items`;
+                updateActiveSearch(data.total_count);
+                setTimeout(syncCartState, 100);
+                attachPaginationHandlers();
+                const url = new URL(window.location);
+                category === 'all' ? url.searchParams.delete('category') : url.searchParams.set('category', category);
+                filter ? url.searchParams.set('filter', filter) : url.searchParams.delete('filter');
+                currentQuery ? url.searchParams.set('q', currentQuery) : url.searchParams.delete('q');
+                page === 1 ? url.searchParams.delete('page') : url.searchParams.set('page', page);
+                window.history.pushState({category, page, filter, query: currentQuery}, '', url);
+                document.querySelector('.shop-layout').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        } catch(e) { showToast('Error', 'Failed to load products', 'error'); }
+        finally { grid.style.opacity = '1'; isLoading = false; }
+    }
+
+    function updateActiveSearch(totalCount) {
+        let banner = document.getElementById('activeSearch');
+        if (currentQuery) {
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.className = 'active-search';
+                banner.id = 'activeSearch';
+                const toolbar = document.getElementById('categoryFilters').parentElement;
+                toolbar.parentElement.insertBefore(banner, toolbar.nextSibling);
+            }
+            banner.innerHTML = `<span>Results for <strong>“${currentQuery.replace(/</g, '&lt;')}”</strong> · ${totalCount} found</span>` +
+                `<a href="{% url 'shop:shop' %}" class="clear-search" aria-label="Clear search">✕ Clear</a>`;
+        } else if (banner) {
+            banner.remove();
+        }
+    }
+
+    function attachPaginationHandlers() {
+        document.querySelectorAll('.pagination-link').forEach(link => {
+            link.addEventListener('click', e => { e.preventDefault(); filterByCategory(currentCategory, link.dataset.page, currentFilter); });
+        });
+    }
+
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => filterByCategory(btn.dataset.category, 1, btn.dataset.filter || ''));
+    });
+
+    window.addEventListener('popstate', e => {
+        if (e.state) filterByCategory(e.state.category || 'all', e.state.page || 1, e.state.filter || '', e.state.query || '');
+    });
+
+    document.addEventListener('DOMContentLoaded', attachPaginationHandlers);
+
+    function toggleWishlist(e, productId, btn) {
+        e.preventDefault(); e.stopPropagation();
+        {% if user.is_authenticated %}
+        const fd = new FormData();
+        fd.append('product_id', productId);
+        fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        fetch('{% url "shop:toggle_wishlist" %}', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            btn.textContent = data.in_wishlist ? '❤️' : '🤍';
+            btn.title = data.in_wishlist ? 'Remove from wishlist' : 'Add to wishlist';
+            showToast(data.in_wishlist ? 'Saved!' : 'Removed', data.in_wishlist ? 'Added to wishlist' : 'Removed from wishlist', 'success');
+        });
+        {% endif %}
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .account-layout {
+        max-width: 1100px; margin: 40px auto; padding: 0 20px 80px;
+        display: grid; grid-template-columns: 240px 1fr; gap: 30px; align-items: start;
+    }
+    .account-sidebar {
+        background: var(--white); border-radius: 16px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.07); overflow: hidden;
+        position: sticky; top: 100px;
+    }
+    .account-sidebar-header {
+        background: var(--dark); color: var(--white);
+        padding: 25px 20px; text-align: center;
+    }
+    .account-avatar {
+        width: 60px; height: 60px; border-radius: 50%;
+        background: var(--accent); display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; font-weight: 700; margin: 0 auto 12px; color: var(--dark);
+    }
+    .account-sidebar-name { font-weight: 600; font-size: 1rem; margin-bottom: 4px; }
+    .account-sidebar-email { font-size: 0.8rem; color: #aaa; }
+    .account-nav { list-style: none; padding: 10px 0; }
+    .account-nav li a {
+        display: flex; align-items: center; gap: 12px;
+        padding: 13px 20px; color: #555; text-decoration: none;
+        font-size: 0.92rem; font-weight: 500; transition: all 0.2s;
+        border-left: 3px solid transparent;
+    }
+    .account-nav li a:hover { background: var(--accent-light); color: var(--black); border-left-color: var(--accent); }
+    .account-nav li a.active { background: var(--accent-light); color: var(--black); border-left-color: var(--accent); font-weight: 600; }
+    .account-nav li a svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .account-nav .nav-divider { border: none; border-top: 1px solid #f0f0f0; margin: 8px 0; }
+    .account-main { min-width: 0; }
+    .account-card {
+        background: var(--white); border-radius: 16px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.07); padding: 30px; margin-bottom: 25px;
+    }
+    .account-card-title {
+        font-size: 1.3rem; font-weight: 600; margin-bottom: 20px;
+        padding-bottom: 15px; border-bottom: 2px solid var(--accent-light);
+        display: flex; align-items: center; gap: 10px;
+    }
+    .messages-list { list-style: none; margin-bottom: 20px; }
+    .messages-list li {
+        padding: 12px 16px; border-radius: 10px; margin-bottom: 8px; font-size: 0.9rem;
+    }
+    .messages-list li.success { background: #f0fff4; color: #2e7d32; border: 1px solid #c8e6c9; }
+    .messages-list li.error { background: #fff5f5; color: #c62828; border: 1px solid #ffcdd2; }
+    @media (max-width: 768px) {
+        .account-layout { grid-template-columns: 1fr; }
+        .account-sidebar { position: static; }
+    }
+</style>
+{% block account_css %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+<div style="max-width:1100px;margin:20px auto;padding:0 20px;">
+    <ul class="messages-list">
+        {% for msg in messages %}<li class="{{ msg.tags }}">{{ msg }}</li>{% endfor %}
+    </ul>
+</div>
+{% endif %}
+<div class="account-layout">
+    <aside class="account-sidebar">
+        <div class="account-sidebar-header">
+            <div class="account-avatar">{{ user.first_name|first|upper|default:user.email|first|upper }}</div>
+            <div class="account-sidebar-name">{{ user.get_full_name|default:user.email }}</div>
+            <div class="account-sidebar-email">{{ user.email }}</div>
+        </div>
+        <ul class="account-nav">
+            <li><a href="{% url 'shop:account_dashboard' %}" class="{% block nav_dashboard %}{% endblock %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Dashboard
+            </a></li>
+            <li><a href="{% url 'shop:account_orders' %}" class="{% block nav_orders %}{% endblock %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                My Orders
+            </a></li>
+            <li><a href="{% url 'shop:account_wishlist' %}" class="{% block nav_wishlist %}{% endblock %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                Wishlist
+            </a></li>
+            <li><a href="{% url 'shop:account_profile' %}" class="{% block nav_profile %}{% endblock %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Profile & Address
+            </a></li>
+            <hr class="nav-divider">
+            <li><a href="{% url 'shop:shop' %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                Continue Shopping
+            </a></li>
+            <li><a href="{% url 'shop:logout' %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Logout
+            </a></li>
+        </ul>
+    </aside>
+    <main class="account-main">
+        {% block account_content %}{% endblock %}
+    </main>
+</div>
+{% endblock %}

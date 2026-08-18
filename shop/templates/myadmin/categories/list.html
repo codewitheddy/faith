@@ -1,68 +1,56 @@
 {% extends 'myadmin/base.html' %}
-{% load static %}
 
-{% block title %}Categories - MyAdmin{% endblock %}
+{% block title %}Categories — Wyatt Collection Admin{% endblock %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
     <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
-    <span class="breadcrumbs-separator">›</span>
-    <span>Categories</span>
+    <span class="breadcrumbs-separator">/</span>
+    <span class="text-gold">Categories</span>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">Categories</h1>
-    <a href="{% url 'myadmin:category_add' %}" class="btn btn-primary">+ Add Category</a>
+    <a href="{% url 'myadmin:category_add' %}" class="btn btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Add Category
+    </a>
 </div>
 
-<!-- Categories Table -->
-<div class="card">
-    <div style="margin-bottom: 16px;">
-        <span class="text-muted">{{ categories|length }} categor{{ categories|length|pluralize:"y,ies" }} total</span>
-    </div>
-    
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Category Name</th>
-                    <th style="width: 150px;">Product Count</th>
-                    <th style="width: 120px;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for category in categories %}
-                <tr>
-                    <td><strong>{{ category.name }}</strong></td>
-                    <td>
-                        <span class="badge badge-secondary">{{ category.product_count }} product{{ category.product_count|pluralize }}</span>
-                    </td>
-                    <td>
-                        <div class="table-actions">
-                            <a href="{% url 'myadmin:category_edit' category.pk %}" class="btn-icon" title="Edit">
-                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                            </a>
-                            <a href="{% url 'myadmin:category_delete' category.pk %}" class="btn-icon" title="Delete" style="color: var(--error-dark);">
-                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center text-muted" style="padding: 32px;">
-                        No categories found. <a href="{% url 'myadmin:category_add' %}">Add your first category</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+{% if categories %}
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Products</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td class="fw-600" style="color:var(--text);">{{ category.name }}</td>
+                <td style="font-size:13px;color:var(--text-muted);">{{ category.slug }}</td>
+                <td><span class="badge badge-gold">{{ category.product_count }}</span></td>
+                <td>
+                    <div class="table-actions">
+                        <a href="{% url 'myadmin:category_edit' category.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                        <a href="{% url 'myadmin:category_delete' category.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
+{% else %}
+<div class="empty-state">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+    <p>No categories yet. <a href="{% url 'myadmin:category_add' %}" class="text-gold">Add one now.</a></p>
+</div>
+{% endif %}
 {% endblock %}

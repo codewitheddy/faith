@@ -1,164 +1,329 @@
 {% extends 'myadmin/base.html' %}
-{% load image_tags %}
-{% load static %}
 
-{% block title %}Analytics - MyAdmin{% endblock %}
+{% block title %}Analytics — Wyatt Collection Admin{% endblock %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
     <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
-    <span class="breadcrumbs-separator">›</span>
-    <span>Analytics</span>
+    <span class="breadcrumbs-separator">/</span>
+    <span class="text-gold">Analytics</span>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.delta { font-size: 12px; font-weight: 600; margin-top: 4px; }
+.delta.up   { color: var(--success); }
+.delta.down { color: var(--danger); }
+.delta.flat { color: var(--text-muted); }
+.chart-card { background: var(--dark-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+.chart-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 18px; display:flex; justify-content:space-between; align-items:center; }
+.bar-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.bar-label { width:160px; font-size:13px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; }
+.bar-track { flex:1; background:var(--dark-3); border-radius:4px; height:10px; overflow:hidden; }
+.bar-fill  { height:100%; border-radius:4px; background:var(--gold); transition:width 0.6s ease; }
+.bar-fill.blue { background:var(--info); }
+.bar-val   { font-size:12px; color:var(--text-muted); width:80px; text-align:right; flex-shrink:0; }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">Analytics</h1>
-    <a href="{% url 'myadmin:analytics_export' %}?date_from={{ date_from }}&date_to={{ date_to }}" class="btn btn-primary">Export CSV</a>
+    <a href="{% url 'myadmin:analytics_export' %}?date_from={{ date_from }}&date_to={{ date_to }}" class="btn btn-secondary">↓ Export CSV</a>
 </div>
 
 <!-- Date Range Filter -->
 <div class="filters-bar">
-    <form method="get" action="{% url 'myadmin:analytics' %}">
+    <form method="get">
         <div class="filters-row">
             <div class="filter-group">
-                <label for="date_from" class="form-label">Date From</label>
-                <input type="date" id="date_from" name="date_from" class="form-input" value="{{ date_from|date:'Y-m-d' }}">
+                <label>From</label>
+                <input type="date" name="date_from" value="{{ date_from }}" class="form-input">
             </div>
-            
             <div class="filter-group">
-                <label for="date_to" class="form-label">Date To</label>
-                <input type="date" id="date_to" name="date_to" class="form-input" value="{{ date_to|date:'Y-m-d' }}">
+                <label>To</label>
+                <input type="date" name="date_to" value="{{ date_to }}" class="form-input">
             </div>
-            
-            <div class="filter-group" style="display: flex; align-items: end;">
-                <button type="submit" class="btn btn-primary">Apply Date Range</button>
+            <div style="display:flex;gap:8px;align-items:flex-end;">
+                <button type="submit" class="btn btn-primary">Apply</button>
+                <a href="{% url 'myadmin:analytics' %}" class="btn btn-secondary">Reset</a>
+            </div>
+            <div style="align-self:flex-end;font-size:12px;color:var(--text-muted);">
+                {{ period_days }}-day period &nbsp;·&nbsp; vs previous {{ period_days }} days
             </div>
         </div>
     </form>
 </div>
 
 <!-- KPI Cards -->
-<div class="kpi-grid">
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+
     <div class="kpi-card">
-        <div class="kpi-label">Total Revenue</div>
-        <div class="kpi-value">KES {{ total_revenue|thousand_separator }}</div>
+        <div class="kpi-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Revenue</div>
+            <div class="kpi-value">KES {{ total_revenue|floatformat:0 }}</div>
+            {% if revenue_delta is not None %}
+            <div class="delta {% if revenue_delta >= 0 %}up{% else %}down{% endif %}">
+                {% if revenue_delta >= 0 %}▲{% else %}▼{% endif %} {{ revenue_delta|floatformat:1 }}% vs prev period
+            </div>
+            {% endif %}
+        </div>
     </div>
-    
+
     <div class="kpi-card">
-        <div class="kpi-label">Total Orders</div>
-        <div class="kpi-value">{{ total_orders }}</div>
+        <div class="kpi-icon" style="background:rgba(52,152,219,0.12);color:var(--info);">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Orders</div>
+            <div class="kpi-value">{{ total_orders }}</div>
+            {% if orders_delta is not None %}
+            <div class="delta {% if orders_delta >= 0 %}up{% else %}down{% endif %}">
+                {% if orders_delta >= 0 %}▲{% else %}▼{% endif %} {{ orders_delta|floatformat:1 }}% vs prev period
+            </div>
+            {% endif %}
+        </div>
     </div>
-    
+
     <div class="kpi-card">
-        <div class="kpi-label">Average Order Value</div>
-        <div class="kpi-value">KES {{ average_order_value|floatformat:2 }}</div>
+        <div class="kpi-icon" style="background:rgba(46,204,113,0.12);color:var(--success);">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Avg Order Value</div>
+            <div class="kpi-value">KES {{ aov|floatformat:0 }}</div>
+            {% if aov_delta is not None %}
+            <div class="delta {% if aov_delta >= 0 %}up{% else %}down{% endif %}">
+                {% if aov_delta >= 0 %}▲{% else %}▼{% endif %} {{ aov_delta|floatformat:1 }}% vs prev period
+            </div>
+            {% endif %}
+        </div>
     </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:rgba(243,156,18,0.12);color:var(--warning);">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Conversion Rate</div>
+            <div class="kpi-value">{{ conversion_rate }}%</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">paid / total orders</div>
+            {% if conversion_delta is not None %}
+            <div class="delta {% if conversion_delta >= 0 %}up{% else %}down{% endif %}">
+                {% if conversion_delta >= 0 %}▲{% else %}▼{% endif %} {{ conversion_delta|floatformat:1 }}% vs prev period
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
 </div>
 
-<!-- Top Products by Quantity -->
-<div class="card">
-    <h2 class="card-header">Top 10 Products by Quantity Sold</h2>
-    {% if top_products_quantity %}
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Product Name</th>
-                    <th>Quantity Sold</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in top_products_quantity %}
-                <tr>
-                    <td><strong>#{{ forloop.counter }}</strong></td>
-                    <td>{{ item.product__name }}</td>
-                    <td><span class="badge badge-success">{{ item.total_quantity }} units</span></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<!-- Sales Trend Chart -->
+<div class="chart-card">
+    <div class="chart-title">
+        Sales Trend — Revenue &amp; Orders
+        <span style="font-size:12px;color:var(--text-muted);">{{ date_from }} → {{ date_to }}</span>
     </div>
+    <canvas id="salesTrendChart" height="90"></canvas>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+<!-- Top Products by Revenue (bar chart) -->
+<div class="chart-card">
+    <div class="chart-title">Top Products by Revenue</div>
+    {% if top_products_revenue %}
+    {% with max_rev=top_products_revenue.0.total_revenue %}
+    {% for item in top_products_revenue %}
+    <div class="bar-row">
+        <div class="bar-label" title="{{ item.product__name }}">{{ item.product__name|truncatechars:22 }}</div>
+        <div class="bar-track">
+            <div class="bar-fill" style="width:{% if max_rev %}{% widthratio item.total_revenue max_rev 100 %}%{% else %}0%{% endif %}"></div>
+        </div>
+        <div class="bar-val">KES {{ item.total_revenue|floatformat:0 }}</div>
+    </div>
+    {% endfor %}
+    {% endwith %}
     {% else %}
-    <p class="text-muted">No sales data available for the selected period.</p>
+    <p class="text-muted" style="font-size:13px;">No data for this period.</p>
     {% endif %}
 </div>
 
-<!-- Top Products by Revenue -->
-<div class="card">
-    <h2 class="card-header">Top 10 Products by Revenue</h2>
-    {% if top_products_revenue %}
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Product Name</th>
-                    <th>Total Revenue</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in top_products_revenue %}
-                <tr>
-                    <td><strong>#{{ forloop.counter }}</strong></td>
-                    <td>{{ item.product__name }}</td>
-                    <td><strong style="color: var(--primary-pink);">KES {{ item.total_revenue|thousand_separator }}</strong></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<!-- Top Products by Quantity (bar chart) -->
+<div class="chart-card">
+    <div class="chart-title">Top Products by Units Sold</div>
+    {% if top_products_quantity %}
+    {% with max_qty=top_products_quantity.0.total_quantity %}
+    {% for item in top_products_quantity %}
+    <div class="bar-row">
+        <div class="bar-label" title="{{ item.product__name }}">{{ item.product__name|truncatechars:22 }}</div>
+        <div class="bar-track">
+            <div class="bar-fill blue" style="width:{% if max_qty %}{% widthratio item.total_quantity max_qty 100 %}%{% else %}0%{% endif %}"></div>
+        </div>
+        <div class="bar-val">{{ item.total_quantity }} units</div>
     </div>
+    {% endfor %}
+    {% endwith %}
     {% else %}
-    <p class="text-muted">No sales data available for the selected period.</p>
+    <p class="text-muted" style="font-size:13px;">No data for this period.</p>
+    {% endif %}
+</div>
+
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+<!-- Category Revenue -->
+<div class="chart-card">
+    <div class="chart-title">Revenue by Category</div>
+    {% if category_revenue %}
+    {% with max_cat=category_revenue.0.revenue %}
+    {% for item in category_revenue %}
+    <div class="bar-row">
+        <div class="bar-label">{{ item.product__category__name|default:"Uncategorised"|truncatechars:20 }}</div>
+        <div class="bar-track">
+            <div class="bar-fill" style="width:{% if max_cat %}{% widthratio item.revenue max_cat 100 %}%{% else %}0%{% endif %};background:var(--gold);"></div>
+        </div>
+        <div class="bar-val">KES {{ item.revenue|floatformat:0 }}</div>
+    </div>
+    {% endfor %}
+    {% endwith %}
+    {% else %}
+    <p class="text-muted" style="font-size:13px;">No data for this period.</p>
     {% endif %}
 </div>
 
 <!-- Order Status Distribution -->
-<div class="card">
-    <h2 class="card-header">Order Status Distribution</h2>
+<div class="chart-card">
+    <div class="chart-title">Order Status Distribution</div>
     {% if order_status_distribution %}
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Status</th>
-                    <th>Count</th>
-                    <th>Percentage</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in order_status_distribution %}
-                <tr>
-                    <td>
-                        {% if item.status == 'pending' %}
-                        <span class="badge badge-warning">Pending</span>
-                        {% elif item.status == 'confirmed' %}
-                        <span class="badge badge-success">Confirmed</span>
-                        {% elif item.status == 'processing' %}
-                        <span class="badge badge-success">Processing</span>
-                        {% elif item.status == 'shipped' %}
-                        <span class="badge badge-success">Shipped</span>
-                        {% elif item.status == 'delivered' %}
-                        <span class="badge badge-success">Delivered</span>
-                        {% elif item.status == 'cancelled' %}
-                        <span class="badge badge-danger">Cancelled</span>
-                        {% else %}
-                        <span class="badge badge-secondary">{{ item.status|title }}</span>
-                        {% endif %}
-                    </td>
-                    <td><strong>{{ item.count }}</strong></td>
-                    <td>
-                        {% widthratio item.count total_orders 100 %}%
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <canvas id="statusDonut" height="180"></canvas>
     {% else %}
-    <p class="text-muted">No orders found for the selected period.</p>
+    <p class="text-muted" style="font-size:13px;">No data for this period.</p>
     {% endif %}
 </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    // Detect current theme
+    function isDark() { return document.body.classList.contains('dark-mode'); }
+    function gridColor()  { return isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'; }
+    function textColor()  { return isDark() ? '#8888AA' : '#6B6B8A'; }
+
+    const labels   = {{ trend_labels_json }};
+    const revenues = {{ trend_revenue_json }};
+    const orders   = {{ trend_orders_json }};
+
+    // ── Sales Trend (dual axis line chart) ───────────────
+    const trendCtx = document.getElementById('salesTrendChart');
+    if (trendCtx) {
+        const trendChart = new Chart(trendCtx, {
+            data: {
+                labels,
+                datasets: [
+                    {
+                        type: 'line',
+                        label: 'Revenue (KES)',
+                        data: revenues,
+                        borderColor: '#C9A84C',
+                        backgroundColor: 'rgba(201,168,76,0.08)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: revenues.length > 30 ? 0 : 3,
+                        pointHoverRadius: 5,
+                        yAxisID: 'yRevenue',
+                        borderWidth: 2,
+                    },
+                    {
+                        type: 'bar',
+                        label: 'Orders',
+                        data: orders,
+                        backgroundColor: 'rgba(52,152,219,0.25)',
+                        borderColor: 'rgba(52,152,219,0.6)',
+                        borderWidth: 1,
+                        borderRadius: 3,
+                        yAxisID: 'yOrders',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { labels: { color: textColor(), font: { size: 12 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ctx.dataset.label === 'Revenue (KES)'
+                                ? ` KES ${ctx.parsed.y.toLocaleString()}`
+                                : ` ${ctx.parsed.y} orders`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: textColor(), maxTicksLimit: 10, font: { size: 11 } },
+                        grid: { color: gridColor() }
+                    },
+                    yRevenue: {
+                        position: 'left',
+                        ticks: { color: '#C9A84C', font: { size: 11 },
+                            callback: v => 'KES ' + v.toLocaleString() },
+                        grid: { color: gridColor() }
+                    },
+                    yOrders: {
+                        position: 'right',
+                        ticks: { color: '#3498DB', font: { size: 11 } },
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        });
+
+        // Re-render on theme toggle
+        document.getElementById('themeToggle')?.addEventListener('click', () => {
+            setTimeout(() => {
+                trendChart.options.scales.x.ticks.color = textColor();
+                trendChart.options.scales.x.grid.color  = gridColor();
+                trendChart.options.scales.yRevenue.grid.color = gridColor();
+                trendChart.options.plugins.legend.labels.color = textColor();
+                trendChart.update();
+            }, 50);
+        });
+    }
+
+    // ── Status Donut ─────────────────────────────────────
+    const donutCtx = document.getElementById('statusDonut');
+    if (donutCtx) {
+        const statusData = [
+            {% for item in order_status_distribution %}
+            { label: '{{ item.status|title }}', value: {{ item.count }},
+              color: '{% if item.status == "delivered" %}#2ECC71{% elif item.status == "cancelled" %}#E74C3C{% elif item.status == "shipped" %}#C9A84C{% elif item.status == "processing" %}#3498DB{% elif item.status == "confirmed" %}#9B59B6{% else %}#F39C12{% endif %}' },
+            {% endfor %}
+        ];
+        new Chart(donutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: statusData.map(d => d.label),
+                datasets: [{ data: statusData.map(d => d.value), backgroundColor: statusData.map(d => d.color), borderWidth: 2, borderColor: isDark() ? '#161625' : '#ffffff' }]
+            },
+            options: {
+                responsive: true,
+                cutout: '65%',
+                plugins: {
+                    legend: { position: 'right', labels: { color: textColor(), font: { size: 12 }, padding: 14 } }
+                }
+            }
+        });
+    }
+})();
+</script>
 {% endblock %}

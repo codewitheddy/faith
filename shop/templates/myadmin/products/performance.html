@@ -1,0 +1,287 @@
+{% extends 'myadmin/base.html' %}
+{% load static %}
+{% load image_tags %}
+
+{% block title %}Product Performance — Wyatt Collection Admin{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <span class="breadcrumbs-separator">/</span>
+    <a href="{% url 'myadmin:product_list' %}">Products</a>
+    <span class="breadcrumbs-separator">/</span>
+    <span class="text-gold">Performance</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Product Performance</h1>
+    <span style="font-size:13px;color:var(--text-muted);">Sales · Views · Wishlist · Conversion</span>
+</div>
+
+<!-- Summary KPIs -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+    <div class="kpi-card">
+        <div class="kpi-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Total Products</div>
+            <div class="kpi-value">{{ total_products }}</div>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:rgba(46,204,113,0.12);color:var(--success);">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Units Sold</div>
+            <div class="kpi-value">{{ total_sold_units }}</div>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:rgba(52,152,219,0.12);color:var(--info);">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Total Views</div>
+            <div class="kpi-value">{{ total_views }}</div>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:rgba(231,76,60,0.12);color:var(--danger);">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Never Sold</div>
+            <div class="kpi-value">{{ zero_sellers|length }}</div>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:rgba(243,156,18,0.12);color:var(--warning);">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Unavailable</div>
+            <div class="kpi-value">{{ unavailable_count }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Sellers -->
+<div class="card">
+    <div class="card-header">
+        Top Selling Products
+        <span class="badge badge-success">{{ top_sellers|length }} products</span>
+    </div>
+    {% if top_sellers %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Units Sold</th>
+                    <th>Revenue</th>
+                    <th>Views</th>
+                    <th>Conversion</th>
+                    <th>Wishlist</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in top_sellers %}
+                <tr>
+                    <td style="color:var(--text-muted);font-size:13px;">{{ forloop.counter }}</td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            {% if product.get_image_url %}
+                            <img src="{{ product.get_image_url }}" alt="{{ product.name }}" class="table-thumbnail">
+                            {% else %}
+                            <div style="width:44px;height:44px;background:var(--dark-3);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);">✦</div>
+                            {% endif %}
+                            <div>
+                                <div class="fw-600" style="color:var(--text);">{{ product.name }}</div>
+                                {% if not product.is_available %}<span class="badge badge-danger" style="font-size:10px;">Unavailable</span>{% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-secondary">{{ product.category.name }}</span></td>
+                    <td class="text-gold fw-600">KES {{ product.price|thousand_separator }}</td>
+                    <td>
+                        <span class="fw-600" style="color:var(--success);">{{ product.total_sold }}</span>
+                    </td>
+                    <td class="fw-600">KES {{ product.total_revenue|floatformat:0 }}</td>
+                    <td style="color:var(--info);">{{ product.view_count }}</td>
+                    <td>
+                        {% if product.conversion > 0 %}
+                        <span class="badge {% if product.conversion >= 10 %}badge-success{% elif product.conversion >= 3 %}badge-warning{% else %}badge-danger{% endif %}">
+                            {{ product.conversion }}%
+                        </span>
+                        {% else %}
+                        <span class="badge badge-secondary">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.wishlist_count %}
+                        <span style="color:var(--danger);">♥ {{ product.wishlist_count }}</span>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'myadmin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        <p>No sales data yet.</p>
+    </div>
+    {% endif %}
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+<!-- Low Performers -->
+<div class="card">
+    <div class="card-header">
+        Low Performers
+        <span class="badge badge-warning">Bottom 20% by sales</span>
+    </div>
+    {% if low_performers %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Sold</th>
+                    <th>Views</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in low_performers %}
+                <tr>
+                    <td>
+                        <div class="fw-600" style="color:var(--text);">{{ product.name|truncatechars:28 }}</div>
+                        <div style="font-size:12px;color:var(--text-muted);">KES {{ product.price|floatformat:0 }}</div>
+                    </td>
+                    <td><span class="badge badge-warning">{{ product.total_sold }}</span></td>
+                    <td style="color:var(--info);font-size:13px;">{{ product.view_count }}</td>
+                    <td><a href="{% url 'myadmin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-muted" style="font-size:13px;padding:12px 0;">No low performers — great job!</p>
+    {% endif %}
+</div>
+
+<!-- Most Wishlisted -->
+<div class="card">
+    <div class="card-header">
+        Most Wishlisted
+        <span class="badge badge-gold">Customer demand</span>
+    </div>
+    {% if most_wishlisted %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Wishlist</th>
+                    <th>Sold</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in most_wishlisted %}
+                {% if product.wishlist_count %}
+                <tr>
+                    <td>
+                        <div class="fw-600" style="color:var(--text);">{{ product.name|truncatechars:28 }}</div>
+                        <div style="font-size:12px;color:var(--text-muted);">KES {{ product.price|floatformat:0 }}</div>
+                    </td>
+                    <td><span style="color:var(--danger);">♥ {{ product.wishlist_count }}</span></td>
+                    <td style="color:var(--success);font-size:13px;">{{ product.total_sold|default:"0" }}</td>
+                    <td><a href="{% url 'myadmin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a></td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-muted" style="font-size:13px;padding:12px 0;">No wishlist data yet.</p>
+    {% endif %}
+</div>
+
+</div>
+
+<!-- Never Sold (Zero Sellers) -->
+{% if zero_sellers %}
+<div class="card">
+    <div class="card-header">
+        Never Sold
+        <span class="badge badge-danger">{{ zero_sellers|length }} products need attention</span>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Views</th>
+                    <th>Wishlist</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in zero_sellers %}
+                <tr>
+                    <td>
+                        <div class="fw-600" style="color:var(--text);">{{ product.name }}</div>
+                    </td>
+                    <td><span class="badge badge-secondary">{{ product.category.name }}</span></td>
+                    <td class="text-gold">KES {{ product.price|floatformat:0 }}</td>
+                    <td style="color:var(--info);">{{ product.view_count }}</td>
+                    <td>
+                        {% if product.wishlist_count %}<span style="color:var(--danger);">♥ {{ product.wishlist_count }}</span>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td>
+                        {% if product.is_available %}<span class="badge badge-success">Available</span>
+                        {% else %}<span class="badge badge-danger">Unavailable</span>{% endif %}
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <a href="{% url 'myadmin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                            {% if not product.is_available %}
+                            <form method="post" action="{% url 'myadmin:product_bulk_action' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="mark_available">
+                                <input type="hidden" name="product_ids" value="{{ product.pk }}">
+                                <button type="submit" class="btn btn-success btn-sm">Enable</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

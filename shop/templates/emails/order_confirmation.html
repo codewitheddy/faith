@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
+        .header { background: #0f3460; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+        .header img { height: 50px; margin-bottom: 10px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { background: white; padding: 30px; border-radius: 0 0 5px 5px; }
+        .order-number { background: #e8f4f8; padding: 15px; border-left: 4px solid #0f3460; margin: 20px 0; border-radius: 3px; }
+        .order-number strong { color: #0f3460; }
+        .section-title { font-size: 16px; font-weight: bold; color: #0f3460; margin-top: 25px; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: #f0f0f0; padding: 10px; text-align: left; font-weight: bold; color: #333; border-bottom: 2px solid #ddd; }
+        td { padding: 12px 10px; border-bottom: 1px solid #eee; }
+        .item-name { font-weight: bold; }
+        .item-price { text-align: right; }
+        .item-qty { text-align: center; }
+        .totals { margin-top: 20px; }
+        .total-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .total-row.grand-total { border-top: 2px solid #0f3460; border-bottom: 2px solid #0f3460; font-weight: bold; font-size: 18px; background: #f0f0f0; padding: 15px 10px; margin-top: 15px; }
+        .grand-total .amount { color: #0f3460; }
+        .address-section { background: #f9f9f9; padding: 15px; border-radius: 3px; }
+        .cta-button { display: inline-block; background: #0f3460; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 20px; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; border-top: 1px solid #eee; margin-top: 30px; }
+        .footer a { color: #0f3460; text-decoration: none; }
+        .status-badge { display: inline-block; background: #4CAF50; color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✓ Order Confirmed!</h1>
+            <p>Thank you for shopping with us</p>
+        </div>
+
+        <div class="content">
+            <p>Hi {{ customer_name }},</p>
+
+            <p>Your order has been successfully placed and we're preparing it for delivery. Please find your order details below.</p>
+
+            <div class="order-number">
+                <strong>Order Number:</strong> {{ order_number }}<br>
+                <strong>Date:</strong> {{ order_date }}<br>
+                <strong>Status:</strong> <span class="status-badge">CONFIRMED</span>
+            </div>
+
+            <div class="section-title">Order Items</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th class="item-qty">Qty</th>
+                        <th class="item-price">Price</th>
+                        <th class="item-price">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td class="item-name">{{ item.name }}</td>
+                        <td class="item-qty">{{ item.quantity }}</td>
+                        <td class="item-price">KSh {{ item.price|floatformat:0|add:"0"|stringformat:",.0f" }}</td>
+                        <td class="item-price">KSh {{ item.subtotal|floatformat:0|add:"0"|stringformat:",.0f" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="totals">
+                <div class="total-row grand-total">
+                    <span>Total Amount:</span>
+                    <span class="amount">KSh {{ total|floatformat:0|add:"0"|stringformat:",.0f" }}</span>
+                </div>
+            </div>
+
+            <div class="section-title">Delivery Address</div>
+            <div class="address-section">
+                <p><strong>{{ customer_name }}</strong></p>
+                <p>{{ address }}<br>
+                {{ city }}, Kenya</p>
+                <p><strong>Phone:</strong> {{ phone }}</p>
+            </div>
+
+            <div class="section-title">What's Next?</div>
+            <p>Our team will contact you shortly via WhatsApp or phone to confirm payment details and delivery arrangements.</p>
+            <p><strong>Payment Methods Accepted:</strong></p>
+            <ul>
+                <li>M-Pesa (Lipa na M-Pesa Online)</li>
+                <li>Bank Transfer</li>
+                <li>Cash on Delivery (Nairobi only)</li>
+            </ul>
+
+            <p>For any questions or concerns, reach out to us:</p>
+            <ul>
+                <li><strong>WhatsApp:</strong> +254 706 105 967</li>
+                <li><strong>Email:</strong> info@wyattcollection.ke</li>
+            </ul>
+
+            <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                This is an automated email. Please do not reply to this message. If you need to contact us, use the details above.
+            </p>
+        </div>
+
+        <div class="footer">
+            <p><strong>Wyatt Collection</strong></p>
+            <p>Premium Menswear | Kenya 🇰🇪</p>
+            <p><a href="https://wyattcollection.ke">Visit our website</a></p>
+        </div>
+    </div>
+</body>
+</html>

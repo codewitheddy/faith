@@ -1,0 +1,79 @@
+{% extends "account/base_account.html" %}
+{% block nav_dashboard %}active{% endblock %}
+{% block title %}My Account - ThePOPSHOP.KE{% endblock %}
+
+{% block account_content %}
+<div class="account-card">
+    <div class="account-card-title">👋 Welcome, {{ user.first_name|default:"there" }}!</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px;">
+        <a href="{% url 'shop:account_orders' %}" style="text-decoration:none;">
+            <div style="background:var(--accent-light);border-radius:12px;padding:20px;text-align:center;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                <div style="font-size:2rem;margin-bottom:8px;">📦</div>
+                <div style="font-size:1.6rem;font-weight:700;color:var(--dark);">{{ orders.count }}</div>
+                <div style="font-size:0.85rem;color:#666;">Total Orders</div>
+            </div>
+        </a>
+        <a href="{% url 'shop:account_wishlist' %}" style="text-decoration:none;">
+            <div style="background:#fff5f5;border-radius:12px;padding:20px;text-align:center;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                <div style="font-size:2rem;margin-bottom:8px;">❤️</div>
+                <div style="font-size:1.6rem;font-weight:700;color:var(--dark);">{{ wishlist.count }}</div>
+                <div style="font-size:0.85rem;color:#666;">Wishlist Items</div>
+            </div>
+        </a>
+        <a href="{% url 'shop:account_profile' %}" style="text-decoration:none;">
+            <div style="background:#f0f4ff;border-radius:12px;padding:20px;text-align:center;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                <div style="font-size:2rem;margin-bottom:8px;">📍</div>
+                <div style="font-size:1.6rem;font-weight:700;color:var(--dark);">{% if user.profile.address %}✓{% else %}—{% endif %}</div>
+                <div style="font-size:0.85rem;color:#666;">Saved Address</div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="account-card">
+    <div class="account-card-title">📦 Recent Orders</div>
+    {% if orders %}
+    <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+            <thead>
+                <tr style="border-bottom:2px solid var(--accent-light);">
+                    <th style="padding:10px;text-align:left;color:#888;font-weight:600;">Order #</th>
+                    <th style="padding:10px;text-align:left;color:#888;font-weight:600;">Date</th>
+                    <th style="padding:10px;text-align:left;color:#888;font-weight:600;">Items</th>
+                    <th style="padding:10px;text-align:left;color:#888;font-weight:600;">Total</th>
+                    <th style="padding:10px;text-align:left;color:#888;font-weight:600;">Status</th>
+                    <th style="padding:10px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders|slice:":5" %}
+                <tr style="border-bottom:1px solid #f5f5f5;">
+                    <td style="padding:12px 10px;font-weight:600;">{{ order.order_number }}</td>
+                    <td style="padding:12px 10px;color:#666;">{{ order.created_at|date:"d M Y" }}</td>
+                    <td style="padding:12px 10px;color:#666;">{{ order.items.count }} item{{ order.items.count|pluralize }}</td>
+                    <td style="padding:12px 10px;font-weight:600;">Ksh {{ order.total_amount|floatformat:0 }}</td>
+                    <td style="padding:12px 10px;">
+                        <span style="padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:600;
+                            background:{% if order.status == 'delivered' %}#e8f5e9;color:#2e7d32{% elif order.status == 'shipped' %}#e3f2fd;color:#1565c0{% elif order.status == 'cancelled' %}#ffebee;color:#c62828{% else %}#fff8e1;color:#f57f17{% endif %};">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td style="padding:12px 10px;"><a href="{% url 'shop:account_order_detail' order.order_number %}" style="color:var(--accent-dark);font-size:0.85rem;font-weight:600;text-decoration:none;">View →</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if orders.count > 5 %}
+    <div style="text-align:center;margin-top:15px;"><a href="{% url 'shop:account_orders' %}" style="color:var(--accent-dark);font-weight:600;text-decoration:none;font-size:0.9rem;">View all {{ orders.count }} orders →</a></div>
+    {% endif %}
+    {% else %}
+    <div style="text-align:center;padding:40px;color:#aaa;">
+        <div style="font-size:3rem;margin-bottom:15px;">🛍️</div>
+        <p>No orders yet.</p>
+        <a href="{% url 'shop:shop' %}" style="display:inline-block;margin-top:15px;background:var(--dark);color:var(--white);padding:10px 25px;border-radius:25px;text-decoration:none;font-size:0.9rem;">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

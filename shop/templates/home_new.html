@@ -1,0 +1,662 @@
+{% extends "base.html" %}
+{% load static %}
+{% load image_tags %}
+{% block title %}Wyatt Collection - Premium Menswear{% endblock %}
+{% block nav_home %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Slider */
+    .hero-slider {
+        position: relative;
+        width: 100%;
+        min-height: 60vh;
+        overflow: hidden;
+    }
+    .slide {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 0.8s ease;
+        min-height: 60vh;
+    }
+    .slide.active { opacity: 1; position: relative; }
+    .slide-bg {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-size: cover; background-position: center;
+        z-index: 0;
+    }
+    .slide-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 1;
+    }
+    .slide-content {
+        position: relative; z-index: 2;
+        max-width: 920px; margin: 0 auto;
+        padding: 90px 30px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        text-align: center; width: 100%;
+    }
+    .slide-text { animation: fadeInUp 0.8s ease-out; display: flex; flex-direction: column; align-items: center; }
+    .slide-badge {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.4);
+        padding: 8px 20px; border-radius: 25px;
+        font-size: 0.85rem; font-weight: 600;
+        letter-spacing: 2px; text-transform: uppercase;
+        margin-bottom: 20px;
+    }
+    .slide-title {
+        font-size: 3.8rem; font-weight: 100;
+        letter-spacing: 4px; line-height: 1.2;
+        margin-bottom: 20px;
+        font-family: Georgia, 'Times New Roman', serif;
+    }
+    .slide-subtitle { font-size: 1.2rem; margin-bottom: 15px; font-style: italic; opacity: 0.9; }
+    .slide-desc { font-size: 1.05rem; line-height: 1.8; opacity: 0.85; margin-bottom: 35px; max-width: 620px; }
+    .slide-features { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 35px; justify-content: center; }
+    .feature-pill {
+        background: rgba(255,255,255,0.9); color: #333;
+        padding: 8px 18px; border-radius: 25px;
+        font-size: 0.85rem; font-weight: 600;
+    }
+    .slide-buttons { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+    /* Slide 1 - Pink */
+    .slide-1 .slide-bg { background: linear-gradient(135deg, #FAF7F2 0%, #C9A84C 50%, #FAF7F2 100%); }
+    .slide-1 .slide-text { color: #1a1a1a; }
+    .slide-1 .slide-badge { background: rgba(201,168,76,0.12); border-color: rgba(201,168,76,0.3); color: #7a5c1e; }
+    /* Slide 2 - Dark */
+    .slide-2 .slide-bg { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+    .slide-2 .slide-text { color: #fff; }
+    .slide-2 .slide-badge { color: #C9A84C; }
+    .slide-2 .slide-title { color: #fff; }
+    .slide-2 .feature-pill { background: rgba(201,168,76,0.2); color: #C9A84C; border: 1px solid rgba(201,168,76,0.3); }
+    /* Slide 3 - Cream */
+    .slide-3 .slide-bg { background: linear-gradient(135deg, #FAF7F2 0%, #F5EDD6 50%, #FAF7F2 100%); }
+    .slide-3 .slide-text { color: #2c1810; }
+    .slide-3 .slide-badge { background: rgba(139,90,43,0.1); border-color: rgba(139,90,43,0.2); color: #8b5a2b; }
+    /* Slider controls */
+    .slider-controls {
+        position: absolute; bottom: 30px; left: 50%;
+        transform: translateX(-50%); z-index: 10;
+        display: flex; gap: 12px; align-items: center;
+    }
+    .slider-dot {
+        width: 12px; height: 12px; border-radius: 50%;
+        background: rgba(0,0,0,0.3); cursor: pointer;
+        transition: all 0.3s; border: 2px solid transparent;
+        padding: 0; margin: 0;
+    }
+    .slider-dot:hover { background: rgba(0,0,0,0.55); }
+    .slider-dot.active { background: var(--black); transform: scale(1.3); }
+    .slider-arrow {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        background: rgba(255,255,255,0.9); border: none;
+        width: 50px; height: 50px; border-radius: 50%;
+        font-size: 1.3rem; cursor: pointer; z-index: 10;
+        transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .slider-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.1); }
+    .slider-arrow.prev { left: 20px; }
+    .slider-arrow.next { right: 20px; }
+    .slider-progress {
+        position: absolute; bottom: 0; left: 0;
+        height: 3px; background: var(--accent);
+        z-index: 10; transition: width 0.1s linear;
+    }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInRight { from{opacity:0;transform:translateX(50px)} to{opacity:1;transform:translateX(0)} }
+
+    /* Featured products section */
+    .featured-section { padding: 80px 20px; background: var(--light-gray); }
+    .section-header { text-align: center; margin-bottom: 50px; }
+    .section-header h2 { font-size: 2.5rem; font-weight: 300; letter-spacing: 2px; margin-bottom: 10px; }
+    .section-header p { color: #666; font-size: 1.05rem; }
+    .section-header .divider {
+        width: 60px; height: 3px;
+        background: var(--accent); margin: 15px auto 0;
+        border-radius: 2px;
+    }
+    .products-grid {
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        gap: 25px; max-width: 1300px; margin: 0 auto 40px;
+    }
+    .product-card {
+        background: var(--white); border-radius: 15px;
+        overflow: hidden; box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+        transition: all 0.3s; display: flex; flex-direction: column;
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.13); }
+    .product-card-link { text-decoration: none; color: inherit; display: flex; flex-direction: column; flex: 1; }
+    /* Wishlist heart on card */
+    .product-image { width: 100%; padding-bottom: 100%; position: relative; background: var(--light-gray); overflow: hidden; }
+    .product-image img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+    .product-card:hover .product-image img { transform: scale(1.05); }
+    .wishlist-btn {
+        position: absolute; top: 10px; right: 10px; z-index: 2;
+        width: 34px; height: 34px; border-radius: 50%;
+        background: rgba(255,255,255,0.92); border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        transition: all 0.25s; text-decoration: none;
+    }
+    .wishlist-btn:hover { transform: scale(1.15); background: #fff; }
+    .product-info { padding: 15px 18px 10px; flex: 1; }
+    .product-name { font-size: 1rem; margin-bottom: 5px; font-weight: 500; line-height: 1.3; }
+    .product-desc { color: #777; font-size: 0.85rem; line-height: 1.4; }
+    .product-info-footer {
+        padding: 10px 18px 18px;
+        display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+    }
+    .product-price { font-size: 1.1rem; font-weight: 500; display: flex; flex-direction: column; }
+    .btn-add-cart {
+        background: var(--accent); color: var(--dark);
+        padding: 8px 16px; border: none; border-radius: 20px;
+        cursor: pointer; transition: all 0.3s; font-size: 0.85rem; font-weight: 500;
+        display: flex; align-items: center; gap: 6px; min-width: 90px; justify-content: center;
+    }
+    .btn-add-cart:hover { background: #B8922E; transform: translateY(-2px); }
+    .quantity-selector {
+        display: none; align-items: center; gap: 8px;
+        background: var(--white); border: 2px solid var(--pastel-pink);
+        border-radius: 20px; padding: 4px 8px; min-width: 90px; justify-content: space-between;
+    }
+    .quantity-selector.active { display: flex; }
+    .qty-control-btn {
+        background: var(--accent); border: none; width: 26px; height: 26px;
+        border-radius: 50%; cursor: pointer; font-size: 1rem; font-weight: 600;
+        display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+    }
+    .qty-control-btn:hover { background: #B8922E; transform: scale(1.1); }
+    .qty-display { font-weight: 600; font-size: 0.95rem; min-width: 18px; text-align: center; }
+    .view-all-wrap { text-align: center; margin-top: 20px; }
+
+    /* Testimonials */
+    .testimonials-section {
+        background: linear-gradient(135deg, #FAF7F2 0%, var(--white) 50%, #FAF7F2 100%);
+        padding: 80px 20px;
+    }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 30px; max-width: 1200px; margin: 0 auto; }
+    .testimonial-card {
+        background: var(--white); padding: 35px; border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.07); transition: all 0.3s;
+    }
+    .testimonial-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.13); }
+    .testimonial-quote { font-size: 3rem; color: var(--accent); line-height: 1; margin-bottom: 10px; opacity: 0.5; }
+    .testimonial-stars { color: #FFD700; margin-bottom: 12px; }
+    .testimonial-text { font-size: 0.98rem; line-height: 1.8; color: #555; margin-bottom: 20px; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-avatar {
+        width: 48px; height: 48px; border-radius: 50%;
+        background: var(--accent); display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; font-weight: 600;
+    }
+    .testimonial-name { font-weight: 600; font-size: 0.95rem; }
+    .testimonial-location { font-size: 0.85rem; color: #999; }
+
+    /* Responsive */
+    @media (max-width: 1200px) { .products-grid { grid-template-columns: repeat(3,1fr); } }
+    @media (max-width: 968px) {
+        .slide-content { padding: 70px 20px; }
+        .slide-title { font-size: 2.5rem; }
+        .testimonials-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+        .products-grid { grid-template-columns: repeat(2,1fr); gap: 15px; }
+        .slide-title { font-size: 2rem; letter-spacing: 2px; }
+        .slider-arrow { width: 40px; height: 40px; font-size: 1rem; }
+        .product-info-footer { flex-direction: column; align-items: stretch; gap: 10px; }
+        .product-price { text-align: center; }
+        .btn-add-cart, .quantity-selector { width: 100%; }
+    }
+    @media (max-width: 480px) { .products-grid { grid-template-columns: repeat(2,1fr); gap: 12px; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Slider -->
+<section class="hero-slider" id="heroSlider">
+    <!-- Slide 1 -->
+    <div class="slide slide-1 active" id="slide-0">
+        <div class="slide-bg"></div>
+        <div class="slide-content">
+            <div class="slide-text">
+                <span class="slide-badge">✨ New Collection 2026</span>
+                <h1 class="slide-title">Refined Style for Modern Men</h1>
+                <p class="slide-subtitle">Where Quality Meets Confidence</p>
+                <p class="slide-desc">Discover premium menswear designed for the modern man. Timeless pieces that define your personal style.</p>
+                <div class="slide-features">
+                    <span class="feature-pill">✓ Premium Fabrics</span>
+                    <span class="feature-pill">✓ Perfect Fit</span>
+                    <span class="feature-pill">✓ Versatile Style</span>
+                </div>
+                <div class="slide-buttons">
+                    <a href="{% url 'shop:shop' %}" class="btn-primary">Explore Collection</a>
+                    <a href="{% url 'shop:contact' %}" class="btn-secondary">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Slide 2 -->
+    <div class="slide slide-2" id="slide-1">
+        <div class="slide-bg"></div>
+        <div class="slide-content">
+            <div class="slide-text">
+                <span class="slide-badge">👔 Premium Collection</span>
+                <h1 class="slide-title">Elevated Menswear</h1>
+                <p class="slide-subtitle">Quality Crafted for Discerning Men</p>
+                <p class="slide-desc">Each piece is carefully curated for quality, style and durability. Wardrobe essentials that last.</p>
+                <div class="slide-features">
+                    <span class="feature-pill">✓ Premium Materials</span>
+                    <span class="feature-pill">✓ Contemporary Design</span>
+                    <span class="feature-pill">✓ Expert Crafted</span>
+                </div>
+                <div class="slide-buttons">
+                    <a href="{% url 'shop:shop' %}" class="btn-primary" style="background:#C9A84C;color:#000;">Shop Now</a>
+                    <a href="{% url 'shop:about' %}" class="btn-secondary" style="border-color:#C9A84C;color:#C9A84C;">Our Story</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Slide 3 -->
+    <div class="slide slide-3" id="slide-2">
+        <div class="slide-bg"></div>
+        <div class="slide-content">
+            <div class="slide-text">
+                <span class="slide-badge">🚚 Fast Delivery Kenya</span>
+                <h1 class="slide-title">Delivered to Your Door</h1>
+                <p class="slide-subtitle">Fast & Reliable Delivery Across Kenya</p>
+                <p class="slide-desc">Order today and receive your style within 1-2 days in Nairobi. Nationwide delivery available.</p>
+                <div class="slide-features">
+                    <span class="feature-pill">✓ 1-2 Days Nairobi</span>
+                    <span class="feature-pill">✓ Nationwide</span>
+                    <span class="feature-pill">✓ Safe Packaging</span>
+                </div>
+                <div class="slide-buttons">
+                    <a href="{% url 'shop:shop' %}" class="btn-primary">Order Now</a>
+                    <a href="https://wa.me/254706105967" class="btn-secondary" target="_blank" rel="noopener noreferrer">WhatsApp Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <button class="slider-arrow prev" onclick="changeSlide(-1)" aria-label="Previous slide">&#8249;</button>
+    <button class="slider-arrow next" onclick="changeSlide(1)" aria-label="Next slide">&#8250;</button>
+    <div class="slider-controls" role="tablist" aria-label="Hero slides">
+        <button class="slider-dot active" onclick="goToSlide(0)" aria-label="Go to slide 1"></button>
+        <button class="slider-dot" onclick="goToSlide(1)" aria-label="Go to slide 2"></button>
+        <button class="slider-dot" onclick="goToSlide(2)" aria-label="Go to slide 3"></button>
+    </div>
+    <div class="slider-progress" id="sliderProgress"></div>
+</section>
+
+
+<!-- New Arrivals -->
+<section class="featured-section" style="background:var(--white);">
+    <div class="section-header">
+        <h2>✨ New Arrivals</h2>
+        <p>Fresh pieces just added to the collection</p>
+        <div class="divider"></div>
+    </div>
+    <div class="products-grid">
+        {% for product in new_arrivals %}
+        <div class="product-card">
+            <a href="{% url 'shop:product_detail' product.slug %}" class="product-card-link">
+                <div class="product-image">
+                    {% if product.get_image_url %}
+                        {% optimized_img product.get_image_url product.name width=600 css_class="" lazy=True %}
+                    {% else %}
+                        <img src="{% static 'images/placeholder.svg' %}" alt="{{ product.name }}" loading="lazy">
+                    {% endif %}
+                    {% if product.on_sale %}
+                    <span style="position:absolute;top:10px;left:10px;background:#e53935;color:#fff;font-size:0.72rem;font-weight:700;padding:4px 10px;border-radius:20px;z-index:2;letter-spacing:0.5px;">-{{ product.discount_percent }}%</span>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                    <button class="wishlist-btn" onclick="toggleWishlist(event, {{ product.id }}, this)"
+                        data-product-id="{{ product.id }}"
+                        title="{% if product.id in wishlist_ids %}Remove from wishlist{% else %}Add to wishlist{% endif %}">
+                        {% if product.id in wishlist_ids %}❤️{% else %}🤍{% endif %}
+                    </button>
+                    {% else %}
+                    <a href="{% url 'shop:login' %}" class="wishlist-btn" title="Login to save">🤍</a>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-desc">{{ product.short_description }}</div>
+                </div>
+            </a>
+            <div class="product-info-footer">
+                <div class="product-price">
+                    {% if product.on_sale and product.sale_price %}
+                    <div style="font-size:1.3rem;font-weight:700;color:#C9A84C;line-height:1.1;">KSh {{ product.sale_price|thousand_separator }}</div>
+                    <div style="font-size:0.78rem;color:#999;text-decoration:line-through;margin-top:2px;">KSh {{ product.price|thousand_separator }}</div>
+                    {% else %}
+                    <div style="font-size:1.1rem;font-weight:600;color:#1a1a1a;">KSh {{ product.price|thousand_separator }}</div>
+                    {% endif %}
+                </div>
+                <button class="btn-add-cart" data-product-id="{{ product.id }}" onclick="addToCart({{ product.id }}, this)">
+                    <span>+</span><span>Add</span>
+                </button>
+                <div class="quantity-selector" data-product-id="{{ product.id }}">
+                    <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'decrease', this.parentElement)" aria-label="Decrease quantity">−</button>
+                    <span class="qty-display">1</span>
+                    <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'increase', this.parentElement)" aria-label="Increase quantity">+</button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p style="grid-column:1/-1;text-align:center;color:#999;">No products available yet.</p>
+        {% endfor %}
+    </div>
+    <div class="view-all-wrap">
+        <a href="{% url 'shop:shop' %}" class="btn-primary">View All New Arrivals</a>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="featured-section">
+    <div class="section-header">
+        <h2>Featured Collection</h2>
+        <p>Handpicked pieces our customers love most</p>
+        <div class="divider"></div>
+    </div>
+    <div class="products-grid">
+        {% for product in featured_products %}
+        <div class="product-card">
+            <a href="{% url 'shop:product_detail' product.slug %}" class="product-card-link">
+                <div class="product-image">
+                    {% if product.get_image_url %}
+                        {% optimized_img product.get_image_url product.name width=600 css_class="" lazy=True %}
+                    {% else %}
+                        <img src="{% static 'images/placeholder.svg' %}" alt="{{ product.name }}" loading="lazy">
+                    {% endif %}
+                    {% if product.on_sale %}
+                    <span style="position:absolute;top:10px;left:10px;background:#e53935;color:#fff;font-size:0.72rem;font-weight:700;padding:4px 10px;border-radius:20px;z-index:2;letter-spacing:0.5px;">-{{ product.discount_percent }}%</span>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                    <button class="wishlist-btn" onclick="toggleWishlist(event, {{ product.id }}, this)"
+                        data-product-id="{{ product.id }}"
+                        title="{% if product.id in wishlist_ids %}Remove from wishlist{% else %}Add to wishlist{% endif %}">
+                        {% if product.id in wishlist_ids %}❤️{% else %}🤍{% endif %}
+                    </button>
+                    {% else %}
+                    <a href="{% url 'shop:login' %}" class="wishlist-btn" title="Login to save">🤍</a>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-desc">{{ product.short_description }}</div>
+                </div>
+            </a>
+            <div class="product-info-footer">
+                <div class="product-price">
+                    {% if product.on_sale and product.sale_price %}
+                    <!-- Sale Price (Large, Prominent) -->
+                    <div style="font-size:1.3rem;font-weight:700;color:#C9A84C;line-height:1.1;">KSh {{ product.sale_price|thousand_separator }}</div>
+                    <!-- Original Price (Small, Strikethrough, Gray) -->
+                    <div style="font-size:0.78rem;color:#999;text-decoration:line-through;margin-top:2px;">KSh {{ product.price|thousand_separator }}</div>
+                    {% else %}
+                    <!-- Regular Price -->
+                    <div style="font-size:1.1rem;font-weight:600;color:#1a1a1a;">KSh {{ product.price|thousand_separator }}</div>
+                    {% endif %}
+                </div>
+                <button class="btn-add-cart" data-product-id="{{ product.id }}" onclick="addToCart({{ product.id }}, this)">
+                    <span>+</span><span>Add</span>
+                </button>
+                <div class="quantity-selector" data-product-id="{{ product.id }}">
+                    <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'decrease', this.parentElement)" aria-label="Decrease quantity">−</button>
+                    <span class="qty-display">1</span>
+                    <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'increase', this.parentElement)" aria-label="Increase quantity">+</button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p style="grid-column:1/-1;text-align:center;color:#999;">No products available yet.</p>
+        {% endfor %}
+    </div>
+    <div class="view-all-wrap">
+        <a href="{% url 'shop:shop' %}" class="btn-primary">View All New Arrivals</a>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="featured-section">
+    <div class="section-header">
+        <h2>Featured Collection</h2>
+        <p>Handpicked pieces our customers love most</p>
+        <div class="divider"></div>
+    </div>
+    <div class="products-grid">
+        {% for product in featured_products %}
+        <div class="product-card">
+            <a href="{% url 'shop:product_detail' product.slug %}" class="product-card-link">
+                <div class="product-image">
+                    {% if product.get_image_url %}
+                        {% optimized_img product.get_image_url product.name width=600 css_class="" lazy=True %}
+                    {% else %}
+                        <img src="{% static 'images/placeholder.svg' %}" alt="{{ product.name }}" loading="lazy">
+                    {% endif %}
+                    {% if product.on_sale %}
+                    <span style="position:absolute;top:10px;left:10px;background:#e53935;color:#fff;font-size:0.72rem;font-weight:700;padding:4px 10px;border-radius:20px;z-index:2;letter-spacing:0.5px;">-{{ product.discount_percent }}%</span>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                    <button class="wishlist-btn" onclick="toggleWishlist(event, {{ product.id }}, this)"
+                        data-product-id="{{ product.id }}"
+                        title="{% if product.id in wishlist_ids %}Remove from wishlist{% else %}Add to wishlist{% endif %}">
+                        {% if product.id in wishlist_ids %}❤️{% else %}🤍{% endif %}
+                    </button>
+                    {% else %}
+                    <a href="{% url 'shop:login' %}" class="wishlist-btn" title="Login to save">🤍</a>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-desc">{{ product.short_description }}</div>
+                </div>
+            </a>
+            <div class="product-info-footer">
+                <div class="product-price">
+                    {% if product.on_sale and product.sale_price %}
+                    <!-- Sale Price (Large, Prominent) -->
+                    <div style="font-size:1.3rem;font-weight:700;color:#C9A84C;line-height:1.1;">KSh {{ product.sale_price|thousand_separator }}</div>
+                    <!-- Original Price (Small, Strikethrough, Gray) -->
+                    <div style="font-size:0.78rem;color:#999;text-decoration:line-through;margin-top:2px;">KSh {{ product.price|thousand_separator }}</div>
+                    {% else %}
+                    <!-- Regular Price -->
+                    <div style="font-size:1.1rem;font-weight:600;color:#1a1a1a;">KSh {{ product.price|thousand_separator }}</div>
+                    {% endif %}
+                </div>
+                <button class="btn-add-cart" data-product-id="{{ product.id }}" onclick="addToCart({{ product.id }}, this)">
+                    <span>+</span><span>Add</span>
+                </button>
+                <div class="quantity-selector" data-product-id="{{ product.id }}">
+                    <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'decrease', this.parentElement)" aria-label="Decrease quantity">−</button>
+                    <span class="qty-display">1</span>
+                    <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'increase', this.parentElement)" aria-label="Increase quantity">+</button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p style="grid-column:1/-1;text-align:center;color:#999;">No products available yet.</p>
+        {% endfor %}
+    </div>
+    <div class="view-all-wrap">
+        <a href="{% url 'shop:shop' %}" class="btn-primary">View Full Collection</a>
+    </div>
+</section>
+
+<!-- On Sale Section -->
+{% if sale_products %}
+<section class="featured-section" style="background:var(--white);">
+    <div class="section-header">
+        <h2>🔥 On Sale</h2>
+        <p>Limited time deals — grab them before they're gone</p>
+        <div class="divider" style="background:#e53935;"></div>
+    </div>
+    <div class="products-grid">
+        {% for product in sale_products %}
+        <div class="product-card">
+            <a href="{% url 'shop:product_detail' product.slug %}" class="product-card-link">
+                <div class="product-image">
+                    {% if product.get_image_url %}
+                        {% optimized_img product.get_image_url product.name width=600 css_class="" lazy=True %}
+                    {% else %}
+                        <img src="{% static 'images/placeholder.svg' %}" alt="{{ product.name }}" loading="lazy">
+                    {% endif %}
+                    <span style="position:absolute;top:10px;left:10px;background:#e53935;color:#fff;font-size:0.72rem;font-weight:700;padding:4px 10px;border-radius:20px;z-index:2;letter-spacing:0.5px;">-{{ product.discount_percent }}%</span>
+                    {% if user.is_authenticated %}
+                    <button class="wishlist-btn" onclick="toggleWishlist(event, {{ product.id }}, this)"
+                        data-product-id="{{ product.id }}"
+                        title="{% if product.id in wishlist_ids %}Remove from wishlist{% else %}Add to wishlist{% endif %}">
+                        {% if product.id in wishlist_ids %}❤️{% else %}🤍{% endif %}
+                    </button>
+                    {% else %}
+                    <a href="{% url 'shop:login' %}" class="wishlist-btn" title="Login to save">🤍</a>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-desc">{{ product.short_description }}</div>
+                </div>
+            </a>
+            <div class="product-info-footer">
+                <div class="product-price">
+                    <!-- Sale Price (Large, Prominent) -->
+                    <div style="font-size:1.3rem;font-weight:700;color:#C9A84C;line-height:1.1;">KSh {{ product.sale_price|thousand_separator }}</div>
+                    <!-- Original Price (Small, Strikethrough, Gray) -->
+                    <div style="font-size:0.78rem;color:#999;text-decoration:line-through;margin-top:2px;">KSh {{ product.price|thousand_separator }}</div>
+                </div>
+                <button class="btn-add-cart" data-product-id="{{ product.id }}" onclick="addToCart({{ product.id }}, this)">
+                    <span>+</span><span>Add</span>
+                </button>
+                <div class="quantity-selector" data-product-id="{{ product.id }}">
+                    <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'decrease', this.parentElement)" aria-label="Decrease quantity">−</button>
+                    <span class="qty-display">1</span>
+                    <button class="qty-control-btn" onclick="adjustQuantity({{ product.id }}, 'increase', this.parentElement)" aria-label="Increase quantity">+</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="view-all-wrap">
+        <a href="{% url 'shop:shop' %}?filter=sale" class="btn-primary" style="background:#e53935;border-color:#e53935;">View All Sale Items</a>
+    </div>
+</section>
+{% endif %}
+
+<!-- Testimonials -->
+<section class="testimonials-section">
+    <div class="section-header">
+        <h2>What Our Customers Say</h2>
+        <p>Real experiences from our valued customers across Kenya</p>
+        <div class="divider"></div>
+    </div>
+    <div class="testimonials-grid">
+        <div class="testimonial-card">
+            <div class="testimonial-quote">"</div>
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">Absolutely stunning pieces! I ordered a full outfit for my anniversary and it exceeded all expectations. The quality is exceptional and delivery was super fast.</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">A</div>
+                <div><div class="testimonial-name">Amina Hassan</div><div class="testimonial-location">Nairobi</div></div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <div class="testimonial-quote">"</div>
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">Wyatt Collection has become my go-to for quality menswear. Premium designs, affordable prices, and excellent customer service. Very responsive on WhatsApp!</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">M</div>
+                <div><div class="testimonial-name">Mary Wanjiku</div><div class="testimonial-location">Mombasa</div></div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <div class="testimonial-quote">"</div>
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">I bought a shirt and pants set as a gift. The quality is amazing and the recipient was thrilled! Will definitely order again. Thank you Wyatt Collection!</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">J</div>
+                <div><div class="testimonial-name">James Omondi</div><div class="testimonial-location">Kisumu</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentSlide = 0;
+    const totalSlides = 3;
+    let slideTimer;
+    let progressTimer;
+    let progressWidth = 0;
+    const slideDuration = 5000;
+
+    function goToSlide(n) {
+        document.getElementById(`slide-${currentSlide}`).classList.remove('active');
+        document.querySelectorAll('.slider-dot')[currentSlide].classList.remove('active');
+        currentSlide = (n + totalSlides) % totalSlides;
+        document.getElementById(`slide-${currentSlide}`).classList.add('active');
+        document.querySelectorAll('.slider-dot')[currentSlide].classList.add('active');
+        resetProgress();
+    }
+
+    function changeSlide(dir) { goToSlide(currentSlide + dir); }
+
+    function resetProgress() {
+        clearInterval(progressTimer);
+        progressWidth = 0;
+        document.getElementById('sliderProgress').style.width = '0%';
+        progressTimer = setInterval(() => {
+            progressWidth += (100 / (slideDuration / 100));
+            document.getElementById('sliderProgress').style.width = progressWidth + '%';
+            if (progressWidth >= 100) { clearInterval(progressTimer); }
+        }, 100);
+        clearTimeout(slideTimer);
+        slideTimer = setTimeout(() => changeSlide(1), slideDuration);
+    }
+
+    resetProgress();
+
+    // Pause on hover
+    document.getElementById('heroSlider').addEventListener('mouseenter', () => {
+        clearTimeout(slideTimer); clearInterval(progressTimer);
+    });
+    document.getElementById('heroSlider').addEventListener('mouseleave', resetProgress);
+
+    // Touch swipe
+    let touchStartX = 0;
+    document.getElementById('heroSlider').addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+    document.getElementById('heroSlider').addEventListener('touchend', e => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+    });
+
+    function toggleWishlist(e, productId, btn) {
+        e.preventDefault(); e.stopPropagation();
+        {% if user.is_authenticated %}
+        const fd = new FormData();
+        fd.append('product_id', productId);
+        fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        fetch('{% url "shop:toggle_wishlist" %}', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            btn.textContent = data.in_wishlist ? '❤️' : '🤍';
+            btn.title = data.in_wishlist ? 'Remove from wishlist' : 'Add to wishlist';
+            showToast(data.in_wishlist ? 'Saved!' : 'Removed', data.in_wishlist ? 'Added to wishlist' : 'Removed from wishlist', 'success');
+        });
+        {% endif %}
+    }
+</script>
+{% endblock %}
+
+
+
+
+

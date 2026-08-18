@@ -1,0 +1,703 @@
+{% extends "base.html" %}
+{% load static %}
+{% load image_tags %}
+{% block title %}Checkout - Wyatt Collection{% endblock %}
+
+{% block extra_css %}
+<style>
+    .co-page {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 0;
+        align-items: start;
+        min-height: calc(100vh - 80px);
+    }
+
+    /* ── Left panel ── */
+    .co-left {
+        padding-right: 48px;
+        border-right: 1px solid #e8e8e8;
+    }
+    .co-logo {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--dark);
+        letter-spacing: 1px;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .co-logo img { height: 36px; }
+
+    .co-section { margin-bottom: 28px; }
+    .co-section-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 14px;
+    }
+    .co-section-subtitle {
+        font-size: 0.82rem;
+        color: #888;
+        font-weight: 400;
+        margin-left: 6px;
+    }
+
+    /* Floating label inputs */
+    .fl-group {
+        position: relative;
+        margin-bottom: 12px;
+    }
+    .fl-group input,
+    .fl-group textarea,
+    .fl-group select {
+        width: 100%;
+        padding: 22px 14px 8px;
+        border: 1.5px solid #d0d0d0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        background: #fff;
+        outline: none;
+        transition: border-color 0.2s;
+        color: var(--dark);
+        appearance: none;
+    }
+    .fl-group textarea { padding-top: 22px; resize: vertical; min-height: 80px; }
+    .fl-group input:focus,
+    .fl-group textarea:focus,
+    .fl-group select:focus { border-color: var(--accent); }
+    .fl-group label {
+        position: absolute;
+        left: 14px; top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.9rem;
+        color: #999;
+        pointer-events: none;
+        transition: all 0.15s ease;
+        background: transparent;
+    }
+    .fl-group textarea ~ label { top: 18px; transform: none; }
+    .fl-group input:focus ~ label,
+    .fl-group input:not(:placeholder-shown) ~ label,
+    .fl-group input.has-value ~ label,
+    .fl-group textarea:focus ~ label,
+    .fl-group textarea:not(:placeholder-shown) ~ label,
+    .fl-group textarea.has-value ~ label,
+    .fl-group select:focus ~ label,
+    .fl-group select.has-value ~ label {
+        top: 8px;
+        transform: none;
+        font-size: 0.72rem;
+        color: var(--accent);
+    }
+    .fl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .fl-select-arrow {
+        position: absolute;
+        right: 14px; top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: #999;
+        font-size: 0.8rem;
+    }
+
+    /* Shipping method */
+    .shipping-options { display: flex; flex-direction: column; gap: 10px; }
+    .shipping-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border: 1.5px solid #d0d0d0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+    }
+    .shipping-option:hover { border-color: var(--accent); }
+    .shipping-option.selected { border-color: var(--accent); background: #fdf8ee; }
+    .shipping-option input[type=radio] { display: none; }
+    .shipping-option-left { display: flex; align-items: center; gap: 12px; }
+    .shipping-radio {
+        width: 18px; height: 18px;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        transition: border-color 0.2s;
+    }
+    .shipping-option.selected .shipping-radio { border-color: var(--accent); }
+    .shipping-radio-dot {
+        width: 9px; height: 9px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: none;
+    }
+    .shipping-option.selected .shipping-radio-dot { display: block; }
+    .shipping-option-name { font-size: 0.9rem; font-weight: 500; }
+    .shipping-option-desc { font-size: 0.78rem; color: #888; }
+    .shipping-option-price { font-weight: 600; font-size: 0.9rem; }
+
+    /* Checkbox row */
+    .co-checkbox {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 0.85rem; color: #555; cursor: pointer;
+        margin-top: 4px;
+    }
+    .co-checkbox input[type=checkbox] {
+        width: 16px; height: 16px;
+        accent-color: var(--accent);
+        cursor: pointer;
+    }
+
+    /* Place order button */
+    .btn-place-order {
+        width: 100%;
+        background: #25D366;
+        color: #fff;
+        padding: 16px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s;
+        margin-top: 20px;
+    }
+    .btn-place-order:hover { background: #1ebe5d; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,0.35); }
+    .btn-place-order svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
+    .co-note { font-size: 0.78rem; color: #aaa; text-align: center; margin-top: 10px; line-height: 1.5; }
+
+    .back-link {
+        display: inline-flex; align-items: center; gap: 5px;
+        color: var(--accent); text-decoration: none;
+        font-size: 0.85rem; margin-bottom: 28px;
+        transition: gap 0.2s;
+    }
+    .back-link:hover { gap: 9px; }
+
+    /* ── Right panel (summary) ── */
+    .co-right {
+        padding-left: 48px;
+        position: sticky;
+        top: 130px;
+    }
+
+    .co-items { margin-bottom: 20px; }
+    .co-item {
+        display: flex; gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+        align-items: center;
+    }
+    .co-item:last-child { border-bottom: none; }
+    .co-item-img-wrap { position: relative; flex-shrink: 0; }
+    .co-item-img {
+        width: 60px; height: 60px;
+        object-fit: cover; border-radius: 8px;
+        border: 1px solid #eee;
+    }
+    .co-item-badge {
+        position: absolute; top: -6px; right: -6px;
+        background: #888; color: #fff;
+        width: 20px; height: 20px; border-radius: 50%;
+        font-size: 0.7rem; font-weight: 600;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .co-item-info { flex: 1; }
+    .co-item-name { font-size: 0.88rem; font-weight: 500; }
+    .co-item-meta { font-size: 0.78rem; color: #aaa; margin-top: 2px; }
+    .co-item-price { font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+
+    /* Discount code */
+    .discount-row {
+        display: flex; gap: 8px;
+        margin-bottom: 16px;
+    }
+    .discount-row input {
+        flex: 1; padding: 11px 14px;
+        border: 1.5px solid #d0d0d0; border-radius: 8px;
+        font-size: 0.88rem; outline: none;
+        transition: border-color 0.2s;
+    }
+    .discount-row input:focus { border-color: var(--accent); }
+    .discount-row input.applied { border-color: #4CAF50; background: #f0fff4; }
+    .btn-apply-discount {
+        padding: 11px 18px;
+        background: var(--dark); color: #fff;
+        border: none; border-radius: 8px;
+        font-size: 0.85rem; font-weight: 500;
+        cursor: pointer; transition: background 0.2s;
+        white-space: nowrap;
+    }
+    .btn-apply-discount:hover { background: #333; }
+    .discount-msg { font-size: 0.78rem; margin-bottom: 10px; }
+    .discount-msg.success { color: #4CAF50; }
+    .discount-msg.error { color: #f44336; }
+
+    /* Totals */
+    .co-totals { border-top: 1px solid #e8e8e8; padding-top: 14px; }
+    .co-totals-row {
+        display: flex; justify-content: space-between;
+        padding: 5px 0; font-size: 0.88rem; color: #555;
+    }
+    .co-totals-row.discount-line { color: #4CAF50; }
+    .co-totals-row.total-line {
+        font-size: 1.1rem; font-weight: 700; color: var(--dark);
+        border-top: 1px solid #e8e8e8;
+        margin-top: 8px; padding-top: 12px;
+    }
+    .co-totals-row .currency-label { font-size: 0.75rem; color: #aaa; margin-right: 4px; }
+
+    /* How it works */
+    .co-howto {
+        margin-top: 20px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 14px 18px;
+        font-size: 0.8rem;
+        color: #666;
+        line-height: 1.8;
+    }
+    .co-howto-title { font-weight: 600; color: #333; margin-bottom: 6px; }
+
+    /* Messages */
+    .co-alert {
+        background: #fff3cd; color: #856404;
+        border: 1px solid #ffc107;
+        padding: 12px 16px; border-radius: 8px;
+        margin-bottom: 18px; font-size: 0.88rem;
+    }
+
+    @media (max-width: 820px) {
+        .co-page { grid-template-columns: 1fr; gap: 0; }
+        .co-left { padding-right: 0; border-right: none; border-bottom: 1px solid #e8e8e8; padding-bottom: 32px; }
+        .co-right { padding-left: 0; padding-top: 32px; position: static; }
+        .co-right { order: -1; }
+    }
+    @media (max-width: 480px) {
+        .fl-row { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="co-page">
+
+    <!-- ── LEFT: Form ── -->
+    <div class="co-left">
+        <div class="co-logo">
+            <img src="{% static 'images/wyatt.png' %}" alt="Wyatt Collection">
+        </div>
+
+        <a href="{% url 'shop:shop' %}" class="back-link">← Continue shopping</a>
+
+        <form method="post" action="{% url 'shop:checkout' %}" id="checkoutForm">
+            {% csrf_token %}
+            <!-- Hidden fields for form submission -->
+            <input type="hidden" name="name" id="nameInput">
+            <input type="hidden" name="discount_code" id="discountCodeInput" value="">
+            <input type="hidden" name="discount_amount" id="discountAmountInput" value="0">
+            <input type="hidden" name="name" id="nameInput" value="">
+
+            <!-- Contact -->
+            <div class="co-section">
+                <div class="co-section-title">
+                    Contact
+                    {% if not user.is_authenticated %}
+                    <span class="co-section-subtitle">Have an account? <a href="{% url 'shop:login' %}?next=/checkout/" style="color:var(--accent);">Sign in</a> to auto-fill</span>
+                    {% endif %}
+                </div>
+                <div class="fl-group">
+                    <input type="email" name="email" id="emailInput" placeholder=" "
+                        value="{{ prefill.email|default:'' }}">
+                    <label>Email (optional — for order updates)</label>
+                </div>
+                <div class="fl-group">
+                    <input type="tel" name="phone" id="phoneInput" placeholder=" " required
+                        value="{{ prefill.phone|default:'' }}">
+                    <label>Phone number *</label>
+                </div>
+                <label class="co-checkbox">
+                    <input type="checkbox" name="email_offers" id="emailOffers">
+                    Send me news and offers via WhatsApp
+                </label>
+            </div>
+
+            <!-- Delivery -->
+            <div class="co-section">
+                <div class="co-section-title">Delivery</div>
+                <div class="fl-row" style="margin-bottom:12px;">
+                    <div class="fl-group">
+                        <input type="text" name="first_name" id="firstNameInput" placeholder=" " required
+                            value="{{ prefill.first_name|default:'' }}">
+                        <label>First name *</label>
+                    </div>
+                    <div class="fl-group">
+                        <input type="text" name="last_name" id="lastNameInput" placeholder=" "
+                            value="{{ prefill.last_name|default:'' }}">
+                        <label>Last name (optional)</label>
+                    </div>
+                </div>
+                <div class="fl-group">
+                    <input type="text" name="address" id="addressInput" placeholder=" " required
+                        value="{{ prefill.address|default:'' }}">
+                    <label>Address *</label>
+                </div>
+                <div class="fl-group">
+                    <input type="text" name="apartment" id="apartmentInput" placeholder=" "
+                        value="{{ prefill.apartment|default:'' }}">
+                    <label>Apartment, suite, etc. (optional)</label>
+                </div>
+                <div class="fl-row">
+                    <div class="fl-group">
+                        <input type="text" name="city" id="cityInput" placeholder=" " required
+                            value="{{ prefill.city|default:'' }}">
+                        <label>City *</label>
+                    </div>
+                    <div class="fl-group">
+                        <input type="text" name="postal_code" id="postalInput" placeholder=" "
+                            value="{{ prefill.postal_code|default:'' }}">
+                        <label>Postal code (optional)</label>
+                    </div>
+                </div>
+                <label class="co-checkbox" style="margin-top:8px;">
+                    <input type="checkbox" id="saveInfo">
+                    Save this information for next time
+                </label>
+            </div>
+
+            <!-- Notes -->
+            <div class="co-section">
+                <div class="co-section-title">Order notes <span class="co-section-subtitle">optional</span></div>
+                <div class="fl-group">
+                    <textarea name="notes" id="notesInput" placeholder=" "></textarea>
+                    <label>Special instructions or requests</label>
+                </div>
+            </div>
+
+            <!-- Order methods -->
+            <div class="co-section">
+                <div class="co-section-title">Checkout Method</div>
+                
+                <!-- Regular Checkout Button -->
+                <button type="submit" class="btn-place-order" style="background:#D4AF37;color:#000;margin-bottom:12px;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;margin-right:8px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Place Order
+                </button>
+                <div class="form-help" style="margin-bottom:20px;font-size:0.85rem;">Standard checkout - You'll provide payment details after order confirmation</div>
+
+                <!-- Or Divider -->
+                <div style="text-align:center;margin:20px 0;font-size:0.85rem;color:#999;">— OR —</div>
+
+                <!-- WhatsApp Checkout Option -->
+                <label style="display:flex;align-items:center;padding:14px;background:#f0f0f0;border-radius:8px;cursor:pointer;margin-bottom:12px;border:2px solid transparent;transition:all 0.2s;">
+                    <input type="checkbox" id="useWhatsApp" name="send_via_whatsapp" style="width:18px;height:18px;cursor:pointer;margin-right:12px;">
+                    <div style="flex:1;">
+                        <div style="font-weight:600;font-size:0.9rem;">Order via WhatsApp</div>
+                        <div style="font-size:0.8rem;color:#666;margin-top:2px;">Get redirected to WhatsApp with your order pre-filled</div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:24px;height:24px;fill:#25D366;flex-shrink:0;">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                </label>
+
+                <div class="form-help" style="font-size:0.8rem;color:#666;">When checked, you can use WhatsApp as an alternative checkout method. Uncheck to use standard checkout only.</div>
+            </div>
+        </form>
+    </div>
+
+    <!-- ── RIGHT: Order Summary ── -->
+    <div class="co-right">
+        <div class="co-items">
+            {% for item in cart_items %}
+            <div class="co-item">
+                <div class="co-item-img-wrap">
+                    {% if item.image %}
+                    <img src="{{ item.image }}" alt="{{ item.name }}" class="co-item-img"
+                        onerror="this.src='/static/images/placeholder.svg'">
+                    {% else %}
+                    <div class="co-item-img" style="background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">👔</div>
+                    {% endif %}
+                    <span class="co-item-badge">{{ item.quantity }}</span>
+                </div>
+                <div class="co-item-info">
+                    <div class="co-item-name">{{ item.name }}</div>
+                    {% if item.is_on_sale and item.original_price %}
+                    <div style="font-size:0.75rem;">
+                        <div style="font-weight:700;color:#C9A84C;">KSh {{ item.price|thousand_separator }}</div>
+                        <div style="color:#999;text-decoration:line-through;font-size:0.7rem;">KSh {{ item.original_price|thousand_separator }}</div>
+                    </div>
+                    {% else %}
+                    <div class="co-item-meta">KSh {{ item.price|thousand_separator }}</div>
+                    {% endif %}
+                    <!-- Stock warning if low stock -->
+                    {% if item.quantity %}
+                    <div class="co-item-meta" id="stock-status-{{ item.id }}" style="margin-top:6px;color:#d97706;font-weight:500;"></div>
+                    {% endif %}
+                </div>
+                <div class="co-item-price">KSh {{ item.subtotal|thousand_separator }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Discount code -->
+        <div class="discount-row">
+            <input type="text" id="discountCodeField" placeholder="Discount code" aria-label="Discount code">
+            <button type="button" class="btn-apply-discount" onclick="applyDiscount()">Apply</button>
+        </div>
+        <div class="discount-msg" id="discountMsg" role="status" aria-live="polite"></div>
+
+        <!-- Totals -->
+        <div class="co-totals">
+            <div class="co-totals-row">
+                <span>Subtotal</span>
+                <span>KSh {{ cart_total|thousand_separator }}</span>
+            </div>
+            <div class="co-totals-row" id="shippingRow">
+                <span>Shipping</span>
+                <span id="shippingDisplay">Ksh 200</span>
+            </div>
+            <div class="co-totals-row discount-line" id="discountRow" style="display:none;">
+                <span>Discount</span>
+                <span id="discountDisplay">-Ksh 0</span>
+            </div>
+            <div class="co-totals-row total-line">
+                <span>Total</span>
+                <span><span class="currency-label">KES</span><strong id="grandTotal">KSh {{ cart_total|thousand_separator }}</strong></span>
+            </div>
+        </div>
+
+        <div class="co-howto">
+            <div class="co-howto-title">📦 How it works</div>
+            <div>1. Fill in your details and place order</div>
+            <div>2. You're taken to WhatsApp with order pre-filled</div>
+            <div>3. We confirm and send M-Pesa payment details</div>
+            <div>4. Order delivered within 1–4 days</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Check stock status on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const cartItems = JSON.parse('{{ cart_items_json|safe }}');
+        if (cartItems && Array.isArray(cartItems)) {
+            cartItems.forEach(item => {
+                fetch(`/api/product/${item.id}/stock/`)
+                    .then(r => r.json())
+                    .then(data => {
+                        const statusEl = document.getElementById(`stock-status-${item.id}`);
+                        if (statusEl && data.stock_quantity !== undefined) {
+                            if (data.is_low_stock && !data.is_out_of_stock) {
+                                statusEl.textContent = `⚠️ Only ${data.stock_quantity} left in stock`;
+                                statusEl.style.color = '#d97706';
+                            } else if (data.is_out_of_stock) {
+                                statusEl.textContent = '❌ This product is out of stock';
+                                statusEl.style.color = '#dc2626';
+                            }
+                        }
+                    })
+                    .catch(err => console.log('Stock check skipped:', err));
+            });
+        }
+    });
+
+    const CART_SUBTOTAL = {{ cart_total }};
+    let currentDiscount = 0;
+
+    function updateTotal() {
+        const total = CART_SUBTOTAL - currentDiscount;
+        document.getElementById('grandTotal').textContent = 'KSh ' + total.toLocaleString('en-KE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    // ── Discount code ──
+    // Simple client-side codes — extend as needed
+    const DISCOUNT_CODES = {
+        'WYATT10': { type: 'percent', value: 10 },
+        'WYATT15': { type: 'percent', value: 15 },
+        'SAVE200':   { type: 'fixed',   value: 200 },
+    };
+
+    function applyDiscount() {
+        const code = document.getElementById('discountCodeField').value.trim().toUpperCase();
+        const msgEl = document.getElementById('discountMsg');
+        const rowEl = document.getElementById('discountRow');
+        const dispEl = document.getElementById('discountDisplay');
+
+        if (!code) { msgEl.textContent = 'Please enter a discount code.'; msgEl.className = 'discount-msg error'; return; }
+
+        const promo = DISCOUNT_CODES[code];
+        if (!promo) {
+            msgEl.textContent = 'Invalid discount code.';
+            msgEl.className = 'discount-msg error';
+            document.getElementById('discountCodeField').classList.remove('applied');
+            currentDiscount = 0;
+            rowEl.style.display = 'none';
+            document.getElementById('discountAmountInput').value = 0;
+            document.getElementById('discountCodeInput').value = '';
+        } else {
+            currentDiscount = promo.type === 'percent'
+                ? Math.round(CART_SUBTOTAL * promo.value / 100)
+                : promo.value;
+            msgEl.textContent = `✓ Code applied — ${promo.type === 'percent' ? promo.value + '% off' : 'KSh ' + promo.value + ' off'}`;
+            msgEl.className = 'discount-msg success';
+            document.getElementById('discountCodeField').classList.add('applied');
+            dispEl.textContent = '-KSh ' + currentDiscount.toLocaleString('en-KE', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            rowEl.style.display = 'flex';
+            document.getElementById('discountAmountInput').value = currentDiscount;
+            document.getElementById('discountCodeInput').value = code;
+        }
+        updateTotal();
+    }
+
+    // Allow Enter key on discount field
+    document.getElementById('discountCodeField').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); applyDiscount(); }
+    });
+
+    // ── Save info (localStorage) ──
+    const SAVE_KEY = 'wyatt_checkout_info';
+
+    function loadSavedInfo() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+            if (!saved) return;
+            const fields = ['emailInput','phoneInput','firstNameInput','lastNameInput','addressInput','apartmentInput','cityInput','postalInput'];
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && saved[id] && !el.value) {
+                    el.value = saved[id];
+                    el.classList.add('has-value');
+                }
+            });
+            if (saved.saveInfo) document.getElementById('saveInfo').checked = true;
+        } catch(e) {}
+    }
+
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Build full name and set on hidden field
+        const fn = document.getElementById('firstNameInput').value.trim();
+        const ln = document.getElementById('lastNameInput').value.trim();
+        const fullName = (fn + ' ' + ln).trim();
+        
+        const email = document.getElementById('emailInput').value.trim();
+        const phone_no = document.getElementById('phoneInput').value.trim();
+        const address = document.getElementById('addressInput').value.trim();
+        const city = document.getElementById('cityInput').value.trim();
+        
+        // Validate required fields
+        if (!fullName) {
+            alert('Please enter your first and last name');
+            document.getElementById('firstNameInput').focus();
+            return;
+        }
+        if (!email) {
+            alert('Please enter your email');
+            document.getElementById('emailInput').focus();
+            return;
+        }
+        if (!phone_no) {
+            alert('Please enter your phone number');
+            document.getElementById('phoneInput').focus();
+            return;
+        }
+        if (!address) {
+            alert('Please enter your address');
+            document.getElementById('addressInput').focus();
+            return;
+        }
+        if (!city) {
+            alert('Please enter your city');
+            document.getElementById('cityInput').focus();
+            return;
+        }
+        
+        document.getElementById('nameInput').value = fullName;
+
+        // Check if WhatsApp option is selected
+        const useWhatsApp = document.getElementById('useWhatsApp') && document.getElementById('useWhatsApp').checked;
+
+        if (useWhatsApp) {
+            // WhatsApp checkout
+            const notes = document.getElementById('notesInput').value.trim();
+            
+            // Build cart items list
+            const cartItems = JSON.parse('{{ cart_items_json|safe }}');
+            let itemsText = '';
+            if (cartItems && Array.isArray(cartItems)) {
+                itemsText = '\n*Order Items:*\n';
+                cartItems.forEach(item => {
+                    const subtotal = typeof item.subtotal === 'number' ? item.subtotal : parseFloat(item.subtotal) || 0;
+                    itemsText += `• ${item.name} x${item.quantity} - KSh ${subtotal.toLocaleString('en-KE', {minimumFractionDigits: 0, maximumFractionDigits: 0})}\n`;
+                });
+            }
+            
+            const message = `Hello, I'd like to place an order:\n\n` +
+                `Name: ${fullName}\n` +
+                `Email: ${email}\n` +
+                `Phone: ${phone_no}\n` +
+                `Address: ${address}\n` +
+                `City: ${city}\n` +
+                `Notes: ${notes}\n` +
+                itemsText +
+                `\nTotal Amount: KSh {{ cart_total|thousand_separator }}\n\n` +
+                `Please confirm and send payment details.`;
+            
+            const whatsappUrl = `https://wa.me/254706105967?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            return;
+        }
+
+        // Save info to localStorage if checked
+        if (document.getElementById('saveInfo').checked) {
+            const data = {
+                saveInfo: true,
+                emailInput: email,
+                phoneInput: phone_no,
+                firstNameInput: fn,
+                lastNameInput: ln,
+                addressInput: address,
+                apartmentInput: document.getElementById('apartmentInput').value,
+                cityInput: city,
+                postalInput: document.getElementById('postalInput').value,
+            };
+            localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+        }
+
+        // Regular checkout - submit form
+        this.submit();
+    });
+
+    // Init
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSavedInfo();
+        updateTotal();
+
+        // Mark pre-filled inputs so floating labels stay up
+        document.querySelectorAll('.fl-group input, .fl-group textarea').forEach(function(el) {
+            function check() {
+                if (el.value) el.classList.add('has-value');
+                else el.classList.remove('has-value');
+            }
+            check();
+            el.addEventListener('input', check);
+            el.addEventListener('change', check);
+        });
+    });
+</script>
+{% endblock %}

@@ -41,18 +41,21 @@ function confirmDelete(itemName, formId) {
     }
 }
 
-// Bulk action confirmation
-function confirmBulkAction(action) {
-    const checkboxes = document.querySelectorAll('input[name="product_ids"]:checked');
+// Bulk action confirmation (works for product_ids / order_ids)
+function confirmBulkAction(action, checkboxName = 'product_ids') {
+    const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]:checked`);
     if (checkboxes.length === 0) {
         showToast('Please select at least one item.', 'warning');
         return false;
     }
-    
+
     if (action === 'delete') {
         return confirm(`Are you sure you want to delete ${checkboxes.length} item(s)? This action cannot be undone.`);
     }
-    
+    if (action && action.startsWith('set_status_')) {
+        return confirm(`Update status of ${checkboxes.length} order(s)? Invalid transitions will be skipped.`);
+    }
+
     return true;
 }
 
@@ -107,14 +110,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Select all checkbox functionality
+    // Select all checkbox functionality (syncs with the bulk checkbox
+    // name used on the page: product_ids or order_ids)
     const selectAllCheckbox = document.getElementById('selectAll');
     if (selectAllCheckbox) {
+        const bulkName = document.querySelector('input[name="order_ids"]') ? 'order_ids' : 'product_ids';
+        const rowCheckboxes = () => document.querySelectorAll(`input[name="${bulkName}"]`);
         selectAllCheckbox.addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('input[name="product_ids"]');
-            checkboxes.forEach(checkbox => {
+            rowCheckboxes().forEach(checkbox => {
                 checkbox.checked = this.checked;
             });
+            selectAllCheckbox.dispatchEvent(new CustomEvent('bulk:change'));
         });
     }
 });

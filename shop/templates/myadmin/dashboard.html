@@ -1,135 +1,183 @@
 {% extends 'myadmin/base.html' %}
-{% load image_tags %}
 {% load static %}
 
-{% block title %}Dashboard - MyAdmin{% endblock %}
+{% block title %}Dashboard — Wyatt Collection Admin{% endblock %}
 
 {% block breadcrumbs %}
-<div class="breadcrumbs">
-    <span>Dashboard</span>
-</div>
+<div class="breadcrumbs"><span class="text-gold">Dashboard</span></div>
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">Dashboard</h1>
+    <span style="font-size:13px;color:var(--text-muted);">This month's overview</span>
 </div>
 
 <!-- KPI Cards -->
 <div class="kpi-grid">
     <div class="kpi-card">
-        <div class="kpi-label">Total Revenue (This Month)</div>
-        <div class="kpi-value">KES {{ total_revenue|thousand_separator }}</div>
+        <div class="kpi-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Revenue (Month)</div>
+            <div class="kpi-value">KES {{ total_revenue|floatformat:0 }}</div>
+        </div>
     </div>
-    
     <div class="kpi-card">
-        <div class="kpi-label">Orders (This Month)</div>
-        <div class="kpi-value">{{ total_orders }}</div>
+        <div class="kpi-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Orders (Month)</div>
+            <div class="kpi-value">{{ total_orders }}</div>
+        </div>
     </div>
-    
     <div class="kpi-card">
-        <div class="kpi-label">Total Customers</div>
-        <div class="kpi-value">{{ total_customers }}</div>
+        <div class="kpi-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Total Customers</div>
+            <div class="kpi-value">{{ total_customers }}</div>
+        </div>
     </div>
-    
     <div class="kpi-card">
-        <div class="kpi-label">Active Products</div>
-        <div class="kpi-value">{{ total_products }}</div>
+        <div class="kpi-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        </div>
+        <div class="kpi-info">
+            <div class="kpi-label">Active Products</div>
+            <div class="kpi-value">{{ total_products }}</div>
+        </div>
     </div>
 </div>
 
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <a href="{% url 'myadmin:product_add' %}" class="quick-action-btn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Add Product
+    </a>
+    <a href="{% url 'myadmin:order_list' %}" class="quick-action-btn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        View Orders
+    </a>
+    <a href="{% url 'myadmin:category_add' %}" class="quick-action-btn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+        Add Category
+    </a>
+    <a href="{% url 'myadmin:analytics' %}" class="quick-action-btn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Analytics
+    </a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 300px;gap:24px;">
+<!-- Low Stock Alert & Recent Orders -->
+<div>
+    <!-- Low Stock Alert -->
+    {% if low_stock_products or out_of_stock_count %}
+    <div class="card" style="border-left:4px solid #f59e0b;background:#fffbeb;margin-bottom:24px;">
+        <div class="card-header" style="color:#92400e;">⚠️ Inventory Alert</div>
+        {% if out_of_stock_count %}
+        <div style="padding:12px 16px;background:#fee2e2;border-radius:6px;margin-bottom:12px;border-left:4px solid #dc2626;">
+            <div style="font-weight:600;color:#991b1b;font-size:0.9rem;">{{ out_of_stock_count }} Product(s) Out of Stock</div>
+            <div style="font-size:0.85rem;color:#7f1d1d;margin-top:4px;">Restock these items immediately.</div>
+            <a href="{% url 'myadmin:product_list' %}" class="btn btn-danger btn-sm" style="margin-top:8px;">Manage Stock</a>
+        </div>
+        {% endif %}
+        {% if low_stock_products %}
+        <div style="padding:0;">
+            <div style="font-weight:600;color:#92400e;font-size:0.9rem;padding:12px 16px;">Low Stock Items:</div>
+            <div style="max-height:300px;overflow-y:auto;">
+                {% for product in low_stock_products %}
+                <div style="padding:12px 16px;border-top:1px solid #fcd34d;display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <div style="font-weight:600;color:#92400e;">{{ product.name }}</div>
+                        <div style="font-size:0.85rem;color:#b45309;">{{ product.stock_quantity }} / {{ product.reorder_level }} units</div>
+                    </div>
+                    <a href="{% url 'myadmin:product_edit' product.pk %}" class="btn btn-secondary btn-xs">Edit</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
 <!-- Recent Orders -->
 <div class="card">
-    <h2 class="card-header">Recent Orders</h2>
-    
+    <div class="card-header">
+        Recent Orders
+        <a href="{% url 'myadmin:order_list' %}" class="btn btn-secondary btn-sm">View All</a>
+    </div>
     {% if recent_orders %}
     <div class="table-container">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Order Number</th>
+                    <th>Order #</th>
                     <th>Customer</th>
-                    <th>Total Amount</th>
+                    <th>Amount</th>
                     <th>Status</th>
                     <th>Date</th>
-                    <th>Actions</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for order in recent_orders %}
                 <tr>
-                    <td><strong>{{ order.order_number }}</strong></td>
+                    <td class="fw-600 text-gold">{{ order.order_number }}</td>
                     <td>{{ order.customer_name }}</td>
-                    <td>KES {{ order.total_amount|floatformat:2 }}</td>
+                    <td>KES {{ order.total_amount|floatformat:0 }}</td>
                     <td>
-                        {% if order.status == 'pending' %}
-                        <span class="badge badge-warning">Pending</span>
-                        {% elif order.status == 'confirmed' %}
-                        <span class="badge badge-success">Confirmed</span>
-                        {% elif order.status == 'processing' %}
-                        <span class="badge badge-success">Processing</span>
-                        {% elif order.status == 'shipped' %}
-                        <span class="badge badge-success">Shipped</span>
-                        {% elif order.status == 'delivered' %}
-                        <span class="badge badge-success">Delivered</span>
-                        {% elif order.status == 'cancelled' %}
-                        <span class="badge badge-danger">Cancelled</span>
-                        {% else %}
-                        <span class="badge badge-secondary">{{ order.get_status_display }}</span>
-                        {% endif %}
+                        {% if order.status == 'pending' %}<span class="badge badge-warning">Pending</span>
+                        {% elif order.status == 'confirmed' %}<span class="badge badge-info">Confirmed</span>
+                        {% elif order.status == 'processing' %}<span class="badge badge-info">Processing</span>
+                        {% elif order.status == 'shipped' %}<span class="badge badge-gold">Shipped</span>
+                        {% elif order.status == 'delivered' %}<span class="badge badge-success">Delivered</span>
+                        {% elif order.status == 'cancelled' %}<span class="badge badge-danger">Cancelled</span>
+                        {% else %}<span class="badge badge-secondary">{{ order.get_status_display }}</span>{% endif %}
                     </td>
-                    <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
-                    <td>
-                        <a href="{% url 'myadmin:order_detail' order.pk %}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 14px;">View</a>
-                    </td>
+                    <td style="color:var(--text-muted);font-size:13px;">{{ order.created_at|date:"M d, H:i" }}</td>
+                    <td><a href="{% url 'myadmin:order_detail' order.pk %}" class="btn btn-secondary btn-sm">View</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
     {% else %}
-    <p class="text-muted">No recent orders.</p>
+    <div class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        <p>No orders yet.</p>
+    </div>
     {% endif %}
 </div>
 
-<!-- Order Status Distribution -->
-{% if status_distribution %}
-<div class="card">
-    <h2 class="card-header">Order Status Distribution</h2>
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Status</th>
-                    <th>Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in status_distribution %}
-                <tr>
-                    <td>
-                        {% if item.status == 'pending' %}
-                        <span class="badge badge-warning">Pending</span>
-                        {% elif item.status == 'confirmed' %}
-                        <span class="badge badge-success">Confirmed</span>
-                        {% elif item.status == 'processing' %}
-                        <span class="badge badge-success">Processing</span>
-                        {% elif item.status == 'shipped' %}
-                        <span class="badge badge-success">Shipped</span>
-                        {% elif item.status == 'delivered' %}
-                        <span class="badge badge-success">Delivered</span>
-                        {% elif item.status == 'cancelled' %}
-                        <span class="badge badge-danger">Cancelled</span>
-                        {% else %}
-                        <span class="badge badge-secondary">{{ item.status|title }}</span>
-                        {% endif %}
-                    </td>
-                    <td><strong>{{ item.count }}</strong></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<!-- Status Distribution -->
+<div>
+    <div class="card">
+        <div class="card-header">Order Status</div>
+        {% if status_distribution %}
+        <div style="display:flex;flex-direction:column;gap:10px;">
+            {% for item in status_distribution %}
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                {% if item.status == 'pending' %}<span class="badge badge-warning">Pending</span>
+                {% elif item.status == 'confirmed' %}<span class="badge badge-info">Confirmed</span>
+                {% elif item.status == 'processing' %}<span class="badge badge-info">Processing</span>
+                {% elif item.status == 'shipped' %}<span class="badge badge-gold">Shipped</span>
+                {% elif item.status == 'delivered' %}<span class="badge badge-success">Delivered</span>
+                {% elif item.status == 'cancelled' %}<span class="badge badge-danger">Cancelled</span>
+                {% else %}<span class="badge badge-secondary">{{ item.status|title }}</span>{% endif %}
+                <span class="fw-600 text-white">{{ item.count }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted" style="font-size:13px;">No data yet.</p>
+        {% endif %}
     </div>
 </div>
-{% endif %}
+</div>
 {% endblock %}

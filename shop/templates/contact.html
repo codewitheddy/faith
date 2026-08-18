@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Contact Us - Wyatt Collection{% endblock %}
+{% block nav_contact %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: var(--dark); color: var(--white);
+        padding: 80px 20px 70px; text-align: center; position: relative; overflow: hidden;
+    }
+    .page-hero::before { content:'💬'; position:absolute; top:30px; right:8%; font-size:4rem; opacity:0.08; }
+    .page-hero::after { content:'📞'; position:absolute; bottom:20px; left:8%; font-size:3rem; opacity:0.08; }
+    .page-hero h1 { font-size: 3.2rem; font-weight: 300; letter-spacing: 3px; margin-bottom: 15px; font-family: Georgia, serif; }
+    .page-hero p { color: #aaa; font-size: 1.1rem; max-width: 550px; margin: 0 auto; }
+
+    .contact-section { padding: 80px 20px; }
+    .contact-container { max-width: 1100px; margin: 0 auto; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+
+    /* Contact Info */
+    .contact-info h2 { font-size: 2rem; font-weight: 300; letter-spacing: 2px; margin-bottom: 15px; }
+    .contact-info > p { color: #666; font-size: 1rem; line-height: 1.8; margin-bottom: 35px; }
+    .contact-cards { display: flex; flex-direction: column; gap: 20px; }
+    .contact-card {
+        display: flex; gap: 20px; align-items: flex-start;
+        padding: 25px; border-radius: 15px;
+        border: 2px solid #f0f0f0; transition: all 0.3s;
+        text-decoration: none; color: inherit;
+    }
+    .contact-card:hover { border-color: var(--accent); transform: translateX(5px); box-shadow: 0 5px 20px rgba(201,168,76,0.2); }
+    .contact-card-icon {
+        width: 55px; height: 55px; border-radius: 15px;
+        background: var(--accent); display: flex; align-items: center; justify-content: center;
+        font-size: 1.6rem; flex-shrink: 0;
+    }
+    .contact-card-icon.whatsapp { background: #25D366; }
+    .contact-card-icon.email { background: #4285F4; }
+    .contact-card-icon.phone { background: var(--accent); }
+    .contact-card-body h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 5px; }
+    .contact-card-body p { color: #666; font-size: 0.9rem; margin-bottom: 5px; }
+    .contact-card-body a { color: var(--black); font-weight: 500; text-decoration: none; font-size: 0.95rem; }
+    .contact-card-body a:hover { color: var(--accent-dark); }
+
+    .hours-card {
+        margin-top: 25px; padding: 25px; border-radius: 15px;
+        background: var(--light-gray);
+    }
+    .hours-card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 15px; color: var(--black); }
+    .hours-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e8e8e8; font-size: 0.9rem; }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-row .day { color: #555; }
+    .hours-row .time { font-weight: 500; }
+    .hours-row .time.open { color: #25D366; }
+    .hours-row .time.closed { color: #f44336; }
+
+    /* Contact Form */
+    .contact-form-wrap {
+        background: var(--white); padding: 40px;
+        border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    }
+    .contact-form-wrap h2 { font-size: 1.8rem; font-weight: 400; margin-bottom: 8px; }
+    .contact-form-wrap > p { color: #666; font-size: 0.95rem; margin-bottom: 30px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; color: #333; }
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%; padding: 13px 16px;
+        border: 2px solid #eee; border-radius: 10px;
+        font-size: 0.95rem; transition: border-color 0.3s;
+        font-family: inherit;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        outline: none; border-color: var(--accent);
+    }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .btn-submit {
+        width: 100%; background: var(--dark); color: var(--white);
+        padding: 15px; border: none; border-radius: 12px;
+        font-size: 1rem; font-weight: 500; cursor: pointer;
+        transition: all 0.3s; letter-spacing: 0.5px;
+    }
+    .btn-submit:hover { background: #333; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+    .form-success {
+        display: none; text-align: center; padding: 30px;
+        background: #f0fff4; border-radius: 12px; border: 2px solid #4CAF50;
+    }
+    .form-success .icon { font-size: 3rem; margin-bottom: 15px; }
+    .form-success h3 { color: #2e7d32; margin-bottom: 10px; }
+    .form-success p { color: #555; font-size: 0.95rem; }
+
+    /* FAQ */
+    .faq-section { background: var(--light-gray); padding: 80px 20px; }
+    .faq-container { max-width: 800px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 50px; }
+    .section-header h2 { font-size: 2.3rem; font-weight: 300; letter-spacing: 2px; margin-bottom: 10px; }
+    .section-header p { color: #666; }
+    .section-header .divider { width: 60px; height: 3px; background: var(--accent); margin: 15px auto 0; border-radius: 2px; }
+    .faq-item {
+        background: var(--white); border: 2px solid #f0f0f0;
+        border-radius: 15px; margin-bottom: 12px; overflow: hidden; transition: all 0.3s;
+    }
+    .faq-item:hover { border-color: var(--accent); }
+    .faq-question {
+        padding: 22px 28px; cursor: pointer;
+        display: flex; justify-content: space-between; align-items: center;
+        font-weight: 500; font-size: 1rem; user-select: none;
+        background: none; border: none; width: 100%; text-align: left;
+        font-family: inherit; color: inherit;
+    }
+    .faq-icon { font-size: 1.4rem; color: var(--accent); transition: transform 0.3s; flex-shrink: 0; margin-left: 15px; }
+    .faq-item.active .faq-icon { transform: rotate(45deg); }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; padding: 0 28px; }
+    .faq-item.active .faq-answer { max-height: 300px; padding: 0 28px 22px; }
+    .faq-answer p { color: #666; line-height: 1.8; font-size: 0.95rem; }
+
+    @media (max-width: 900px) {
+        .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+        .form-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+        .page-hero h1 { font-size: 2.2rem; }
+        .contact-form-wrap { padding: 25px 20px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <h1>Contact Us</h1>
+    <p>We'd love to hear from you. Reach out anytime!</p>
+</div>
+
+<section class="contact-section">
+    <div class="contact-container">
+        <div class="contact-grid">
+            <!-- Contact Info -->
+            <div class="contact-info">
+                <h2>Get in Touch</h2>
+                <p>Have a question about an order, need help choosing the perfect piece, or just want to say hello? We're here for you.</p>
+
+                <div class="contact-cards">
+                    <a href="https://wa.me/254706105967" class="contact-card" target="_blank" rel="noopener">
+                        <div class="contact-card-icon whatsapp">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        </div>
+                        <div class="contact-card-body">
+                            <h3>WhatsApp</h3>
+                            <p>Fastest way to reach us</p>
+                            <a href="https://wa.me/254706105967">+254 706 105 967</a>
+                        </div>
+                    </a>
+
+                    <a href="mailto:info@wyattcollection.ke" class="contact-card">
+                        <div class="contact-card-icon email">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="contact-card-body">
+                            <h3>Email</h3>
+                            <p>We reply within 24 hours</p>
+                            <a href="mailto:info@wyattcollection.ke">info@wyattcollection.ke</a>
+                        </div>
+                    </a>
+
+                    <a href="tel:+254706105967" class="contact-card">
+                        <div class="contact-card-icon phone">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        </div>
+                        <div class="contact-card-body">
+                            <h3>Phone</h3>
+                            <p>Mon–Sat, 8am–8pm</p>
+                            <a href="tel:+254706105967">+254 706 105 967</a>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="hours-card">
+                    <h3>🕐 Business Hours</h3>
+                    <div class="hours-row"><span class="day">Monday – Friday</span><span class="time open">8:00 AM – 8:00 PM</span></div>
+                    <div class="hours-row"><span class="day">Saturday</span><span class="time open">9:00 AM – 6:00 PM</span></div>
+                    <div class="hours-row"><span class="day">Sunday</span><span class="time open">10:00 AM – 4:00 PM</span></div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="contact-form-wrap">
+                <h2>Send a Message</h2>
+                <p>Fill in the form and we'll get back to you as soon as possible.</p>
+                <div id="formSuccess" class="form-success">
+                    <div class="icon">✅</div>
+                    <h3>Message Sent!</h3>
+                    <p>Thank you for reaching out. We'll get back to you within 24 hours. You can also reach us directly on WhatsApp for a faster response.</p>
+                </div>
+                <form id="contactForm">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group"><label>First Name *</label><input type="text" name="first_name" required placeholder="Jane"></div>
+                        <div class="form-group"><label>Last Name *</label><input type="text" name="last_name" required placeholder="Doe"></div>
+                    </div>
+                    <div class="form-group"><label>Email Address *</label><input type="email" name="email" required placeholder="jane@example.com"></div>
+                    <div class="form-group"><label>Phone Number</label><input type="tel" name="phone" placeholder="+254 700 000 000"></div>
+                    <div class="form-group">
+                        <label>Subject *</label>
+                        <select name="subject" required>
+                            <option value="">Select a subject...</option>
+                            <option value="order">Order Enquiry</option>
+                            <option value="product">Product Question</option>
+                            <option value="delivery">Delivery Information</option>
+                            <option value="return">Returns & Exchanges</option>
+                            <option value="wholesale">Wholesale Enquiry</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Message *</label><textarea name="message" required placeholder="Tell us how we can help you..."></textarea></div>
+                    <button type="submit" class="btn-submit">Send Message via WhatsApp</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+    <div class="faq-container">
+        <div class="section-header">
+            <h2>Frequently Asked Questions</h2>
+            <p>Quick answers to common questions</p>
+            <div class="divider"></div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">How do I place an order? <span class="faq-icon">+</span>            </button>
+            <div class="faq-answer"><p>Simply browse our collection, add items to your cart, and click "Proceed to Checkout". Fill in your details and your order will be sent directly to us via WhatsApp. We'll confirm your order and send payment details.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">How long does delivery take? <span class="faq-icon">+</span>            </button>
+            <div class="faq-answer"><p>Nairobi deliveries typically take 1-2 business days. For other counties, delivery takes 2-4 business days. We'll keep you updated via WhatsApp throughout the process.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">What payment methods do you accept? <span class="faq-icon">+</span>            </button>
+            <div class="faq-answer"><p>We accept M-Pesa, bank transfers, and cash on delivery (Nairobi only). Payment details are shared after you place your order via WhatsApp.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">How do I choose the right size? <span class="faq-icon">+</span></button>
+            <div class="faq-answer"><p>Each product page includes a size guide with measurements in the description. If you're between sizes or unsure, message us on WhatsApp with your measurements and we'll recommend the best fit for you.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">Can I return or exchange an item? <span class="faq-icon">+</span>            </button>
+            <div class="faq-answer"><p>Yes, we accept returns and exchanges within 7 days of delivery, provided the item is in its original condition. Contact us via WhatsApp to initiate a return.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">Do you offer gift wrapping? <span class="faq-icon">+</span>            </button>
+            <div class="faq-answer"><p>Absolutely! All our orders come in elegant packaging. If you need special gift wrapping or a personalised message, just let us know in the order notes.</p></div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleFaq(el) {
+        const item = el.parentElement;
+        const isActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+        if (!isActive) item.classList.add('active');
+    }
+
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const fd = new FormData(this);
+        const firstName = fd.get('first_name');
+        const lastName = fd.get('last_name');
+        const email = fd.get('email');
+        const phone = fd.get('phone') || 'Not provided';
+        const subject = fd.get('subject');
+        const message = fd.get('message');
+        const waMsg = `*Message from Wyatt Collection Website*\n\nName: ${firstName} ${lastName}\nEmail: ${email}\nPhone: ${phone}\nSubject: ${subject}\n\nMessage:\n${message}`;
+        const encoded = encodeURIComponent(waMsg);
+        window.open(`https://wa.me/254706105967?text=${encoded}`, '_blank');
+        this.style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+    });
+</script>
+{% endblock %}

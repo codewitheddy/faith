@@ -15,6 +15,14 @@ import os
 import dj_database_url
 from decouple import config, Csv
 
+# Optional Sentry SDK for error tracking
+try:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    SENTRY_AVAILABLE = True
+except ImportError:
+    SENTRY_AVAILABLE = False
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -72,6 +80,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'shop.context_processors.store_globals',
             ],
         },
     },
@@ -164,13 +173,13 @@ CACHES = {
     }
 }
 
-# Session configuration - use cache for sessions
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
-SESSION_CACHE_ALIAS = 'default'
-SESSION_COOKIE_AGE = 7200  # 2 hours
-SESSION_SAVE_EVERY_REQUEST = True  # Reset timeout on activity
-SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access
-SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection
+# Session configuration - use signed cookies (simpler, no DB timing issues)
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_AGE = 86400 * 7  # 7 days
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_NAME = 'popshop_session'
 
 # Security settings for production
 if not DEBUG:
@@ -218,4 +227,48 @@ if DEBUG:
     }
     LOGGING['loggers']['myadmin']['handlers'].append('file')
 
+# Sentry Error Tracking (optional)
+SENTRY_DSN = config('SENTRY_DSN', default='')
+
+if SENTRY_DSN and SENTRY_AVAILABLE:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[
+            DjangoIntegration(
+                transaction_style='url',
+                middleware_spans=True,
+                signals_spans=True,
+                cache_spans=True,
+            ),
+        ],
+        # Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring.
+        # Adjust this value in production to reduce overhead
+        traces_sample_rate=0.1 if not DEBUG else 1.0,
+        
+        # Set profiles_sample_rate to 1.0 to profile 100% of sampled transactions.
+        # Adjust this value in production
+        profiles_sample_rate=0.1 if not DEBUG else 1.0,
+        
+        # Send default PII (Personally Identifiable Information) like user IP and username
+        send_default_pii=True,
+        
+        # Environment
+        environment='production' if not DEBUG else 'development',
+        
+        # Release tracking
+        release='unknown',
+        
+        # Before send hook to filter sensitive data
+        before_send=lambda event, hint: event if not DEBUG else None,  # Don't send in development
+    )
+
+# Email Configuration for cPanel
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='mail.wyatt.co.ke')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)  # Try 587 (TLS) instead of 465
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='info@wyatt.co.ke')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='WYATT COLLECTION <info@wyatt.co.ke>')
+SERVER_EMAIL = config('SERVER_EMAIL', default='WYATT COLLECTION <info@wyatt.co.ke>')
 

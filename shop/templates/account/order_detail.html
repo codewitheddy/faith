@@ -1,0 +1,92 @@
+{% extends "account/base_account.html" %}
+{% load image_tags %}
+{% block nav_orders %}active{% endblock %}
+{% block title %}Order {{ order.order_number }} - ThePOPSHOP.KE{% endblock %}
+
+{% block account_content %}
+<div class="account-card">
+    <div class="account-card-title">
+        📦 Order {{ order.order_number }}
+        <span style="margin-left:auto;padding:5px 15px;border-radius:20px;font-size:0.8rem;font-weight:600;
+            background:{% if order.status == 'delivered' %}#e8f5e9;color:#2e7d32{% elif order.status == 'shipped' %}#e3f2fd;color:#1565c0{% elif order.status == 'cancelled' %}#ffebee;color:#c62828{% else %}#fff8e1;color:#f57f17{% endif %};">
+            {{ order.get_status_display }}
+        </span>
+    </div>
+
+    <!-- Order Tracking -->
+    <div style="margin-bottom:30px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;position:relative;padding:0 10px;">
+            <div style="position:absolute;top:18px;left:10%;right:10%;height:3px;background:#eee;z-index:0;"></div>
+            {% for step_info in order.tracking_steps %}
+            <div style="text-align:center;z-index:1;flex:1;">
+                <div style="width:36px;height:36px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;
+                    {% if step_info.is_current %}background:var(--accent);color:var(--dark);box-shadow:0 0 0 4px rgba(201,168,76,0.2);
+                    {% elif step_info.is_done %}background:#4CAF50;color:white;
+                    {% else %}background:#eee;color:#aaa;{% endif %}">
+                    {{ step_info.number }}
+                </div>
+                <div style="font-size:0.72rem;color:#666;font-weight:500;">{{ step_info.label }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Items -->
+    <div style="margin-bottom:25px;">
+        <div style="font-weight:600;margin-bottom:12px;color:#555;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;">Items Ordered</div>
+        {% for item in order.items.all %}
+        <div style="display:flex;gap:15px;align-items:center;padding:12px 0;border-bottom:1px solid #f5f5f5;">
+            {% if item.product %}
+                {% if item.product.get_image_url %}
+                <img src="{{ item.product.get_image_url }}" style="width:60px;height:60px;object-fit:cover;border-radius:10px;background:#f5f5f5;" alt="{{ item.product.name }}">
+                {% else %}
+                <div style="width:60px;height:60px;border-radius:10px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">💎</div>
+                {% endif %}
+                <div style="flex:1;">
+                    <div style="font-weight:500;margin-bottom:3px;">{{ item.product.name }}</div>
+                    <div style="font-size:0.85rem;color:#888;">Qty: {{ item.quantity }} × KSh {{ item.price|thousand_separator }}</div>
+                </div>
+            {% else %}
+                <div style="width:60px;height:60px;border-radius:10px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#999;">✕</div>
+                <div style="flex:1;">
+                    <div style="font-weight:500;margin-bottom:3px;color:#999;font-style:italic;">[Product No Longer Available]</div>
+                    <div style="font-size:0.85rem;color:#888;">Qty: {{ item.quantity }} × KSh {{ item.price|thousand_separator }}</div>
+                </div>
+            {% endif %}
+            <div style="font-weight:600;">KSh {{ item.get_subtotal|thousand_separator }}</div>
+        </div>
+        {% endfor %}
+        <div style="text-align:right;padding-top:15px;font-size:1.1rem;font-weight:700;">
+            Total: KSh {{ order.total_amount|thousand_separator }}
+        </div>
+    </div>
+
+    <!-- Delivery Info -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div style="background:var(--light-gray);border-radius:12px;padding:20px;">
+            <div style="font-weight:600;margin-bottom:10px;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;color:#555;">Delivery Details</div>
+            <div style="font-size:0.9rem;color:#444;line-height:1.8;">
+                <div>{{ order.customer_name }}</div>
+                <div>{{ order.customer_phone }}</div>
+                <div>{{ order.customer_address }}</div>
+            </div>
+        </div>
+        <div style="background:var(--light-gray);border-radius:12px;padding:20px;">
+            <div style="font-weight:600;margin-bottom:10px;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;color:#555;">Order Info</div>
+            <div style="font-size:0.9rem;color:#444;line-height:1.8;">
+                <div>Placed: {{ order.created_at|date:"d M Y, H:i" }}</div>
+                <div>Updated: {{ order.updated_at|date:"d M Y, H:i" }}</div>
+                {% if order.notes %}<div>Notes: {{ order.notes }}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="{% url 'shop:account_orders' %}" style="padding:10px 22px;border:2px solid #eee;border-radius:25px;text-decoration:none;color:var(--black);font-size:0.9rem;font-weight:500;">← Back to Orders</a>
+        <a href="https://wa.me/254706105967?text=Hi!%20I'd%20like%20to%20enquire%20about%20order%20{{ order.order_number }}" target="_blank"
+           style="padding:10px 22px;background:#25D366;color:white;border-radius:25px;text-decoration:none;font-size:0.9rem;font-weight:500;">
+            WhatsApp Support
+        </a>
+    </div>
+</div>
+{% endblock %}

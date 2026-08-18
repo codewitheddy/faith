@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import Category, Product, Order, OrderItem
+from .models import Category, Product, ProductVariant, Order, OrderItem, UserProfile, Wishlist
 
 # Customize admin site headers
-admin.site.site_header = "POPSHOP ADMIN"
-admin.site.site_title = "POPSHOP Admin Portal"
-admin.site.index_title = "Welcome to POPSHOP Administration"
+admin.site.site_header = "WYATT COLLECTION ADMIN"
+admin.site.site_title = "Wyatt Collection Admin"
+admin.site.index_title = "Welcome to Wyatt Collection Administration"
 
 
 @admin.register(Category)
@@ -18,15 +18,22 @@ class CategoryAdmin(admin.ModelAdmin):
     product_count.short_description = 'Products'
 
 
+class ProductVariantInline(admin.TabularInline):
+    model = ProductVariant
+    extra = 1
+    fields = ['name', 'price_adjustment', 'is_available', 'sort_order']
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'price', 'is_available', 'created_at']
-    list_editable = ['is_available', 'price']
+    list_display = ['name', 'category', 'price', 'sale_price', 'is_on_sale', 'is_available', 'created_at']
+    list_editable = ['is_available', 'price', 'is_on_sale']
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ['name', 'description', 'short_description']
     date_hierarchy = 'created_at'
     list_per_page = 20
-    
+    inlines = [ProductVariantInline]
+
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'slug', 'category')
@@ -35,7 +42,11 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('short_description', 'description')
         }),
         ('Pricing & Availability', {
-            'fields': ('price', 'is_available')
+            'fields': ('price', 'sale_price', 'is_on_sale', 'is_available')
+        }),
+        ('Inventory Management', {
+            'fields': ('stock_quantity', 'reorder_level'),
+            'description': 'Set available stock and low-stock alert threshold'
         }),
         ('Media', {
             'fields': ('image_url', 'image_base64', 'image'),
@@ -112,3 +123,22 @@ class OrderAdmin(admin.ModelAdmin):
         updated = queryset.update(status='delivered')
         self.message_user(request, f'{updated} order(s) marked as delivered.')
     mark_delivered.short_description = 'Mark as Delivered'
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ['user', 'phone', 'city', 'created_at']
+    search_fields = ['user__username', 'phone', 'city']
+
+
+@admin.register(Wishlist)
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ['user', 'product', 'added_at']
+    search_fields = ['user__username', 'product__name']
+
+
+@admin.register(ProductVariant)
+class ProductVariantAdmin(admin.ModelAdmin):
+    list_display = ['product', 'name', 'price_adjustment', 'is_available', 'sort_order']
+    list_editable = ['price_adjustment', 'is_available', 'sort_order']
+    search_fields = ['product__name', 'name']
