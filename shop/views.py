@@ -105,14 +105,20 @@ def cart(request):
         # Fetch product to get original price for display
         try:
             product = Product.objects.get(id=product_id)
-            original_price = float(product.price) if product.price else None
-            is_on_sale = product.is_on_sale
-            # Calculate discount percent
+            base_price = float(product.price) if product.price else float(item['price'])
+            current_price = float(item['price'])
+            
+            # Check if this item is on sale
+            is_on_sale = product.is_on_sale and product.sale_price and product.sale_price < product.price
             discount_percent = product.discount_percent if is_on_sale else 0
+            
             # Calculate total savings
-            if discount_percent > 0:
-                savings_per_item = (float(item['price']) * discount_percent / 100) * item['quantity']
+            if discount_percent > 0 and is_on_sale:
+                savings_per_item = (base_price - current_price) * item['quantity']
                 cart_total_savings += savings_per_item
+            
+            original_price = base_price if is_on_sale else None
+            
         except Product.DoesNotExist:
             original_price = None
             is_on_sale = False
