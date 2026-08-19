@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Category, Product, ProductVariant, Order, OrderItem, UserProfile, Wishlist
+from django.utils.html import format_html
+from .models import Category, Product, ProductVariant, Order, OrderItem, UserProfile, Wishlist, HeroSlide
 
 # Customize admin site headers
 admin.site.site_header = "WYATT COLLECTION ADMIN"
@@ -142,3 +143,74 @@ class ProductVariantAdmin(admin.ModelAdmin):
     list_display = ['product', 'name', 'price_adjustment', 'is_available', 'sort_order']
     list_editable = ['price_adjustment', 'is_available', 'sort_order']
     search_fields = ['product__name', 'name']
+
+
+@admin.register(HeroSlide)
+class HeroSlideAdmin(admin.ModelAdmin):
+    list_display  = ['order', 'slide_preview', 'badge_text', 'theme', 'has_image', 'is_active']
+    list_editable = ['order', 'is_active']
+    list_display_links = ['slide_preview']
+    ordering      = ['order']
+    list_per_page = 20
+
+    fieldsets = (
+        ('Content', {
+            'description': (
+                'To highlight one word in the title, wrap it in double asterisks: '
+                'e.g. <code>Refined **Style** for Men</code>'
+            ),
+            'fields': ('badge_text', 'title', 'subtitle'),
+        }),
+        ('Stats Row', {
+            'description': 'Three figures shown below the subtitle.',
+            'fields': (
+                ('stat1_number', 'stat1_label'),
+                ('stat2_number', 'stat2_label'),
+                ('stat3_number', 'stat3_label'),
+            ),
+        }),
+        ('Call-to-Action Buttons', {
+            'fields': (
+                ('btn1_text', 'btn1_url'),
+                ('btn2_text', 'btn2_url'),
+            ),
+        }),
+        ('Circle Visual', {
+            'description': (
+                'Paste a direct image URL to show a photo in the circle. '
+                'Leave blank to show the emoji instead.'
+            ),
+            'fields': ('image_url', 'circle_emoji', 'badge1_text', 'badge2_text'),
+        }),
+        ('Background & Theme', {
+            'fields': ('theme', 'bg_color'),
+        }),
+        ('Display Settings', {
+            'fields': ('order', 'is_active'),
+        }),
+    )
+
+    # ── Custom list columns ──────────────────────────────────
+
+    def slide_preview(self, obj):
+        before, highlight, after = obj.get_title_parts()
+        if highlight:
+            return format_html(
+                '{}<span style="color:#C9A84C;font-weight:700;"> {} </span>{}',
+                before, highlight, after
+            )
+        return obj.title
+    slide_preview.short_description = 'Title'
+
+    def has_image(self, obj):
+        if obj.image_url:
+            return format_html(
+                '<img src="{}" style="height:40px;width:40px;object-fit:cover;'
+                'border-radius:50%;border:2px solid #C9A84C;">',
+                obj.image_url
+            )
+        return format_html(
+            '<span style="font-size:1.5rem;opacity:0.5;">{}</span>',
+            obj.circle_emoji or '👔'
+        )
+    has_image.short_description = 'Image'

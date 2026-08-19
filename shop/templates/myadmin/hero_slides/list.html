@@ -1,0 +1,106 @@
+{% extends "myadmin/base.html" %}
+{% block title %}Hero Slides — Admin{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a> &rsaquo; Hero Slides
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+    <div>
+        <h1 class="page-title">Hero Slides</h1>
+        <p class="page-subtitle">Manage the homepage slider. Slides are shown in order.</p>
+    </div>
+    <a href="{% url 'myadmin:heroslide_add' %}" class="btn btn-primary">+ Add Slide</a>
+</div>
+
+{% if slides %}
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width:50px;">Order</th>
+                <th>Title</th>
+                <th>Theme</th>
+                <th>Stats</th>
+                <th style="width:80px;">Image</th>
+                <th style="width:80px;">Active</th>
+                <th style="width:120px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for slide in slides %}
+            <tr>
+                <td style="text-align:center;font-weight:700;color:var(--accent);">{{ slide.order }}</td>
+                <td>
+                    {% if slide.badge_text %}
+                    <span style="display:inline-block;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);
+                        padding:2px 8px;border-radius:20px;font-size:0.65rem;font-weight:700;
+                        letter-spacing:1px;color:#7a5c1e;margin-bottom:4px;">{{ slide.badge_text }}</span><br>
+                    {% endif %}
+                    <strong>
+                        {% with parts=slide.get_title_parts %}
+                            {{ parts.0 }}{% if parts.1 %}<span style="color:#C9A84C;">{{ parts.1 }}</span>{% endif %}{{ parts.2 }}
+                        {% endwith %}
+                    </strong>
+                    {% if slide.subtitle %}<br><small style="color:#888;">{{ slide.subtitle }}</small>{% endif %}
+                </td>
+                <td>
+                    <span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:600;
+                        {% if slide.theme == 'dark' %}background:#0f1a2e;color:#C9A84C;
+                        {% elif slide.theme == 'warm' %}background:#F0EAD6;color:#8b5a2b;
+                        {% elif slide.theme == 'custom' %}background:#f0f0f0;color:#333;
+                        {% else %}background:#FAF7F2;color:#7a5c1e;{% endif %}">
+                        {{ slide.get_theme_display }}
+                    </span>
+                </td>
+                <td style="font-size:0.8rem;color:#666;">
+                    {% if slide.stat1_number %}<span style="font-weight:700;color:#C9A84C;">{{ slide.stat1_number }}</span> {{ slide.stat1_label }}<br>{% endif %}
+                    {% if slide.stat2_number %}<span style="font-weight:700;color:#C9A84C;">{{ slide.stat2_number }}</span> {{ slide.stat2_label }}<br>{% endif %}
+                    {% if slide.stat3_number %}<span style="font-weight:700;color:#C9A84C;">{{ slide.stat3_number }}</span> {{ slide.stat3_label }}{% endif %}
+                </td>
+                <td style="text-align:center;">
+                    {% if slide.get_image_url %}
+                    <img src="{{ slide.get_image_url }}" alt=""
+                         style="width:48px;height:48px;object-fit:cover;border-radius:50%;border:2px solid #C9A84C;">
+                    {% else %}
+                    <span style="font-size:2rem;">{{ slide.circle_emoji|default:"👔" }}</span>
+                    {% endif %}
+                </td>
+                <td style="text-align:center;">
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="toggle_id" value="{{ slide.pk }}">
+                        <button type="submit" style="background:none;border:none;cursor:pointer;font-size:1.4rem;"
+                                title="{% if slide.is_active %}Deactivate{% else %}Activate{% endif %}">
+                            {% if slide.is_active %}
+                            <span style="color:#22c55e;" title="Active">●</span>
+                            {% else %}
+                            <span style="color:#d1d5db;" title="Inactive">●</span>
+                            {% endif %}
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <div style="display:flex;gap:8px;justify-content:center;">
+                        <a href="{% url 'myadmin:heroslide_edit' slide.pk %}" class="btn btn-sm btn-secondary" title="Edit">Edit</a>
+                        <a href="{% url 'myadmin:heroslide_delete' slide.pk %}" class="btn btn-sm"
+                           style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;" title="Delete">Del</a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div style="text-align:center;padding:60px 20px;background:var(--card-bg);border-radius:12px;">
+    <div style="font-size:3rem;margin-bottom:16px;">🖼️</div>
+    <h3 style="margin-bottom:8px;">No hero slides yet</h3>
+    <p style="color:#888;margin-bottom:24px;">The homepage will show the default static slides until you add some here.</p>
+    <a href="{% url 'myadmin:heroslide_add' %}" class="btn btn-primary">+ Add First Slide</a>
+</div>
+{% endif %}
+{% endblock %}

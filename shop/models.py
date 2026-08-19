@@ -243,3 +243,123 @@ class Wishlist(models.Model):
 
     def __str__(self):
         return f"{self.user.username} → {self.product.name}"
+
+
+class HeroSlide(models.Model):
+    """Admin-manageable hero slider slide."""
+
+    THEME_CHOICES = [
+        ('light', 'Light (cream background)'),
+        ('dark',  'Dark (navy background)'),
+        ('warm',  'Warm (tan background)'),
+        ('custom', 'Custom (use bg_color field)'),
+    ]
+
+    # ── Content ──────────────────────────────────────────────
+    badge_text      = models.CharField(max_length=100, blank=True,
+                                       help_text="Small pill above the title, e.g. '✨ New Collection 2026'")
+    title           = models.CharField(max_length=200,
+                                       help_text="Main heading. Use ** around one word to highlight it, e.g. 'Refined **Style** for Men'")
+    subtitle        = models.CharField(max_length=300, blank=True,
+                                       help_text="One-line tagline below the title")
+
+    # ── Stats row ────────────────────────────────────────────
+    stat1_number    = models.CharField(max_length=20, blank=True, help_text="e.g. 500+")
+    stat1_label     = models.CharField(max_length=60, blank=True, help_text="e.g. Styles Available")
+    stat2_number    = models.CharField(max_length=20, blank=True, help_text="e.g. 98%")
+    stat2_label     = models.CharField(max_length=60, blank=True, help_text="e.g. Happy Clients")
+    stat3_number    = models.CharField(max_length=20, blank=True, help_text="e.g. 1–2")
+    stat3_label     = models.CharField(max_length=60, blank=True, help_text="e.g. Days Delivery")
+
+    # ── Buttons ──────────────────────────────────────────────
+    btn1_text       = models.CharField(max_length=80, blank=True, default='Explore Collection')
+    btn1_url        = models.CharField(max_length=200, blank=True, default='/shop/')
+    btn2_text       = models.CharField(max_length=80, blank=True, default='Our Story ↗')
+    btn2_url        = models.CharField(max_length=200, blank=True, default='/about/')
+
+    # ── Visual ───────────────────────────────────────────────
+    image_url       = models.URLField(max_length=500, blank=True, null=True,
+                                      help_text="URL of the circle image (leave blank for emoji placeholder)")
+    image           = models.ImageField(upload_to='hero_slides/', blank=True, null=True,
+                                        help_text="Upload an image from your computer (JPEG, PNG, WebP)")
+    circle_emoji    = models.CharField(max_length=10, blank=True, default='👔',
+                                       help_text="Emoji shown when no image URL is provided")
+    badge1_text     = models.CharField(max_length=60, blank=True, help_text="Floating badge top-right, e.g. 'Premium Quality'")
+    badge2_text     = models.CharField(max_length=60, blank=True, help_text="Floating badge bottom-left, e.g. 'New Arrivals'")
+
+    # ── Theme / background ───────────────────────────────────
+    theme           = models.CharField(max_length=10, choices=THEME_CHOICES, default='light',
+                                       help_text="Controls the slide background and text colour")
+    bg_color        = models.CharField(max_length=200, blank=True,
+                                       help_text="Custom CSS background value (only used when theme = Custom), "
+                                                 "e.g. '#1a1a2e' or 'linear-gradient(135deg,#0f1a2e,#1a2a4a)'")
+    bg_image        = models.ImageField(upload_to='hero_slides/bg/', blank=True, null=True,
+                                        help_text="Upload a full-bleed background image (overrides bg_color when set)")
+
+    # ── Color overrides (optional — leave blank to use theme defaults) ────────
+    title_color     = models.CharField(max_length=30, blank=True,
+                                       help_text="Title text color, e.g. #1a1a1a")
+    subtitle_color  = models.CharField(max_length=30, blank=True,
+                                       help_text="Subtitle text color")
+    highlight_color = models.CharField(max_length=30, blank=True,
+                                       help_text="Highlighted word color (default gold #C9A84C)")
+    stat_color      = models.CharField(max_length=30, blank=True,
+                                       help_text="Stat numbers color (default gold)")
+    stat_label_color= models.CharField(max_length=30, blank=True,
+                                       help_text="Stat labels color")
+    badge_bg        = models.CharField(max_length=60, blank=True,
+                                       help_text="Badge pill background, e.g. rgba(201,168,76,0.13)")
+    badge_color     = models.CharField(max_length=30, blank=True,
+                                       help_text="Badge pill text color")
+
+    # ── Display ──────────────────────────────────────────────
+    order           = models.PositiveSmallIntegerField(default=0,
+                                                       help_text="Lower numbers appear first")
+    is_active       = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name = 'Hero Slide'
+        verbose_name_plural = 'Hero Slides'
+
+    def __str__(self):
+        return self.title
+
+    def get_image_url(self):
+        """Return the best available circle image URL (uploaded file > external URL)."""
+        if self.image:
+            return self.image.url
+        if self.image_url:
+            return self.image_url
+        return None
+
+    def get_bg_image_url(self):
+        """Return background image URL if set."""
+        if self.bg_image:
+            return self.bg_image.url
+        return None
+
+    def get_title_parts(self):
+        """Split title into (before, highlight, after) for template rendering."""
+        import re
+        match = re.search(r'\*\*(.+?)\*\*', self.title)
+        if match:
+            before = self.title[:match.start()]
+            highlight = match.group(1)
+            after = self.title[match.end():]
+            return before, highlight, after
+        return self.title, '', ''
+
+    def bg_style(self):
+        """Return an inline CSS background value for the slide."""
+        if self.bg_image:
+            return f"url('{self.bg_image.url}') center/cover no-repeat"
+        if self.theme == 'light':
+            return '#FAF7F2'
+        elif self.theme == 'dark':
+            return 'linear-gradient(135deg,#0f1a2e 0%,#1a2a4a 100%)'
+        elif self.theme == 'warm':
+            return '#F0EAD6'
+        elif self.theme == 'custom' and self.bg_color:
+            return self.bg_color
+        return '#FAF7F2'

@@ -1,0 +1,377 @@
+{% extends "myadmin/base.html" %}
+{% block title %}{{ title }} — Admin{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a> &rsaquo;
+    <a href="{% url 'myadmin:heroslide_list' %}">Hero Slides</a> &rsaquo;
+    {{ title }}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.color-row { display:flex; align-items:center; gap:10px; }
+.color-row input[type=color] { width:44px; height:36px; padding:2px 3px; border-radius:6px; border:1px solid var(--border); cursor:pointer; background:none; }
+.color-row .form-input[type=text] { flex:1; }
+.color-row .color-reset { background:none; border:1px solid var(--border); border-radius:6px; padding:4px 10px; font-size:0.72rem; cursor:pointer; color:var(--text-muted); white-space:nowrap; }
+.color-row .color-reset:hover { background:var(--dark-3); }
+.section-divider { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin:18px 0 10px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+.bg-tab-btn { padding:7px 18px; border-radius:6px 6px 0 0; border:1px solid var(--border); border-bottom:none; background:var(--dark-3); color:var(--text-muted); cursor:pointer; font-size:0.82rem; font-weight:600; }
+.bg-tab-btn.active { background:var(--card-bg); color:var(--text); }
+.bg-tab-panel { display:none; border:1px solid var(--border); border-radius:0 6px 6px 6px; padding:16px; }
+.bg-tab-panel.active { display:block; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom:24px;">
+    <h1 class="page-title">{{ title }}</h1>
+    <p class="page-subtitle">Tip: Wrap one word in the title with <code>**double asterisks**</code> to highlight it in gold — e.g. <code>Refined **Style** for Men</code></p>
+</div>
+
+<form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    {% if form.errors %}
+    <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:12px 16px;margin-bottom:20px;color:#dc2626;">
+        Please fix the errors below.
+    </div>
+    {% endif %}
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+        <!-- ══ LEFT COLUMN ══ -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- Content -->
+            <div class="card" style="padding:24px;">
+                <h3 style="margin-bottom:16px;font-size:1rem;font-weight:700;">Content</h3>
+                <div class="form-group">
+                    <label class="form-label">Badge Text</label>
+                    {{ form.badge_text }}
+                    <small class="form-hint">e.g. ✨ New Collection 2026</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Title <span style="color:#dc2626;">*</span></label>
+                    {{ form.title }}
+                    <small class="form-hint">Wrap one word in **asterisks** to highlight it in gold</small>
+                    {% if form.title.errors %}<p class="form-error">{{ form.title.errors.0 }}</p>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subtitle</label>
+                    {{ form.subtitle }}
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="card" style="padding:24px;">
+                <h3 style="margin-bottom:16px;font-size:1rem;font-weight:700;">Stats Row</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="form-group"><label class="form-label">Stat 1 Number</label>{{ form.stat1_number }}</div>
+                    <div class="form-group"><label class="form-label">Stat 1 Label</label>{{ form.stat1_label }}</div>
+                    <div class="form-group"><label class="form-label">Stat 2 Number</label>{{ form.stat2_number }}</div>
+                    <div class="form-group"><label class="form-label">Stat 2 Label</label>{{ form.stat2_label }}</div>
+                    <div class="form-group"><label class="form-label">Stat 3 Number</label>{{ form.stat3_number }}</div>
+                    <div class="form-group"><label class="form-label">Stat 3 Label</label>{{ form.stat3_label }}</div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="card" style="padding:24px;">
+                <h3 style="margin-bottom:16px;font-size:1rem;font-weight:700;">Buttons</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="form-group"><label class="form-label">Button 1 Text</label>{{ form.btn1_text }}</div>
+                    <div class="form-group"><label class="form-label">Button 1 URL</label>{{ form.btn1_url }}</div>
+                    <div class="form-group"><label class="form-label">Button 2 Text</label>{{ form.btn2_text }}</div>
+                    <div class="form-group"><label class="form-label">Button 2 URL</label>{{ form.btn2_url }}</div>
+                </div>
+            </div>
+
+            <!-- Colors -->
+            <div class="card" style="padding:24px;">
+                <h3 style="margin-bottom:4px;font-size:1rem;font-weight:700;">Color Overrides</h3>
+                <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">Leave blank to use the theme defaults. Click the swatch to open the color picker.</p>
+
+                <div class="section-divider">Text</div>
+                <div class="form-group">
+                    <label class="form-label">Title Color</label>
+                    <div class="color-row">
+                        <input type="color" id="cp_title" value="#1a1a1a">
+                        {{ form.title_color }}
+                        <button type="button" class="color-reset" data-target="id_title_color">Reset</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subtitle Color</label>
+                    <div class="color-row">
+                        <input type="color" id="cp_subtitle" value="#555555">
+                        {{ form.subtitle_color }}
+                        <button type="button" class="color-reset" data-target="id_subtitle_color">Reset</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Highlighted Word Color</label>
+                    <div class="color-row">
+                        <input type="color" id="cp_highlight" value="#C9A84C">
+                        {{ form.highlight_color }}
+                        <button type="button" class="color-reset" data-target="id_highlight_color">Reset</button>
+                    </div>
+                </div>
+
+                <div class="section-divider">Stats</div>
+                <div class="form-group">
+                    <label class="form-label">Stat Numbers Color</label>
+                    <div class="color-row">
+                        <input type="color" id="cp_stat" value="#C9A84C">
+                        {{ form.stat_color }}
+                        <button type="button" class="color-reset" data-target="id_stat_color">Reset</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Stat Labels Color</label>
+                    <div class="color-row">
+                        <input type="color" id="cp_stat_label" value="#888888">
+                        {{ form.stat_label_color }}
+                        <button type="button" class="color-reset" data-target="id_stat_label_color">Reset</button>
+                    </div>
+                </div>
+
+                <div class="section-divider">Badge Pill</div>
+                <div class="form-group">
+                    <label class="form-label">Badge Background</label>
+                    {{ form.badge_bg }}
+                    <small class="form-hint">Supports rgba, e.g. rgba(201,168,76,0.13)</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Badge Text Color</label>
+                    <div class="color-row">
+                        <input type="color" id="cp_badge" value="#7a5c1e">
+                        {{ form.badge_color }}
+                        <button type="button" class="color-reset" data-target="id_badge_color">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ══ RIGHT COLUMN ══ -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- Background -->
+            <div class="card" style="padding:24px;">
+                <h3 style="margin-bottom:8px;font-size:1rem;font-weight:700;">Background</h3>
+                <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">Choose a preset theme, upload a full-bleed background image, or set a custom color/gradient.</p>
+
+                <!-- Preset theme -->
+                <div class="form-group">
+                    <label class="form-label">Preset Theme</label>
+                    {{ form.theme }}
+                    <small class="form-hint">Light = cream · Dark = navy · Warm = tan · Custom = use field below</small>
+                </div>
+
+                <!-- Tab switcher for bg image vs color -->
+                <div style="margin-top:16px;">
+                    <div style="display:flex;gap:0;">
+                        <button type="button" class="bg-tab-btn active" id="tabBtnImg" onclick="switchBgTab('img')">Upload Image</button>
+                        <button type="button" class="bg-tab-btn" id="tabBtnColor" onclick="switchBgTab('color')">Color / Gradient</button>
+                    </div>
+
+                    <!-- Image tab -->
+                    <div class="bg-tab-panel active" id="tabPanelImg">
+                        {% if object.bg_image %}
+                        <div style="margin-bottom:12px;text-align:center;">
+                            <p style="font-size:0.72rem;color:#888;margin-bottom:6px;">Current background</p>
+                            <img src="{{ object.bg_image.url }}" alt=""
+                                 style="max-height:100px;border-radius:8px;border:2px solid var(--border);">
+                        </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <label class="form-label">Background Image</label>
+                            {{ form.bg_image }}
+                            <small class="form-hint">JPEG, PNG or WebP. Will be stretched full-bleed across the slide. Overrides theme color when set.</small>
+                        </div>
+                        <div id="bgImgPreviewWrap" style="display:none;text-align:center;margin-top:10px;">
+                            <img id="bgImgPreview" src="" alt="Preview"
+                                 style="max-height:90px;border-radius:8px;border:2px solid #C9A84C;">
+                        </div>
+                    </div>
+
+                    <!-- Color tab -->
+                    <div class="bg-tab-panel" id="tabPanelColor" id="bgColorWrap">
+                        <div class="form-group">
+                            <label class="form-label">Custom Background CSS <small style="font-weight:400;">(requires theme = Custom)</small></label>
+                            {{ form.bg_color }}
+                            <small class="form-hint">Solid: <code>#1a1a2e</code> &nbsp;|&nbsp; Gradient: <code>linear-gradient(135deg,#0f1a2e,#1a2a4a)</code></small>
+                        </div>
+                        <div id="bgColorPreview" style="height:48px;border-radius:8px;border:1px solid var(--border);margin-top:8px;transition:background 0.2s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Circle Visual -->
+            <div class="card" style="padding:24px;">
+                <h3 style="margin-bottom:16px;font-size:1rem;font-weight:700;">Circle Visual</h3>
+
+                {% if object.get_image_url %}
+                <div style="margin-bottom:16px;text-align:center;">
+                    <p style="font-size:0.75rem;color:#888;margin-bottom:8px;">Current image</p>
+                    <img src="{{ object.get_image_url }}" alt=""
+                         style="width:80px;height:80px;object-fit:cover;border-radius:50%;border:3px solid #C9A84C;">
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label class="form-label">Upload Circle Image</label>
+                    {{ form.image }}
+                    <small class="form-hint">JPEG, PNG or WebP.</small>
+                    {% if form.image.errors %}<p class="form-error">{{ form.image.errors.0 }}</p>{% endif %}
+                </div>
+                <div id="uploadPreviewWrap" style="display:none;margin-bottom:12px;text-align:center;">
+                    <img id="uploadPreview" src="" alt="Preview"
+                         style="width:80px;height:80px;object-fit:cover;border-radius:50%;border:3px solid #C9A84C;">
+                </div>
+
+                <div style="display:flex;align-items:center;gap:12px;margin:10px 0;">
+                    <hr style="flex:1;border:none;border-top:1px solid var(--border);">
+                    <span style="font-size:0.7rem;color:var(--text-muted);white-space:nowrap;">OR</span>
+                    <hr style="flex:1;border:none;border-top:1px solid var(--border);">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">External Image URL</label>
+                    {{ form.image_url }}
+                    {% if form.image_url.errors %}<p class="form-error">{{ form.image_url.errors.0 }}</p>{% endif %}
+                </div>
+                <div id="urlPreviewWrap" style="display:none;margin-bottom:8px;text-align:center;">
+                    <img id="urlPreview" src="" alt="Preview"
+                         style="width:80px;height:80px;object-fit:cover;border-radius:50%;border:3px solid rgba(201,168,76,0.4);">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Emoji (fallback when no image)</label>
+                    {{ form.circle_emoji }}
+                </div>
+
+                <div class="section-divider">Floating Badges</div>
+                <div class="form-group"><label class="form-label">Badge Top-Right</label>{{ form.badge1_text }}</div>
+                <div class="form-group"><label class="form-label">Badge Bottom-Left</label>{{ form.badge2_text }}</div>
+            </div>
+
+            <!-- Display Settings -->
+            <div class="card" style="padding:24px;">
+                <h3 style="margin-bottom:16px;font-size:1rem;font-weight:700;">Display Settings</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end;">
+                    <div class="form-group">
+                        <label class="form-label">Order (lower = first)</label>
+                        {{ form.order }}
+                    </div>
+                    <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-bottom:6px;">
+                        {{ form.is_active }}
+                        <label style="font-weight:600;font-size:0.88rem;">Active</label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:24px;">
+        <button type="submit" class="btn btn-primary">{{ action }}</button>
+        <a href="{% url 'myadmin:heroslide_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+<script>
+// ── Color pickers sync with text inputs ─────────────────────
+const colorPairs = [
+    ['cp_title',      'id_title_color'],
+    ['cp_subtitle',   'id_subtitle_color'],
+    ['cp_highlight',  'id_highlight_color'],
+    ['cp_stat',       'id_stat_color'],
+    ['cp_stat_label', 'id_stat_label_color'],
+    ['cp_badge',      'id_badge_color'],
+];
+colorPairs.forEach(([pickerId, inputId]) => {
+    const picker = document.getElementById(pickerId);
+    const input  = document.getElementById(inputId);
+    if (!picker || !input) return;
+    // Init picker from existing text value
+    if (input.value && /^#[0-9a-f]{6}$/i.test(input.value)) picker.value = input.value;
+    picker.addEventListener('input', () => { input.value = picker.value; });
+    input.addEventListener('input', () => {
+        if (/^#[0-9a-f]{6}$/i.test(input.value)) picker.value = input.value;
+    });
+});
+
+// Reset buttons
+document.querySelectorAll('.color-reset').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const inp = document.getElementById(btn.dataset.target);
+        if (inp) inp.value = '';
+    });
+});
+
+// ── Circle upload preview ────────────────────────────────────
+const circleFile = document.querySelector('[name="image"]');
+const uploadWrap = document.getElementById('uploadPreviewWrap');
+const uploadImg  = document.getElementById('uploadPreview');
+if (circleFile) {
+    circleFile.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) { uploadWrap.style.display = 'none'; return; }
+        const reader = new FileReader();
+        reader.onload = ev => { uploadImg.src = ev.target.result; uploadWrap.style.display = 'block'; };
+        reader.readAsDataURL(file);
+    });
+}
+
+// ── Circle URL preview ───────────────────────────────────────
+const urlInput = document.querySelector('[name="image_url"]');
+const urlWrap  = document.getElementById('urlPreviewWrap');
+const urlImg   = document.getElementById('urlPreview');
+function updateUrlPreview() {
+    const val = urlInput ? urlInput.value.trim() : '';
+    if (val) { urlImg.src = val; urlWrap.style.display = 'block'; }
+    else { urlWrap.style.display = 'none'; }
+}
+if (urlInput) { urlInput.addEventListener('input', updateUrlPreview); updateUrlPreview(); }
+
+// ── Background image upload preview ─────────────────────────
+const bgFile     = document.querySelector('[name="bg_image"]');
+const bgImgWrap  = document.getElementById('bgImgPreviewWrap');
+const bgImgPrev  = document.getElementById('bgImgPreview');
+if (bgFile) {
+    bgFile.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) { bgImgWrap.style.display = 'none'; return; }
+        const reader = new FileReader();
+        reader.onload = ev => { bgImgPrev.src = ev.target.result; bgImgWrap.style.display = 'block'; };
+        reader.readAsDataURL(file);
+    });
+}
+
+// ── Background color preview swatch ─────────────────────────
+const bgColorInput   = document.querySelector('[name="bg_color"]');
+const bgColorPreview = document.getElementById('bgColorPreview');
+function updateBgColorPreview() {
+    const val = bgColorInput ? bgColorInput.value.trim() : '';
+    if (bgColorPreview) bgColorPreview.style.background = val || 'transparent';
+}
+if (bgColorInput) { bgColorInput.addEventListener('input', updateBgColorPreview); updateBgColorPreview(); }
+
+// ── Background tab switcher ──────────────────────────────────
+function switchBgTab(tab) {
+    document.getElementById('tabBtnImg').classList.toggle('active', tab === 'img');
+    document.getElementById('tabBtnColor').classList.toggle('active', tab === 'color');
+    document.getElementById('tabPanelImg').classList.toggle('active', tab === 'img');
+    document.getElementById('tabPanelColor').classList.toggle('active', tab === 'color');
+}
+// Auto-open color tab if bg_color is already set and no bg_image
+(function() {
+    const hasBgImg = {% if object.bg_image %}true{% else %}false{% endif %};
+    const hasBgColor = document.querySelector('[name="bg_color"]')?.value?.trim();
+    if (!hasBgImg && hasBgColor) switchBgTab('color');
+})();
+</script>
+{% endblock %}

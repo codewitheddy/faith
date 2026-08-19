@@ -1,0 +1,31 @@
+{% extends "myadmin/base.html" %}
+{% block title %}Delete Slide — Admin{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a> &rsaquo;
+    <a href="{% url 'myadmin:heroslide_list' %}">Hero Slides</a> &rsaquo; Delete
+</div>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:480px;margin:40px auto;text-align:center;">
+    <div class="card" style="padding:40px 32px;">
+        <div style="font-size:3rem;margin-bottom:16px;">🗑️</div>
+        <h2 style="margin-bottom:8px;">Delete Slide?</h2>
+        <p style="color:#888;margin-bottom:24px;">
+            "<strong>{{ object.title }}</strong>" will be permanently removed. This cannot be undone.
+        </p>
+        <div style="display:flex;gap:12px;justify-content:center;">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn"
+                        style="background:#dc2626;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-weight:600;cursor:pointer;">
+                    Yes, Delete
+                </button>
+            </form>
+            <a href="{% url 'myadmin:heroslide_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

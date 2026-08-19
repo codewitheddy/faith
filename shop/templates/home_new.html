@@ -6,107 +6,307 @@
 
 {% block extra_css %}
 <style>
-    /* Hero Slider */
+    /* ══════════════════════════════════════════
+       HERO SLIDER  –  Redesigned
+       ══════════════════════════════════════════ */
     .hero-slider {
         position: relative;
         width: 100%;
-        min-height: 60vh;
+        height: 40vh;
+        min-height: 300px;
         overflow: hidden;
     }
+
+    /* ── Individual slide ── */
     .slide {
         position: absolute; top: 0; left: 0;
         width: 100%; height: 100%;
         display: flex; align-items: center; justify-content: center;
-        opacity: 0; transition: opacity 0.8s ease;
-        min-height: 60vh;
+        opacity: 0;
+        transition: opacity 0.75s cubic-bezier(0.4,0,0.2,1);
+        pointer-events: none;
     }
-    .slide.active { opacity: 1; position: relative; }
+    .slide.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* ── Full-bleed background ── */
     .slide-bg {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        position: absolute; inset: 0;
         background-size: cover; background-position: center;
         z-index: 0;
     }
-    .slide-overlay {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        z-index: 1;
-    }
+
+    /* ── Two-column inner layout ── */
     .slide-content {
         position: relative; z-index: 2;
-        max-width: 920px; margin: 0 auto;
-        padding: 90px 30px;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        text-align: center; width: 100%;
+        width: 100%; height: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 64px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 160px;
+        box-sizing: border-box;
     }
-    .slide-text { animation: fadeInUp 0.8s ease-out; display: flex; flex-direction: column; align-items: center; }
+
+    /* ── Left: text column ── */
+    .slide-text {
+        flex: 0 1 520px;
+        min-width: 0;
+        display: flex; flex-direction: column;
+        gap: 16px;
+        animation: hsTextIn 0.7s cubic-bezier(0.4,0,0.2,1) both;
+    }
+    @keyframes hsTextIn {
+        from { opacity: 0; transform: translateX(-28px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
     .slide-badge {
-        display: inline-block;
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.4);
-        padding: 8px 20px; border-radius: 25px;
-        font-size: 0.85rem; font-weight: 600;
-        letter-spacing: 2px; text-transform: uppercase;
-        margin-bottom: 20px;
+        display: inline-flex; align-items: center; gap: 6px;
+        align-self: flex-start;
+        background: rgba(201,168,76,0.13);
+        border: 1.5px solid rgba(201,168,76,0.35);
+        padding: 6px 18px; border-radius: 999px;
+        font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 1.5px; text-transform: uppercase;
+        color: #7a5c1e;
     }
+
     .slide-title {
-        font-size: 3.8rem; font-weight: 100;
-        letter-spacing: 4px; line-height: 1.2;
-        margin-bottom: 20px;
-        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(2.2rem, 4vw, 3.6rem);
+        font-weight: 800;
+        letter-spacing: -1px;
+        line-height: 1.08;
+        margin: 0;
     }
-    .slide-subtitle { font-size: 1.2rem; margin-bottom: 15px; font-style: italic; opacity: 0.9; }
-    .slide-desc { font-size: 1.05rem; line-height: 1.8; opacity: 0.85; margin-bottom: 35px; max-width: 620px; }
-    .slide-features { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 35px; justify-content: center; }
+    .slide-title .highlight { color: #C9A84C; }
+
+    .slide-subtitle {
+        font-size: 1.1rem;
+        margin: 0;
+        opacity: 0.6;
+        font-weight: 400;
+        line-height: 1.6;
+    }
+
+    .slide-desc { display: none; }
+
+    /* Feature pills – stat row */
+    .slide-features {
+        display: flex;
+        gap: 32px;
+        flex-wrap: nowrap;
+        padding: 4px 0;
+        border-top: 1px solid rgba(0,0,0,0.07);
+        padding-top: 16px;
+    }
+    .slide-2 .slide-features { border-top-color: rgba(255,255,255,0.1); }
+    .slide-3 .slide-features { border-top-color: rgba(139,90,43,0.15); }
+
     .feature-pill {
-        background: rgba(255,255,255,0.9); color: #333;
-        padding: 8px 18px; border-radius: 25px;
-        font-size: 0.85rem; font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+        background: transparent;
+        padding: 0;
     }
-    .slide-buttons { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
-    /* Slide 1 - Pink */
-    .slide-1 .slide-bg { background: #FAF7F2; }
-    .slide-1 .slide-text { color: #1a1a1a; }
-    .slide-1 .slide-badge { background: rgba(201,168,76,0.12); border-color: rgba(201,168,76,0.3); color: #7a5c1e; }
-    /* Slide 2 - Dark */
-    .slide-2 .slide-bg { background: #1a1a2e; }
-    .slide-2 .slide-text { color: #fff; }
-    .slide-2 .slide-badge { color: #C9A84C; }
-    .slide-2 .slide-title { color: #fff; }
-    .slide-2 .feature-pill { background: rgba(201,168,76,0.2); color: #C9A84C; border: 1px solid rgba(201,168,76,0.3); }
-    /* Slide 3 - Cream */
-    .slide-3 .slide-bg { background: #F5EDD6; }
-    .slide-3 .slide-text { color: #2c1810; }
-    .slide-3 .slide-badge { background: rgba(139,90,43,0.1); border-color: rgba(139,90,43,0.2); color: #8b5a2b; }
-    /* Slider controls */
+    .feature-pill-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #C9A84C;
+        line-height: 1;
+    }
+    .feature-pill-label {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: #888;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    /* Buttons – scoped smaller than base.html */
+    .slide-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .slide-buttons .btn-primary,
+    .slide-buttons .btn-secondary {
+        padding: 11px 28px;
+        font-size: 0.82rem;
+        letter-spacing: 0.5px;
+        border-radius: 50px;
+        border-width: 1.5px;
+    }
+
+    /* ── Right: visual column ── */
+    .slide-visual {
+        flex-shrink: 0;
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 0;
+        animation: hsVisualIn 0.8s cubic-bezier(0.4,0,0.2,1) 0.1s both;
+    }
+    @keyframes hsVisualIn {
+        from { opacity: 0; transform: translateX(28px) scale(0.96); }
+        to   { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    .slide-circle-wrap {
+        position: relative;
+        height: calc(40vh - 48px);
+        width:  calc(40vh - 48px);
+        max-height: 300px;
+        max-width:  300px;
+        min-height: 180px;
+        min-width:  180px;
+    }
+    /* Spinning dashed ring */
+    .slide-circle-wrap::before {
+        content: '';
+        position: absolute; inset: -12px;
+        border-radius: 50%;
+        border: 2px dashed rgba(201,168,76,0.4);
+        animation: spinRing 18s linear infinite;
+    }
+    /* Solid accent arc */
+    .slide-circle-wrap::after {
+        content: '';
+        position: absolute; inset: -12px;
+        border-radius: 50%;
+        border: 2.5px solid transparent;
+        border-top-color: #C9A84C;
+        border-right-color: #C9A84C;
+        animation: spinRing 6s linear infinite reverse;
+    }
+    @keyframes spinRing {
+        to { transform: rotate(360deg); }
+    }
+    .slide-circle-img {
+        position: relative; z-index: 1;
+        width: 100%; height: 100%;
+        border-radius: 50%;
+        overflow: hidden;
+        background: rgba(201,168,76,0.08);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 16px 56px rgba(0,0,0,0.1), 0 0 0 5px rgba(201,168,76,0.1);
+    }
+    .slide-circle-img img {
+        width: 100%; height: 100%;
+        object-fit: cover; border-radius: 50%;
+    }
+    /* Floating icon badges */
+    .slide-icon-badge {
+        position: absolute;
+        background: #fff;
+        border-radius: 10px;
+        padding: 8px 13px;
+        display: flex; align-items: center; gap: 7px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+        font-size: 0.72rem; font-weight: 700;
+        color: #333; white-space: nowrap;
+        z-index: 3;
+    }
+    .slide-icon-badge svg { width: 15px; height: 15px; stroke: #C9A84C; fill: none; stroke-width: 2; }
+    .slide-icon-badge-1 { top: 6%; right: -8%; animation: floatBadge 4s ease-in-out infinite; }
+    .slide-icon-badge-2 { bottom: 8%; left: -10%; animation: floatBadge 4s ease-in-out infinite 1.5s; }
+    @keyframes floatBadge {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(-7px); }
+    }
+
+    /* ── Placeholder (no image) ── */
+    .slide-placeholder { font-size: 5rem; opacity: 0.18; }
+
+    /* ── Per-slide backgrounds ── */
+    .slide-light .slide-bg { background: #FAF7F2; }
+    .slide-light .slide-text { color: #1a1a1a; }
+    .slide-light .slide-badge { background: rgba(201,168,76,0.13); border-color: rgba(201,168,76,0.35); color: #7a5c1e; }
+
+    .slide-dark .slide-bg { background: linear-gradient(135deg, #0f1a2e 0%, #1a2a4a 100%); }
+    .slide-dark .slide-text { color: #fff; }
+    .slide-dark .slide-title { color: #fff; }
+    .slide-dark .slide-subtitle { color: #e0d5c0; }
+    .slide-dark .slide-badge { background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.4); color: #C9A84C; }
+    .slide-dark .feature-pill-label { color: rgba(255,255,255,0.5); }
+    .slide-dark .slide-circle-img { background: rgba(201,168,76,0.12); }
+    .slide-dark .slide-features { border-top-color: rgba(255,255,255,0.1); }
+    .slide-dark .slide-icon-badge { background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); color: #fff; border: 1px solid rgba(255,255,255,0.15); }
+    .slide-dark .slide-icon-badge svg { stroke: #C9A84C; }
+    .slide-dark .slider-counter { color: rgba(255,255,255,0.35); }
+
+    .slide-warm .slide-bg { background: #F0EAD6; }
+    .slide-warm .slide-text { color: #2c1810; }
+    .slide-warm .slide-title { color: #2c1810; }
+    .slide-warm .slide-subtitle { color: #5a3d2b; }
+    .slide-warm .slide-badge { background: rgba(139,90,43,0.12); border-color: rgba(139,90,43,0.3); color: #8b5a2b; }
+    .slide-warm .feature-pill-label { color: #8b7355; }
+    .slide-warm .slide-features { border-top-color: rgba(139,90,43,0.15); }
+    .slide-warm .slide-circle-img { background: rgba(139,90,43,0.08); }
+
+    /* custom theme — bg is set inline, just ensure text defaults */
+    .slide-custom .slide-text { color: #1a1a1a; }
+    .slide-custom .slide-badge { background: rgba(201,168,76,0.13); border-color: rgba(201,168,76,0.35); color: #7a5c1e; }
+
+    /* ── Slider controls ── */
     .slider-controls {
-        position: absolute; bottom: 30px; left: 50%;
-        transform: translateX(-50%); z-index: 10;
-        display: flex; gap: 12px; align-items: center;
+        position: absolute; bottom: 18px; left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex; gap: 8px; align-items: center;
     }
     .slider-dot {
-        width: 12px; height: 12px; border-radius: 50%;
-        background: rgba(0,0,0,0.3); cursor: pointer;
-        transition: all 0.3s; border: 2px solid transparent;
-        padding: 0; margin: 0;
+        width: 7px; height: 7px; border-radius: 50%;
+        background: rgba(0,0,0,0.2); cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
+        border: none; padding: 0; margin: 0;
     }
-    .slider-dot:hover { background: rgba(0,0,0,0.55); }
-    .slider-dot.active { background: var(--black); transform: scale(1.3); }
-    .slider-arrow {
-        position: absolute; top: 50%; transform: translateY(-50%);
-        background: rgba(255,255,255,0.9); border: none;
-        width: 50px; height: 50px; border-radius: 50%;
-        font-size: 1.3rem; cursor: pointer; z-index: 10;
-        transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        display: flex; align-items: center; justify-content: center;
+    .slider-dot:hover { background: rgba(0,0,0,0.38); }
+    .slider-dot.active { width: 24px; border-radius: 4px; background: #C9A84C; }
+
+    .slider-counter {
+        position: absolute; bottom: 14px; right: 64px;
+        z-index: 10;
+        font-size: 0.72rem; font-weight: 700;
+        color: rgba(0,0,0,0.3); letter-spacing: 1px;
     }
-    .slider-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.1); }
-    .slider-arrow.prev { left: 20px; }
-    .slider-arrow.next { right: 20px; }
+    .slider-counter .current { font-size: 1.1rem; color: #C9A84C; }
+    .slide-2 .slider-counter { color: rgba(255,255,255,0.35); }
+
     .slider-progress {
         position: absolute; bottom: 0; left: 0;
-        height: 3px; background: var(--accent);
-        z-index: 10; transition: width 0.1s linear;
+        height: 3px; background: linear-gradient(90deg, #C9A84C, #F5D98A);
+        z-index: 10; transition: width 0.12s linear;
+        border-radius: 0 2px 2px 0;
     }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+        .slide-content { padding: 0 48px; gap: 48px; }
+    }
+    @media (max-width: 900px) {
+        .slide-content { padding: 0 36px; gap: 32px; }
+        .slide-circle-wrap { max-height: 280px; max-width: 280px; }
+        .slide-icon-badge { display: none; }
+    }
+    @media (max-width: 640px) {
+        .slide-visual { display: none; }
+        .slide-content { padding: 0 28px; justify-content: flex-start; }
+        .slide-text { flex: 1 1 auto; }
+        .slide-title { font-size: clamp(1.7rem, 7vw, 2.4rem); }
+        .slide-features { gap: 20px; }
+        .feature-pill-number { font-size: 1.6rem; }
+        .slider-counter { display: none; }
+    }
+
     @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeInRight { from{opacity:0;transform:translateX(50px)} to{opacity:1;transform:translateX(0)} }
 
@@ -175,28 +375,123 @@
     .qty-display { font-weight: 600; font-size: 0.95rem; min-width: 18px; text-align: center; }
     .view-all-wrap { text-align: center; margin-top: 20px; }
 
-    /* Testimonials */
+    /* Testimonials Carousel */
     .testimonials-section {
         background: #FAF7F2;
         padding: 80px 20px;
     }
-    .testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 30px; max-width: 1200px; margin: 0 auto; }
+    .testimonials-section .section-header { max-width: 900px; margin: 0 auto 40px; }
+
+    .t-carousel-wrapper {
+        position: relative;
+        max-width: 900px;
+        margin: 0 auto 50px;
+        background: var(--white);
+        border-radius: 25px;
+        padding: 40px 70px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+    .t-carousel-track {
+        overflow: hidden;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #FAF7F2 0%, #fff 100%);
+    }
+    .t-carousel-inner {
+        display: flex;
+        transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+    }
+    .testimonial-slide {
+        min-width: 100%;
+        flex-shrink: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
     .testimonial-card {
-        background: var(--white); padding: 35px; border-radius: 20px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.07); transition: all 0.3s;
+        background: transparent;
+        padding: 50px 45px;
+        border-radius: 0;
+        box-shadow: none;
+        width: 100%;
     }
-    .testimonial-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.13); }
-    .testimonial-quote { font-size: 3rem; color: var(--accent); line-height: 1; margin-bottom: 10px; opacity: 0.5; }
-    .testimonial-stars { color: #FFD700; margin-bottom: 12px; }
-    .testimonial-text { font-size: 0.98rem; line-height: 1.8; color: #555; margin-bottom: 20px; font-style: italic; }
-    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-quote { font-size: 4rem; color: var(--accent); line-height: 0.8; margin-bottom: 14px; opacity: 0.4; font-family: Georgia, serif; }
+    .testimonial-stars { color: #FBBF24; font-size: 1.1rem; margin-bottom: 16px; letter-spacing: 2px; }
+    .testimonial-text { font-size: 1.05rem; line-height: 1.85; color: #555; margin-bottom: 28px; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 14px; }
     .testimonial-avatar {
-        width: 48px; height: 48px; border-radius: 50%;
-        background: var(--accent); display: flex; align-items: center; justify-content: center;
-        font-size: 1.3rem; font-weight: 600;
+        width: 52px; height: 52px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), #a38435);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; font-weight: 700; color: #fff; flex-shrink: 0;
     }
-    .testimonial-name { font-weight: 600; font-size: 0.95rem; }
-    .testimonial-location { font-size: 0.85rem; color: #999; }
+    .testimonial-name { font-weight: 700; font-size: 1rem; color: #1a1a1a; }
+    .testimonial-location { font-size: 0.85rem; color: #999; margin-top: 2px; }
+
+    /* Arrows */
+    .t-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 46px; height: 46px;
+        border-radius: 50%;
+        background: #C9A84C;
+        border: none;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white);
+        box-shadow: 0 4px 14px rgba(201, 168, 76, 0.3);
+        transition: all 0.25s;
+        z-index: 20;
+    }
+    .t-arrow:hover { background: #B8922E; color: #fff; transform: translateY(-50%) scale(1.1); box-shadow: 0 6px 18px rgba(201, 168, 76, 0.5); }
+    .t-arrow:active { transform: translateY(-50%) scale(0.95); }
+    .t-arrow.prev { left: 0; }
+    .t-arrow.next { right: 0; }
+
+    /* Dots */
+    .t-dots {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 28px;
+    }
+    .t-dot {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        background: #ddd;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.3s;
+    }
+    .t-dot.active { background: var(--accent); transform: scale(1.35); }
+
+    @media (max-width: 960px) {
+        .t-carousel-wrapper {
+            padding: 30px 50px;
+        }
+        .t-arrow.prev { left: 15px; }
+        .t-arrow.next { right: 15px; }
+        .testimonial-card { padding: 35px 30px; }
+    }
+    @media (max-width: 600px) {
+        .t-carousel-wrapper {
+            padding: 20px 50px;
+        }
+        .testimonial-text { font-size: 0.95rem; }
+        .t-arrow { width: 38px; height: 38px; font-size: 0.9rem; }
+        .testimonial-card { padding: 25px 20px; }
+    }
+    @media (max-width: 480px) {
+        .t-carousel-wrapper {
+            padding: 15px 40px;
+        }
+        .t-arrow { width: 36px; height: 36px; }
+        .t-arrow.prev { left: 8px; }
+        .t-arrow.next { right: 8px; }
+    }
 
     /* Responsive */
     @media (max-width: 1200px) { .products-grid { grid-template-columns: repeat(3,1fr); } }
@@ -208,7 +503,6 @@
     @media (max-width: 768px) {
         .products-grid { grid-template-columns: repeat(2,1fr); gap: 15px; }
         .slide-title { font-size: 2rem; letter-spacing: 2px; }
-        .slider-arrow { width: 40px; height: 40px; font-size: 1rem; }
         .product-info-footer { flex-direction: column; align-items: stretch; gap: 10px; }
         .product-price { text-align: center; }
         .btn-add-cart, .quantity-selector { width: 100%; }
@@ -219,80 +513,185 @@
 
 {% block content %}
 <!-- Hero Slider -->
-<section class="hero-slider" id="heroSlider">
-    <!-- Slide 1 -->
-    <div class="slide slide-1 active" id="slide-0">
-        <div class="slide-bg"></div>
+<section class="hero-slider" id="heroSlider" aria-label="Hero banner">
+
+    <!-- ─── Slides (DB-driven with static fallback) ─── -->
+    {% if hero_slides %}
+        {% for slide in hero_slides %}
+        <div class="slide slide-{{ slide.theme }} {% if forloop.first %}active{% endif %}"
+             id="slide-{{ forloop.counter0 }}"
+             aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
+             style="--slide-bg: {{ slide.bg_style }};">
+            <div class="slide-bg" style="background: {{ slide.bg_style }};"></div>
+            <div class="slide-content">
+                <!-- Left: text -->
+                <div class="slide-text">
+                    {% if slide.badge_text %}
+                    <span class="slide-badge"{% if slide.badge_bg or slide.badge_color %} style="{% if slide.badge_bg %}background:{{ slide.badge_bg }};border-color:{{ slide.badge_bg }};{% endif %}{% if slide.badge_color %}color:{{ slide.badge_color }};{% endif %}"{% endif %}>{{ slide.badge_text }}</span>
+                    {% endif %}
+
+                    {% with parts=slide.get_title_parts %}
+                    <h1 class="slide-title"{% if slide.title_color %} style="color:{{ slide.title_color }};"{% endif %}>
+                        {{ parts.0 }}{% if parts.1 %}<span class="highlight"{% if slide.highlight_color %} style="color:{{ slide.highlight_color }};"{% endif %}>{{ parts.1 }}</span>{% endif %}{{ parts.2 }}
+                    </h1>
+                    {% endwith %}
+
+                    {% if slide.subtitle %}
+                    <p class="slide-subtitle"{% if slide.subtitle_color %} style="color:{{ slide.subtitle_color }};"{% endif %}>{{ slide.subtitle }}</p>
+                    {% endif %}
+
+                    {% if slide.stat1_number or slide.stat2_number or slide.stat3_number %}
+                    <div class="slide-features">
+                        {% if slide.stat1_number %}
+                        <div class="feature-pill">
+                            <span class="feature-pill-number"{% if slide.stat_color %} style="color:{{ slide.stat_color }};"{% endif %}>{{ slide.stat1_number }}</span>
+                            <span class="feature-pill-label"{% if slide.stat_label_color %} style="color:{{ slide.stat_label_color }};"{% endif %}>{{ slide.stat1_label }}</span>
+                        </div>
+                        {% endif %}
+                        {% if slide.stat2_number %}
+                        <div class="feature-pill">
+                            <span class="feature-pill-number"{% if slide.stat_color %} style="color:{{ slide.stat_color }};"{% endif %}>{{ slide.stat2_number }}</span>
+                            <span class="feature-pill-label"{% if slide.stat_label_color %} style="color:{{ slide.stat_label_color }};"{% endif %}>{{ slide.stat2_label }}</span>
+                        </div>
+                        {% endif %}
+                        {% if slide.stat3_number %}
+                        <div class="feature-pill">
+                            <span class="feature-pill-number"{% if slide.stat_color %} style="color:{{ slide.stat_color }};"{% endif %}>{{ slide.stat3_number }}</span>
+                            <span class="feature-pill-label"{% if slide.stat_label_color %} style="color:{{ slide.stat_label_color }};"{% endif %}>{{ slide.stat3_label }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="slide-buttons">
+                        {% if slide.btn1_text %}
+                        <a href="{{ slide.btn1_url }}" class="btn-primary">{{ slide.btn1_text }}</a>
+                        {% endif %}
+                        {% if slide.btn2_text %}
+                        <a href="{{ slide.btn2_url }}" class="btn-secondary">{{ slide.btn2_text }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Right: visual -->
+                <div class="slide-visual">
+                    <div class="slide-circle-wrap">
+                        <div class="slide-circle-img">
+                            {% if slide.get_image_url %}
+                            <img src="{{ slide.get_image_url }}" alt="{{ slide.title }}" loading="lazy">
+                            {% else %}
+                            <div class="slide-placeholder">{{ slide.circle_emoji|default:"👔" }}</div>
+                            {% endif %}
+                        </div>
+                        {% if slide.badge1_text %}
+                        <div class="slide-icon-badge slide-icon-badge-1">
+                            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linejoin="round"/></svg>
+                            {{ slide.badge1_text }}
+                        </div>
+                        {% endif %}
+                        {% if slide.badge2_text %}
+                        <div class="slide-icon-badge slide-icon-badge-2">
+                            <svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                            {{ slide.badge2_text }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    {% else %}
+    <!-- ─── Static fallback slides (shown when no DB slides exist) ─── -->
+    <div class="slide slide-light active" id="slide-0" aria-hidden="false">
+        <div class="slide-bg" style="background:#FAF7F2;"></div>
         <div class="slide-content">
             <div class="slide-text">
                 <span class="slide-badge">✨ New Collection 2026</span>
-                <h1 class="slide-title">Refined Style for Modern Men</h1>
+                <h1 class="slide-title">Refined <span class="highlight">Style</span><br>for Modern Men</h1>
                 <p class="slide-subtitle">Where Quality Meets Confidence</p>
-                <p class="slide-desc">Discover premium menswear designed for the modern man. Timeless pieces that define your personal style.</p>
                 <div class="slide-features">
-                    <span class="feature-pill">✓ Premium Fabrics</span>
-                    <span class="feature-pill">✓ Perfect Fit</span>
-                    <span class="feature-pill">✓ Versatile Style</span>
+                    <div class="feature-pill"><span class="feature-pill-number">500+</span><span class="feature-pill-label">Styles Available</span></div>
+                    <div class="feature-pill"><span class="feature-pill-number">98%</span><span class="feature-pill-label">Happy Clients</span></div>
+                    <div class="feature-pill"><span class="feature-pill-number">1–2</span><span class="feature-pill-label">Days Delivery</span></div>
                 </div>
                 <div class="slide-buttons">
                     <a href="{% url 'shop:shop' %}" class="btn-primary">Explore Collection</a>
-                    <a href="{% url 'shop:contact' %}" class="btn-secondary">Contact Us</a>
+                    <a href="{% url 'shop:about' %}" class="btn-secondary">Our Story ↗</a>
+                </div>
+            </div>
+            <div class="slide-visual">
+                <div class="slide-circle-wrap">
+                    <div class="slide-circle-img"><div class="slide-placeholder">👔</div></div>
+                    <div class="slide-icon-badge slide-icon-badge-1"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linejoin="round"/></svg>Premium Quality</div>
+                    <div class="slide-icon-badge slide-icon-badge-2"><svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>New Arrivals</div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Slide 2 -->
-    <div class="slide slide-2" id="slide-1">
-        <div class="slide-bg"></div>
+    <div class="slide slide-dark" id="slide-1" aria-hidden="true">
+        <div class="slide-bg" style="background:linear-gradient(135deg,#0f1a2e 0%,#1a2a4a 100%);"></div>
         <div class="slide-content">
             <div class="slide-text">
                 <span class="slide-badge">👔 Premium Collection</span>
-                <h1 class="slide-title">Elevated Menswear</h1>
+                <h1 class="slide-title">Elevated<br><span class="highlight">Menswear</span></h1>
                 <p class="slide-subtitle">Quality Crafted for Discerning Men</p>
-                <p class="slide-desc">Each piece is carefully curated for quality, style and durability. Wardrobe essentials that last.</p>
                 <div class="slide-features">
-                    <span class="feature-pill">✓ Premium Materials</span>
-                    <span class="feature-pill">✓ Contemporary Design</span>
-                    <span class="feature-pill">✓ Expert Crafted</span>
+                    <div class="feature-pill"><span class="feature-pill-number">100%</span><span class="feature-pill-label">Premium Fabric</span></div>
+                    <div class="feature-pill"><span class="feature-pill-number">240+</span><span class="feature-pill-label">Curated Pieces</span></div>
+                    <div class="feature-pill"><span class="feature-pill-number">5★</span><span class="feature-pill-label">Customer Rating</span></div>
                 </div>
                 <div class="slide-buttons">
                     <a href="{% url 'shop:shop' %}" class="btn-primary" style="background:#C9A84C;color:#000;">Shop Now</a>
-                    <a href="{% url 'shop:about' %}" class="btn-secondary" style="border-color:#C9A84C;color:#C9A84C;">Our Story</a>
+                    <a href="{% url 'shop:about' %}" class="btn-secondary" style="border-color:rgba(201,168,76,0.5);color:#C9A84C;">Our Story ↗</a>
+                </div>
+            </div>
+            <div class="slide-visual">
+                <div class="slide-circle-wrap">
+                    <div class="slide-circle-img"><div class="slide-placeholder">🧥</div></div>
+                    <div class="slide-icon-badge slide-icon-badge-1"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>Top Rated</div>
+                    <div class="slide-icon-badge slide-icon-badge-2"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Best Value</div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Slide 3 -->
-    <div class="slide slide-3" id="slide-2">
-        <div class="slide-bg"></div>
+    <div class="slide slide-warm" id="slide-2" aria-hidden="true">
+        <div class="slide-bg" style="background:#F0EAD6;"></div>
         <div class="slide-content">
             <div class="slide-text">
                 <span class="slide-badge">🚚 Fast Delivery Kenya</span>
-                <h1 class="slide-title">Delivered to Your Door</h1>
-                <p class="slide-subtitle">Fast & Reliable Delivery Across Kenya</p>
-                <p class="slide-desc">Order today and receive your style within 1-2 days in Nairobi. Nationwide delivery available.</p>
+                <h1 class="slide-title">Delivered<br>to Your <span class="highlight">Door</span></h1>
+                <p class="slide-subtitle">Fast &amp; Reliable Delivery Across Kenya</p>
                 <div class="slide-features">
-                    <span class="feature-pill">✓ 1-2 Days Nairobi</span>
-                    <span class="feature-pill">✓ Nationwide</span>
-                    <span class="feature-pill">✓ Safe Packaging</span>
+                    <div class="feature-pill"><span class="feature-pill-number">1–2</span><span class="feature-pill-label">Days Nairobi</span></div>
+                    <div class="feature-pill"><span class="feature-pill-number">47+</span><span class="feature-pill-label">Counties Served</span></div>
+                    <div class="feature-pill"><span class="feature-pill-number">Free</span><span class="feature-pill-label">CBD Pickup</span></div>
                 </div>
                 <div class="slide-buttons">
                     <a href="{% url 'shop:shop' %}" class="btn-primary">Order Now</a>
-                    <a href="https://wa.me/254706105967" class="btn-secondary" target="_blank" rel="noopener noreferrer">WhatsApp Us</a>
+                    <a href="https://wa.me/254706105967" class="btn-secondary" target="_blank" rel="noopener noreferrer">WhatsApp Us ↗</a>
+                </div>
+            </div>
+            <div class="slide-visual">
+                <div class="slide-circle-wrap">
+                    <div class="slide-circle-img"><div class="slide-placeholder">🛍️</div></div>
+                    <div class="slide-icon-badge slide-icon-badge-1"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Fast Shipping</div>
+                    <div class="slide-icon-badge slide-icon-badge-2"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6 6l.94-.94a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.73 16z"/></svg>WhatsApp Order</div>
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
 
-    <!-- Controls -->
-    <button class="slider-arrow prev" onclick="changeSlide(-1)" aria-label="Previous slide">&#8249;</button>
-    <button class="slider-arrow next" onclick="changeSlide(1)" aria-label="Next slide">&#8250;</button>
-    <div class="slider-controls" role="tablist" aria-label="Hero slides">
-        <button class="slider-dot active" onclick="goToSlide(0)" aria-label="Go to slide 1"></button>
-        <button class="slider-dot" onclick="goToSlide(1)" aria-label="Go to slide 2"></button>
-        <button class="slider-dot" onclick="goToSlide(2)" aria-label="Go to slide 3"></button>
+    <!-- ─── Controls ─── -->
+    <div class="slider-controls" role="tablist" aria-label="Hero slides" id="sliderDots"></div>
+
+    <div class="slider-counter" aria-hidden="true">
+        <span class="current" id="slideCurrentNum">01</span> /
+        <span id="slideTotalNum">03</span>
     </div>
-    <div class="slider-progress" id="sliderProgress"></div>
+
+    <div class="slider-progress" id="sliderProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
 </section>
 
 
@@ -550,60 +949,47 @@
 </section>
 {% endif %}
 
-<!-- Testimonials -->
-<section class="testimonials-section">
-    <div class="section-header">
-        <h2>What Our Customers Say</h2>
-        <p>Real experiences from our valued customers across Kenya</p>
-        <div class="divider"></div>
-    </div>
-    <div class="testimonials-grid">
-        <div class="testimonial-card">
-            <div class="testimonial-quote">"</div>
-            <div class="testimonial-stars">★★★★★</div>
-            <p class="testimonial-text">Absolutely stunning pieces! I ordered a full outfit for my anniversary and it exceeded all expectations. The quality is exceptional and delivery was super fast.</p>
-            <div class="testimonial-author">
-                <div class="testimonial-avatar">A</div>
-                <div><div class="testimonial-name">Amina Hassan</div><div class="testimonial-location">Nairobi</div></div>
-            </div>
-        </div>
-        <div class="testimonial-card">
-            <div class="testimonial-quote">"</div>
-            <div class="testimonial-stars">★★★★★</div>
-            <p class="testimonial-text">Wyatt Collection has become my go-to for quality menswear. Premium designs, affordable prices, and excellent customer service. Very responsive on WhatsApp!</p>
-            <div class="testimonial-author">
-                <div class="testimonial-avatar">M</div>
-                <div><div class="testimonial-name">Mary Wanjiku</div><div class="testimonial-location">Mombasa</div></div>
-            </div>
-        </div>
-        <div class="testimonial-card">
-            <div class="testimonial-quote">"</div>
-            <div class="testimonial-stars">★★★★★</div>
-            <p class="testimonial-text">I bought a shirt and pants set as a gift. The quality is amazing and the recipient was thrilled! Will definitely order again. Thank you Wyatt Collection!</p>
-            <div class="testimonial-author">
-                <div class="testimonial-avatar">J</div>
-                <div><div class="testimonial-name">James Omondi</div><div class="testimonial-location">Kisumu</div></div>
-            </div>
-        </div>
-    </div>
-</section>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
     let currentSlide = 0;
-    const totalSlides = 3;
+    const slides = document.querySelectorAll('#heroSlider .slide');
+    const totalSlides = slides.length;
     let slideTimer;
     let progressTimer;
     let progressWidth = 0;
     const slideDuration = 5000;
 
+    // Build dots dynamically
+    const dotsWrap = document.getElementById('sliderDots');
+    const totalEl  = document.getElementById('slideTotalNum');
+    if (totalEl) totalEl.textContent = String(totalSlides).padStart(2,'0');
+    slides.forEach((_, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'slider-dot' + (i === 0 ? ' active' : '');
+        btn.setAttribute('role','tab');
+        btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+        btn.setAttribute('aria-label','Slide ' + (i+1));
+        btn.onclick = () => goToSlide(i);
+        if (dotsWrap) dotsWrap.appendChild(btn);
+    });
+
     function goToSlide(n) {
-        document.getElementById(`slide-${currentSlide}`).classList.remove('active');
-        document.querySelectorAll('.slider-dot')[currentSlide].classList.remove('active');
+        const prevEl = document.getElementById(`slide-${currentSlide}`);
+        if (prevEl) { prevEl.classList.remove('active'); prevEl.setAttribute('aria-hidden','true'); }
+        const dots = document.querySelectorAll('.slider-dot');
+        if (dots[currentSlide]) { dots[currentSlide].classList.remove('active'); dots[currentSlide].setAttribute('aria-selected','false'); }
+
         currentSlide = (n + totalSlides) % totalSlides;
-        document.getElementById(`slide-${currentSlide}`).classList.add('active');
-        document.querySelectorAll('.slider-dot')[currentSlide].classList.add('active');
+
+        const nextEl = document.getElementById(`slide-${currentSlide}`);
+        if (nextEl) { nextEl.classList.add('active'); nextEl.setAttribute('aria-hidden','false'); }
+        if (dots[currentSlide]) { dots[currentSlide].classList.add('active'); dots[currentSlide].setAttribute('aria-selected','true'); }
+
+        const counter = document.getElementById('slideCurrentNum');
+        if (counter) counter.textContent = String(currentSlide + 1).padStart(2,'0');
         resetProgress();
     }
 
@@ -612,31 +998,100 @@
     function resetProgress() {
         clearInterval(progressTimer);
         progressWidth = 0;
-        document.getElementById('sliderProgress').style.width = '0%';
+        const bar = document.getElementById('sliderProgress');
+        if (bar) { bar.style.width = '0%'; bar.setAttribute('aria-valuenow', 0); }
         progressTimer = setInterval(() => {
             progressWidth += (100 / (slideDuration / 100));
-            document.getElementById('sliderProgress').style.width = progressWidth + '%';
-            if (progressWidth >= 100) { clearInterval(progressTimer); }
+            if (bar) { bar.style.width = progressWidth + '%'; bar.setAttribute('aria-valuenow', Math.round(progressWidth)); }
+            if (progressWidth >= 100) clearInterval(progressTimer);
         }, 100);
         clearTimeout(slideTimer);
-        slideTimer = setTimeout(() => changeSlide(1), slideDuration);
+        if (totalSlides > 1) slideTimer = setTimeout(() => changeSlide(1), slideDuration);
     }
 
-    resetProgress();
+    if (totalSlides > 0) resetProgress();
 
-    // Pause on hover
-    document.getElementById('heroSlider').addEventListener('mouseenter', () => {
-        clearTimeout(slideTimer); clearInterval(progressTimer);
-    });
-    document.getElementById('heroSlider').addEventListener('mouseleave', resetProgress);
+    const heroEl = document.getElementById('heroSlider');
+    if (heroEl) {
+        heroEl.addEventListener('mouseenter', () => { clearTimeout(slideTimer); clearInterval(progressTimer); });
+        heroEl.addEventListener('mouseleave', resetProgress);
+        let touchStartX = 0;
+        heroEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        heroEl.addEventListener('touchend', e => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+        }, { passive: true });
+        heroEl.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft')  changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+    }
 
-    // Touch swipe
-    let touchStartX = 0;
-    document.getElementById('heroSlider').addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
-    document.getElementById('heroSlider').addEventListener('touchend', e => {
-        const diff = touchStartX - e.changedTouches[0].clientX;
-        if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
-    });
+    // ── Testimonials Carousel ──────────────────────────────────────
+    (function () {
+        const inner   = document.getElementById('tCarouselInner');
+        const dotsWrap= document.getElementById('tDots');
+        const slides  = inner ? inner.querySelectorAll('.testimonial-slide') : [];
+        const total   = slides.length;
+        if (!total) return;
+
+        let current   = 0;
+        let autoTimer = null;
+
+        // Build dots
+        slides.forEach((_, i) => {
+            const d = document.createElement('button');
+            d.className = 't-dot' + (i === 0 ? ' active' : '');
+            d.setAttribute('aria-label', 'Go to testimonial ' + (i + 1));
+            d.addEventListener('click', () => goTo(i));
+            dotsWrap.appendChild(d);
+        });
+
+        function getDots() { return dotsWrap.querySelectorAll('.t-dot'); }
+
+        function goTo(n) {
+            current = (n + total) % total;
+            inner.style.transform = `translateX(-${current * 100}%)`;
+            getDots().forEach((d, i) => d.classList.toggle('active', i === current));
+        }
+
+        function next() { goTo(current + 1); }
+        function prev() { goTo(current - 1); }
+
+        function startAuto() {
+            stopAuto();
+            autoTimer = setInterval(next, 6000);
+        }
+        function stopAuto() {
+            clearInterval(autoTimer);
+        }
+
+        // Wire arrows
+        document.getElementById('tPrev').addEventListener('click', () => { prev(); startAuto(); });
+        document.getElementById('tNext').addEventListener('click', () => { next(); startAuto(); });
+
+        // Pause on hover
+        const wrapper = document.querySelector('.t-carousel-wrapper');
+        wrapper.addEventListener('mouseenter', stopAuto);
+        wrapper.addEventListener('mouseleave', startAuto);
+
+        // Touch swipe
+        let touchX = 0;
+        wrapper.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+        wrapper.addEventListener('touchend', e => {
+            const diff = touchX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) { diff > 0 ? next() : prev(); startAuto(); }
+        }, { passive: true });
+
+        // Keyboard (only when section is in view)
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft')  { prev(); startAuto(); }
+            if (e.key === 'ArrowRight') { next(); startAuto(); }
+        });
+
+        startAuto();
+    })();
+    // ──────────────────────────────────────────────────────────────
 
     function toggleWishlist(e, productId, btn) {
         e.preventDefault(); e.stopPropagation();
@@ -655,8 +1110,3 @@
     }
 </script>
 {% endblock %}
-
-
-
-
-

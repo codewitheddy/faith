@@ -46,4 +46,10 @@ urlpatterns = [
     path('users/<int:pk>/edit/', views_admin.UserUpdateView.as_view(), name='user_edit'),
     path('users/<int:pk>/password/', views_admin.UserPasswordChangeView.as_view(), name='user_password_change'),
     path('users/<int:pk>/delete/', views_admin.UserDeleteView.as_view(), name='user_delete'),
+
+    # Hero Slides
+    path('hero-slides/', views_admin.HeroSlideListView.as_view(), name='heroslide_list'),
+    path('hero-slides/add/', views_admin.HeroSlideCreateView.as_view(), name='heroslide_add'),
+    path('hero-slides/<int:pk>/edit/', views_admin.HeroSlideUpdateView.as_view(), name='heroslide_edit'),
+    path('hero-slides/<int:pk>/delete/', views_admin.HeroSlideDeleteView.as_view(), name='heroslide_delete'),
 ]

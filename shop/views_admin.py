@@ -16,8 +16,8 @@ from datetime import timedelta
 from decimal import Decimal
 import csv
 
-from .models import Product, Category, Order, OrderItem, Wishlist, ProductVariant
-from .forms_admin import ProductForm, CategoryForm, OrderStatusForm
+from .models import Product, Category, Order, OrderItem, Wishlist, ProductVariant, HeroSlide
+from .forms_admin import ProductForm, CategoryForm, OrderStatusForm, HeroSlideForm
 
 
 # Authentication decorator
@@ -1388,3 +1388,75 @@ class ProductStockUpdateView(View):
             'updated': results,
             'errors': errors,
         })
+
+
+# ── Hero Slides ──────────────────────────────────────────────────────────────
+
+@staff_required
+class HeroSlideListView(ListView):
+    model = HeroSlide
+    template_name = 'myadmin/hero_slides/list.html'
+    context_object_name = 'slides'
+    ordering = ['order']
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['title'] = 'Hero Slides'
+        return ctx
+
+    def post(self, request, *args, **kwargs):
+        """Handle quick toggle active/inactive from the list."""
+        slide_id = request.POST.get('toggle_id')
+        if slide_id:
+            slide = get_object_or_404(HeroSlide, pk=slide_id)
+            slide.is_active = not slide.is_active
+            slide.save(update_fields=['is_active'])
+            messages.success(request, f'Slide "{slide.title}" {"activated" if slide.is_active else "deactivated"}.')
+        return redirect('myadmin:heroslide_list')
+
+
+@staff_required
+class HeroSlideCreateView(CreateView):
+    model = HeroSlide
+    form_class = HeroSlideForm
+    template_name = 'myadmin/hero_slides/form.html'
+    success_url = reverse_lazy('myadmin:heroslide_list')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['title'] = 'Add Hero Slide'
+        ctx['action'] = 'Add'
+        return ctx
+
+    def form_valid(self, form):
+        messages.success(self.request, f'Slide "{form.instance.title}" created successfully.')
+        return super().form_valid(form)
+
+
+@staff_required
+class HeroSlideUpdateView(UpdateView):
+    model = HeroSlide
+    form_class = HeroSlideForm
+    template_name = 'myadmin/hero_slides/form.html'
+    success_url = reverse_lazy('myadmin:heroslide_list')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['title'] = f'Edit Slide — {self.object.title}'
+        ctx['action'] = 'Save Changes'
+        return ctx
+
+    def form_valid(self, form):
+        messages.success(self.request, f'Slide "{form.instance.title}" updated successfully.')
+        return super().form_valid(form)
+
+
+@staff_required
+class HeroSlideDeleteView(DeleteView):
+    model = HeroSlide
+    template_name = 'myadmin/hero_slides/confirm_delete.html'
+    success_url = reverse_lazy('myadmin:heroslide_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, f'Slide deleted.')
+        return super().form_valid(form)

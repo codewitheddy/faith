@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import F
-from .models import Category, Product, ProductVariant, Order, OrderItem, UserProfile, Wishlist
+from .models import Category, Product, ProductVariant, Order, OrderItem, UserProfile, Wishlist, HeroSlide
 from .email_utils import send_order_confirmation_email
 from decimal import Decimal
 import json
@@ -30,6 +30,7 @@ def home(request):
     sale_products = Product.objects.filter(
         is_available=True, sale_price__isnull=False
     ).filter(sale_price__lt=F('price')).select_related('category')[:8]
+    hero_slides = HeroSlide.objects.filter(is_active=True).order_by('order')
     context = {
         'categories': categories,
         'new_arrivals': new_arrivals,
@@ -37,6 +38,7 @@ def home(request):
         'sale_products': sale_products,
         'cart_count': _get_cart_count(request),
         'wishlist_ids': _get_wishlist_ids(request),
+        'hero_slides': hero_slides,
     }
     return render(request, 'home_new.html', context)
 

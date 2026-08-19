@@ -521,3 +521,61 @@ class UserPasswordChangeForm(forms.Form):
             raise ValidationError('The two password fields must match.')
         
         return cleaned_data
+
+
+class HeroSlideForm(forms.ModelForm):
+    class Meta:
+        from .models import HeroSlide
+        model = HeroSlide
+        fields = [
+            'badge_text', 'title', 'subtitle',
+            'stat1_number', 'stat1_label',
+            'stat2_number', 'stat2_label',
+            'stat3_number', 'stat3_label',
+            'btn1_text', 'btn1_url',
+            'btn2_text', 'btn2_url',
+            'image', 'image_url', 'circle_emoji',
+            'badge1_text', 'badge2_text',
+            'theme', 'bg_color', 'bg_image',
+            'title_color', 'subtitle_color', 'highlight_color',
+            'stat_color', 'stat_label_color',
+            'badge_bg', 'badge_color',
+            'order', 'is_active',
+        ]
+        widgets = {
+            'badge_text':       forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'e.g. ✨ New Collection 2026'}),
+            'title':            forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'e.g. Refined **Style** for Men'}),
+            'subtitle':         forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'One-line tagline'}),
+            'stat1_number':     forms.TextInput(attrs={'class': 'form-input', 'placeholder': '500+'}),
+            'stat1_label':      forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Styles Available'}),
+            'stat2_number':     forms.TextInput(attrs={'class': 'form-input', 'placeholder': '98%'}),
+            'stat2_label':      forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Happy Clients'}),
+            'stat3_number':     forms.TextInput(attrs={'class': 'form-input', 'placeholder': '1–2'}),
+            'stat3_label':      forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Days Delivery'}),
+            'btn1_text':        forms.TextInput(attrs={'class': 'form-input'}),
+            'btn1_url':         forms.TextInput(attrs={'class': 'form-input', 'placeholder': '/shop/'}),
+            'btn2_text':        forms.TextInput(attrs={'class': 'form-input'}),
+            'btn2_url':         forms.TextInput(attrs={'class': 'form-input', 'placeholder': '/about/'}),
+            'image':            forms.ClearableFileInput(attrs={'class': 'form-file', 'accept': 'image/*'}),
+            'image_url':        forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://...'}),
+            'circle_emoji':     forms.TextInput(attrs={'class': 'form-input', 'placeholder': '👔'}),
+            'badge1_text':      forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Premium Quality'}),
+            'badge2_text':      forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'New Arrivals'}),
+            'theme':            forms.Select(attrs={'class': 'form-select'}),
+            'bg_color':         forms.TextInput(attrs={'class': 'form-input', 'placeholder': '#1a1a2e or linear-gradient(...)'}),
+            'bg_image':         forms.ClearableFileInput(attrs={'class': 'form-file', 'accept': 'image/*'}),
+            'title_color':      forms.TextInput(attrs={'class': 'form-input color-input', 'placeholder': '#1a1a1a', 'type': 'color', 'style': 'width:56px;height:38px;padding:2px;cursor:pointer;'}),
+            'subtitle_color':   forms.TextInput(attrs={'class': 'form-input color-input', 'placeholder': '#555555', 'type': 'color', 'style': 'width:56px;height:38px;padding:2px;cursor:pointer;'}),
+            'highlight_color':  forms.TextInput(attrs={'class': 'form-input color-input', 'placeholder': '#C9A84C', 'type': 'color', 'style': 'width:56px;height:38px;padding:2px;cursor:pointer;'}),
+            'stat_color':       forms.TextInput(attrs={'class': 'form-input color-input', 'placeholder': '#C9A84C', 'type': 'color', 'style': 'width:56px;height:38px;padding:2px;cursor:pointer;'}),
+            'stat_label_color': forms.TextInput(attrs={'class': 'form-input color-input', 'placeholder': '#888888', 'type': 'color', 'style': 'width:56px;height:38px;padding:2px;cursor:pointer;'}),
+            'badge_bg':         forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'rgba(201,168,76,0.13)'}),
+            'badge_color':      forms.TextInput(attrs={'class': 'form-input color-input', 'placeholder': '#7a5c1e', 'type': 'color', 'style': 'width:56px;height:38px;padding:2px;cursor:pointer;'}),
+            'order':            forms.NumberInput(attrs={'class': 'form-input', 'min': '0'}),
+            'is_active':        forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from .models import HeroSlide
+        self.Meta.model = HeroSlide
