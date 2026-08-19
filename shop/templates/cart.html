@@ -7,18 +7,20 @@
 {% block extra_css %}
 <style>
     .cart-page {
-        max-width: 1100px;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 60px 20px;
         min-height: 80vh;
+        background: #fafafa;
     }
 
     .cart-page h1 {
-        font-size: 2.2rem;
-        font-weight: 300;
+        font-size: 2.5rem;
+        font-weight: 700;
         text-align: center;
-        margin-bottom: 40px;
-        letter-spacing: 2px;
+        margin-bottom: 50px;
+        letter-spacing: 1px;
+        color: var(--dark);
     }
 
     .cart-items-container {
@@ -32,62 +34,111 @@
 
     .cart-item {
         display: flex;
-        gap: 20px;
-        padding: 25px 0;
-        border-bottom: 1px solid #eee;
+        gap: 25px;
+        padding: 25px;
+        margin-bottom: 20px;
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        transition: all 0.3s ease;
+    }
+
+    .cart-item:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
     }
 
     .cart-item-image {
-        width: 120px;
-        height: 120px;
+        width: 140px;
+        height: 140px;
         object-fit: cover;
-        border-radius: 15px;
+        border-radius: 12px;
         background: var(--light-gray);
+        flex-shrink: 0;
     }
 
     .cart-item-info {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .cart-item-header {
+        margin-bottom: 12px;
     }
 
     .cart-item-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 8px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 6px;
         color: var(--dark);
     }
 
-    .cart-item-price {
-        font-size: 1.05rem;
-        color: var(--accent);
-        font-weight: 500;
-        margin-bottom: 10px;
-    }
-
-    .cart-item-controls {
+    .cart-item-pricing {
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .cart-item-price-display {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+    }
+
+    .price-current {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .price-original {
+        font-size: 1rem;
+        color: #999;
+        text-decoration: line-through;
+        font-weight: 500;
+    }
+
+    .discount-badge {
+        background: #ff4444;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .cart-item-footer {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-top: 15px;
         flex-wrap: wrap;
     }
 
     .qty-control {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 0;
         background: var(--white);
-        border: 2px solid var(--pastel-pink);
-        border-radius: 25px;
-        padding: 4px 10px;
+        border: 2px solid var(--accent);
+        border-radius: 10px;
+        padding: 0;
+        overflow: hidden;
     }
 
     .qty-btn {
-        background: var(--accent);
-        color: var(--dark);
+        background: transparent;
+        color: var(--accent);
         border: none;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        font-size: 1.1rem;
+        width: 36px;
+        height: 36px;
+        font-size: 1.2rem;
         font-weight: 700;
         cursor: pointer;
         display: flex;
@@ -96,57 +147,98 @@
         transition: all 0.2s;
     }
 
-    .qty-btn:hover { background: #B8922E; transform: scale(1.1); }
-    .qty-btn:active { transform: scale(0.95); }
+    .qty-btn:hover {
+        background: var(--accent);
+        color: var(--dark);
+    }
 
     .qty-display {
-        font-weight: 600;
+        font-weight: 700;
         font-size: 1rem;
-        min-width: 25px;
+        min-width: 50px;
         text-align: center;
+        color: var(--dark);
+    }
+
+    .item-subtotal {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--dark);
+        min-width: 80px;
+        text-align: right;
     }
 
     .remove-btn {
         background: none;
-        border: 1px solid #e53935;
+        border: 2px solid #e53935;
         color: #e53935;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 700;
         cursor: pointer;
         transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .remove-btn:hover {
         background: #e53935;
         color: #fff;
+        transform: scale(1.05);
     }
 
+    .stock-warning {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        color: #856404;
+        font-weight: 600;
+    }
+
+    /* Cart Sidebar */
     .cart-sidebar {
-        width: 350px;
+        width: 380px;
         background: var(--white);
-        border-radius: 20px;
-        padding: 30px;
+        border-radius: 16px;
+        padding: 35px;
         box-shadow: 0 5px 25px rgba(0,0,0,0.08);
         position: sticky;
         top: 134px;
+        height: fit-content;
     }
 
     .cart-sidebar h3 {
-        font-size: 1.3rem;
-        font-weight: 600;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: var(--dark);
+    }
+
+    .summary-section {
         margin-bottom: 25px;
         padding-bottom: 15px;
         border-bottom: 1px solid #eee;
     }
 
+    .summary-section:last-child {
+        border-bottom: none;
+    }
+
     .summary-row {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         margin-bottom: 12px;
         font-size: 1rem;
-        color: #555;
+        color: #666;
+    }
+
+    .summary-row span:last-child {
+        font-weight: 600;
+        color: var(--dark);
     }
 
     .summary-row.total {
@@ -156,6 +248,24 @@
         border-top: 2px solid var(--accent);
         padding-top: 20px;
         margin-top: 20px;
+        margin-bottom: 0;
+    }
+
+    .summary-row.total span:last-child {
+        color: var(--accent);
+        font-size: 1.4rem;
+    }
+
+    .savings-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: #fff3cd;
+        border-radius: 8px;
+        color: #856404;
+        font-weight: 600;
+        margin-bottom: 15px;
     }
 
     .btn-proceed {
@@ -164,77 +274,103 @@
         color: var(--dark);
         padding: 16px 20px;
         border: none;
-        border-radius: 25px;
+        border-radius: 12px;
         font-size: 1.05rem;
         font-weight: 700;
-        margin-top: 30px;
+        margin-top: 25px;
         cursor: pointer;
         transition: all 0.3s;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .btn-proceed:hover {
         background: #B8922E;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(184,146,46,0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(184,146,46,0.4);
+    }
+
+    .btn-proceed:active {
+        transform: translateY(-1px);
     }
 
     .empty-cart {
         text-align: center;
-        padding: 80px 20px;
+        padding: 100px 40px;
         background: var(--white);
         border-radius: 20px;
         box-shadow: 0 5px 25px rgba(0,0,0,0.08);
     }
 
     .empty-cart-icon {
-        font-size: 4rem;
-        margin-bottom: 20px;
-        opacity: 0.3;
+        font-size: 5rem;
+        margin-bottom: 25px;
+        opacity: 0.4;
+    }
+
+    .empty-cart h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 10px;
     }
 
     .empty-cart p {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         color: #666;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
+        line-height: 1.6;
     }
 
     .empty-cart a {
         display: inline-block;
-        padding: 14px 35px;
+        padding: 14px 40px;
         background: var(--accent);
         color: var(--dark);
-        border-radius: 25px;
-        font-weight: 600;
+        border-radius: 12px;
+        font-weight: 700;
         text-decoration: none;
         transition: all 0.3s;
+        margin-top: 25px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .empty-cart a:hover {
         background: #B8922E;
         transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(184,146,46,0.3);
     }
 
     .continue-shopping {
-        margin-top: 30px;
+        margin-top: 40px;
         text-align: center;
+        padding: 20px;
     }
 
     .continue-shopping a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         color: var(--accent);
         text-decoration: none;
-        font-weight: 600;
-        font-size: 0.95rem;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .continue-shopping a:hover {
-        text-decoration: underline;
+        gap: 12px;
+        color: #B8922E;
     }
 
-    @media (max-width: 850px) {
+    @media (max-width: 900px) {
         .cart-items-container {
             flex-direction: column;
         }
@@ -245,22 +381,47 @@
         }
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
         .cart-page h1 {
             font-size: 1.8rem;
+            margin-bottom: 30px;
         }
+
         .cart-item {
             flex-direction: column;
-            align-items: center;
-            text-align: center;
+            padding: 20px;
+            gap: 15px;
         }
+
         .cart-item-image {
             width: 100%;
-            height: 200px;
+            height: 180px;
         }
-        .cart-item-controls {
+
+        .cart-item-footer {
             width: 100%;
-            justify-content: center;
+            justify-content: space-between;
+        }
+
+        .qty-control {
+            order: -1;
+            margin-bottom: 10px;
+        }
+
+        .item-subtotal {
+            order: 2;
+        }
+
+        .remove-btn {
+            order: 3;
+        }
+
+        .cart-sidebar {
+            padding: 25px;
+        }
+
+        .cart-sidebar h3 {
+            font-size: 1.2rem;
         }
     }
 </style>
@@ -268,7 +429,7 @@
 
 {% block content %}
 <div class="cart-page">
-    <h1>Your Cart</h1>
+    <h1>🛒 Your Cart</h1>
 
     <div class="cart-items-container">
         <!-- Cart Items -->
@@ -278,25 +439,34 @@
                 <div class="cart-item" data-product-id="{{ item.id }}">
                     <img src="{{ item.image }}" class="cart-item-image" alt="{{ item.name }}" onerror="this.src='/static/images/placeholder.svg'">
                     <div class="cart-item-info">
-                        <div class="cart-item-name">{{ item.name }}</div>
-                        {% if item.is_on_sale and item.original_price %}
-                        <div class="cart-item-price">
-                            <div style="font-size:1rem;font-weight:700;color:#C9A84C;">KSh {{ item.price|thousand_separator }}</div>
-                            <div style="font-size:0.75rem;color:#999;text-decoration:line-through;">KSh {{ item.original_price|thousand_separator }}</div>
-                        </div>
-                        {% else %}
-                        <div class="cart-item-price">KSh {{ item.price|thousand_separator }}</div>
-                        {% endif %}
-                        <div class="cart-item-controls">
-                            <div class="qty-control">
-                                <button class="qty-btn" onclick="adjustQuantity({{ item.id }}, 'decrease', this)" aria-label="Decrease quantity of {{ item.name }}">−</button>
-                                <span class="qty-display">{{ item.quantity }}</span>
-                                <button class="qty-btn" onclick="adjustQuantity({{ item.id }}, 'increase', this)" aria-label="Increase quantity of {{ item.name }}">+</button>
+                        <div class="cart-item-header">
+                            <div class="cart-item-name">{{ item.name }}</div>
+                            <div class="cart-item-pricing">
+                                <div class="cart-item-price-display">
+                                    <span class="price-current">KSh {{ item.price|thousand_separator }}</span>
+                                    {% if item.is_on_sale and item.original_price %}
+                                    <span class="price-original">KSh {{ item.original_price|thousand_separator }}</span>
+                                    {% endif %}
+                                </div>
+                                {% if item.is_on_sale and item.original_price %}
+                                <div class="discount-badge">
+                                    <span>💰</span>
+                                    <span>{{ item.discount_percent }}% OFF</span>
+                                </div>
+                                {% endif %}
                             </div>
-                            <button class="remove-btn" onclick="removeItem({{ item.id }})" aria-label="Remove {{ item.name }} from cart">Remove</button>
+                        </div>
+                        <div class="cart-item-footer">
+                            <div class="qty-control">
+                                <button class="qty-btn" onclick="adjustQuantity({{ item.id }}, 'decrease', this)" aria-label="Decrease quantity">−</button>
+                                <span class="qty-display">{{ item.quantity }}</span>
+                                <button class="qty-btn" onclick="adjustQuantity({{ item.id }}, 'increase', this)" aria-label="Increase quantity">+</button>
+                            </div>
+                            <div class="item-subtotal" id="subtotal-{{ item.id }}">KSh {{ item.subtotal|thousand_separator }}</div>
+                            <button class="remove-btn" onclick="removeItem({{ item.id }})" aria-label="Remove from cart">Remove</button>
                         </div>
                         <!-- Stock warning message -->
-                        <div class="stock-warning" id="stock-warning-{{ item.id }}" style="display:none;margin-top:10px;padding:8px 12px;background:#fff3cd;border-radius:6px;font-size:0.85rem;color:#856404;font-weight:500;"></div>
+                        <div class="stock-warning" id="stock-warning-{{ item.id }}" style="display:none;margin-top:10px;"></div>
                     </div>
                 </div>
                 {% endfor %}
@@ -306,9 +476,10 @@
             {% else %}
             <div class="empty-cart">
                 <div class="empty-cart-icon">🛍️</div>
-                <p>Your cart is empty</p>
-                <p>Add some premium menswear to get started!</p>
-                <a href="{% url 'shop:shop' %}">Start Shopping</a>
+                <h2>Your Cart is Empty</h2>
+                <p>Discover our collection of premium menswear</p>
+                <p>Curated shirts, trousers, shoes and accessories</p>
+                <a href="{% url 'shop:shop' %}">Start Shopping Now</a>
             </div>
             {% endif %}
         </div>
@@ -317,24 +488,40 @@
         {% if cart_items %}
         <div class="cart-sidebar" id="cartSidebar">
             <h3>Order Summary</h3>
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <span>KSh {{ cart_total|thousand_separator }}</span>
+            
+            <div class="summary-section">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal-display">KSh {{ cart_total|thousand_separator }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>Calculated at checkout</span>
+                </div>
             </div>
-            <div class="summary-row">
-                <span>Shipping</span>
-                <span>Calculated at checkout</span>
+
+            {% if cart_total_savings %}
+            <div class="savings-row">
+                <span>💰 You're Saving</span>
+                <span>KSh {{ cart_total_savings|thousand_separator }}</span>
             </div>
+            {% endif %}
+
             <div class="summary-row total">
                 <span>Total</span>
-                <span>KSh {{ cart_total|thousand_separator }}</span>
+                <span id="total-display">KSh {{ cart_total|thousand_separator }}</span>
             </div>
-            <button class="btn-proceed" onclick="window.location.href='{% url "shop:checkout" %}'">
+
+            <button class="btn-proceed" onclick="window.location.href='{% url 'shop:checkout' %}'">
                 Proceed to Checkout
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
             </button>
+
+            <div style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px; font-size: 0.9rem; color: #666; text-align: center;">
+                ✓ Secure checkout · 🚚 Fast delivery · 🔒 Safe payments
+            </div>
         </div>
         {% endif %}
     </div>
@@ -372,7 +559,7 @@
                 qtyDisplay.textContent = currentQty;
                 const warningEl = document.getElementById(`stock-warning-${productId}`);
                 if (warningEl) {
-                    warningEl.textContent = '⚠️ ' + data.error;
+                    warningEl.innerHTML = '⚠️ ' + data.error;
                     warningEl.style.display = 'block';
                     setTimeout(() => warningEl.style.display = 'none', 4000);
                 }
@@ -382,6 +569,7 @@
                 if (warningEl) warningEl.style.display = 'none';
                 setCartCount(data.cart_count);
                 updateTotals(data);
+                updateItemSubtotal(productId, data);
             }
         })
         .catch(err => {
@@ -406,9 +594,10 @@
                 document.getElementById('cartItemsContainer').innerHTML = `
                     <div class="empty-cart">
                         <div class="empty-cart-icon">🛍️</div>
-                        <p>Your cart is empty</p>
-                        <p>Add some premium menswear to get started!</p>
-                        <a href="{% url 'shop:shop' %}">Start Shopping</a>
+                        <h2>Your Cart is Empty</h2>
+                        <p>Discover our collection of premium menswear</p>
+                        <p>Curated shirts, trousers, shoes and accessories</p>
+                        <a href="{% url 'shop:shop' %}">Start Shopping Now</a>
                     </div>`;
                 const sidebar = document.getElementById('cartSidebar');
                 if (sidebar) sidebar.remove();
@@ -421,11 +610,32 @@
     }
 
     function updateTotals(data) {
-        const totalAmountEl = document.querySelector('.summary-row.total span:last-child');
-        if (totalAmountEl) {
-            // Format with thousand separators (commas) and 2 decimal places like Django filter
+        const totalEl = document.getElementById('total-display');
+        const subtotalEl = document.getElementById('subtotal-display');
+        
+        if (totalEl) {
             const formatted = parseFloat(data.cart_total).toLocaleString('en-KE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            totalAmountEl.textContent = 'KSh ' + formatted;
+            totalEl.textContent = 'KSh ' + formatted;
+        }
+        
+        if (subtotalEl) {
+            const formatted = parseFloat(data.cart_total).toLocaleString('en-KE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            subtotalEl.textContent = 'KSh ' + formatted;
+        }
+    }
+
+    function updateItemSubtotal(productId, data) {
+        // Find the item and update its subtotal from the response
+        const item = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
+        if (item && data.items_detail) {
+            const itemDetail = data.items_detail.find(i => i.id === productId);
+            if (itemDetail) {
+                const subtotalEl = document.getElementById(`subtotal-${productId}`);
+                if (subtotalEl) {
+                    const formatted = parseFloat(itemDetail.subtotal).toLocaleString('en-KE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    subtotalEl.textContent = 'KSh ' + formatted;
+                }
+            }
         }
     }
 </script>

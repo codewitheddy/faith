@@ -97,6 +97,7 @@ def cart(request):
     cart = request.session.get('cart', {})
     cart_items = []
     cart_total = 0
+    cart_total_savings = 0
     for product_id, item in cart.items():
         subtotal = float(item['price']) * item['quantity']
         cart_total += subtotal
@@ -106,9 +107,16 @@ def cart(request):
             product = Product.objects.get(id=product_id)
             original_price = float(product.price) if product.price else None
             is_on_sale = product.is_on_sale
+            # Calculate discount percent
+            discount_percent = product.discount_percent if is_on_sale else 0
+            # Calculate total savings
+            if discount_percent > 0:
+                savings_per_item = (float(item['price']) * discount_percent / 100) * item['quantity']
+                cart_total_savings += savings_per_item
         except Product.DoesNotExist:
             original_price = None
             is_on_sale = False
+            discount_percent = 0
         
         cart_items.append({
             'id': product_id,
@@ -116,6 +124,7 @@ def cart(request):
             'price': float(item['price']),
             'original_price': original_price,
             'is_on_sale': is_on_sale,
+            'discount_percent': discount_percent,
             'quantity': item['quantity'],
             'subtotal': float(subtotal),
             'image': item.get('image', ''),
@@ -123,6 +132,7 @@ def cart(request):
     context = {
         'cart_items': cart_items,
         'cart_total': cart_total,
+        'cart_total_savings': cart_total_savings,
         'cart_count': _get_cart_count(request),
     }
     return render(request, 'cart.html', context)
