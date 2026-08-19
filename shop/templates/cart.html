@@ -443,10 +443,10 @@
                             <div class="cart-item-name">{{ item.name }}</div>
                             <div class="cart-item-pricing">
                                 <div class="cart-item-price-display">
-                                    <span class="price-current">KSh {{ item.price|thousand_separator }}</span>
                                     {% if item.is_on_sale and item.original_price %}
                                     <span class="price-original">KSh {{ item.original_price|thousand_separator }}</span>
                                     {% endif %}
+                                    <span class="price-current">KSh {{ item.price|thousand_separator }}</span>
                                 </div>
                                 {% if item.is_on_sale and item.original_price %}
                                 <div class="discount-badge">
