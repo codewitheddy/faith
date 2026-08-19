@@ -6,82 +6,159 @@
 {% block extra_css %}
 <style>
     .co-page {
-        max-width: 1080px;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 40px 20px 80px;
         display: grid;
-        grid-template-columns: 1fr 400px;
-        gap: 0;
+        grid-template-columns: 1fr 420px;
+        gap: 40px;
         align-items: start;
         min-height: calc(100vh - 80px);
     }
 
     /* ── Left panel ── */
     .co-left {
-        padding-right: 48px;
-        border-right: 1px solid #e8e8e8;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
     }
+    
+    .co-header {
+        margin-bottom: 32px;
+    }
+    
     .co-logo {
         font-size: 1.4rem;
         font-weight: 700;
         color: var(--dark);
         letter-spacing: 1px;
-        margin-bottom: 28px;
+        margin-bottom: 16px;
         display: flex;
         align-items: center;
         gap: 10px;
     }
     .co-logo img { height: 36px; }
 
-    .co-section { margin-bottom: 28px; }
-    .co-section-title {
-        font-size: 1.05rem;
-        font-weight: 600;
-        color: var(--dark);
-        margin-bottom: 14px;
+    .back-link {
+        display: inline-flex; 
+        align-items: center; 
+        gap: 6px;
+        color: var(--accent); 
+        text-decoration: none;
+        font-size: 0.9rem; 
+        transition: gap 0.2s, color 0.2s;
+        width: fit-content;
     }
+    .back-link:hover { 
+        gap: 10px;
+        color: #8b6914;
+    }
+
+    .co-section { 
+        margin-bottom: 32px;
+        background: #f9f9f9;
+        padding: 24px;
+        border-radius: 12px;
+        border: 1px solid #e8e8e8;
+        transition: all 0.3s;
+    }
+    
+    .co-section:hover {
+        border-color: var(--accent);
+        background: #fffbf0;
+    }
+    
+    .co-section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .co-section-icon {
+        width: 28px;
+        height: 28px;
+        background: var(--accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+    }
+    
     .co-section-subtitle {
         font-size: 0.82rem;
         color: #888;
         font-weight: 400;
-        margin-left: 6px;
     }
 
     /* Floating label inputs */
     .fl-group {
         position: relative;
-        margin-bottom: 12px;
+        margin-bottom: 14px;
     }
+    
     .fl-group input,
     .fl-group textarea,
     .fl-group select {
         width: 100%;
-        padding: 22px 14px 8px;
+        padding: 14px 16px;
         border: 1.5px solid #d0d0d0;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: 0.95rem;
         font-family: inherit;
         background: #fff;
         outline: none;
-        transition: border-color 0.2s;
+        transition: all 0.2s;
         color: var(--dark);
         appearance: none;
     }
-    .fl-group textarea { padding-top: 22px; resize: vertical; min-height: 80px; }
+    
+    .fl-group input::placeholder,
+    .fl-group select::placeholder {
+        color: transparent;
+    }
+    
     .fl-group input:focus,
     .fl-group textarea:focus,
-    .fl-group select:focus { border-color: var(--accent); }
+    .fl-group select:focus { 
+        border-color: var(--accent);
+        background: #fffbf0;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+    
+    .fl-group input.autofilled,
+    .fl-group select.autofilled {
+        background-color: #f0f8ff !important;
+        border-color: #4CAF50;
+    }
+    
     .fl-group label {
         position: absolute;
-        left: 14px; top: 50%;
-        transform: translateY(-50%);
+        left: 16px;
+        top: 14px;
         font-size: 0.9rem;
         color: #999;
         pointer-events: none;
         transition: all 0.15s ease;
         background: transparent;
     }
-    .fl-group textarea ~ label { top: 18px; transform: none; }
+    
+    .fl-group textarea { 
+        padding-top: 14px; 
+        resize: vertical; 
+        min-height: 100px;
+    }
+    
+    .fl-group textarea ~ label { 
+        top: 14px; 
+        transform: none; 
+    }
+    
     .fl-group input:focus ~ label,
     .fl-group input:not(:placeholder-shown) ~ label,
     .fl-group input.has-value ~ label,
@@ -90,200 +167,494 @@
     .fl-group textarea.has-value ~ label,
     .fl-group select:focus ~ label,
     .fl-group select.has-value ~ label {
-        top: 8px;
-        transform: none;
-        font-size: 0.72rem;
+        top: -10px;
+        left: 12px;
+        font-size: 0.75rem;
         color: var(--accent);
+        background: white;
+        padding: 0 4px;
+        font-weight: 600;
     }
-    .fl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    
+    .fl-row { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 14px;
+    }
+    
     .fl-select-arrow {
         position: absolute;
-        right: 14px; top: 50%;
+        right: 16px;
+        top: 50%;
         transform: translateY(-50%);
         pointer-events: none;
         color: #999;
-        font-size: 0.8rem;
+        font-size: 1rem;
     }
 
     /* Shipping method */
-    .shipping-options { display: flex; flex-direction: column; gap: 10px; }
+    .shipping-options { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 12px;
+    }
+    
     .shipping-option {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 14px 16px;
-        border: 1.5px solid #d0d0d0;
-        border-radius: 8px;
+        padding: 16px 18px;
+        border: 2px solid #d0d0d0;
+        border-radius: 10px;
         cursor: pointer;
-        transition: border-color 0.2s, background 0.2s;
+        transition: all 0.3s;
+        background: white;
     }
-    .shipping-option:hover { border-color: var(--accent); }
-    .shipping-option.selected { border-color: var(--accent); background: #fdf8ee; }
-    .shipping-option input[type=radio] { display: none; }
-    .shipping-option-left { display: flex; align-items: center; gap: 12px; }
+    
+    .shipping-option:hover { 
+        border-color: var(--accent);
+        background: #fffbf0;
+    }
+    
+    .shipping-option.selected { 
+        border-color: var(--accent); 
+        background: #fffbf0;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+    
+    .shipping-option input[type=radio] { 
+        display: none; 
+    }
+    
+    .shipping-option-left { 
+        display: flex; 
+        align-items: center; 
+        gap: 14px;
+        flex: 1;
+    }
+    
     .shipping-radio {
-        width: 18px; height: 18px;
-        border: 2px solid #ccc;
+        width: 20px;
+        height: 20px;
+        border: 2.5px solid #ccc;
         border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
-        transition: border-color 0.2s;
+        transition: all 0.2s;
+        background: white;
     }
-    .shipping-option.selected .shipping-radio { border-color: var(--accent); }
-    .shipping-radio-dot {
-        width: 9px; height: 9px;
-        border-radius: 50%;
+    
+    .shipping-option.selected .shipping-radio { 
+        border-color: var(--accent);
         background: var(--accent);
+    }
+    
+    .shipping-radio-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: white;
         display: none;
     }
-    .shipping-option.selected .shipping-radio-dot { display: block; }
-    .shipping-option-name { font-size: 0.9rem; font-weight: 500; }
-    .shipping-option-desc { font-size: 0.78rem; color: #888; }
-    .shipping-option-price { font-weight: 600; font-size: 0.9rem; }
+    
+    .shipping-option.selected .shipping-radio-dot { 
+        display: block; 
+    }
+    
+    .shipping-option-name { 
+        font-size: 0.95rem; 
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .shipping-option-desc { 
+        font-size: 0.8rem; 
+        color: #888;
+        margin-top: 2px;
+    }
+    
+    .shipping-option-price { 
+        font-weight: 700;
+        font-size: 1rem;
+        color: #2e7d32;
+    }
 
     /* Checkbox row */
     .co-checkbox {
-        display: flex; align-items: center; gap: 10px;
-        font-size: 0.85rem; color: #555; cursor: pointer;
-        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.9rem;
+        color: #555;
+        cursor: pointer;
+        margin-top: 8px;
     }
+    
     .co-checkbox input[type=checkbox] {
-        width: 16px; height: 16px;
+        width: 18px;
+        height: 18px;
         accent-color: var(--accent);
         cursor: pointer;
+        border-radius: 4px;
     }
 
     /* Place order button */
     .btn-place-order {
         width: 100%;
-        background: #25D366;
-        color: #fff;
+        background: #D4AF37;
+        color: var(--dark);
         padding: 16px;
         border: none;
         border-radius: 10px;
         font-size: 1rem;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
         transition: all 0.3s;
-        margin-top: 20px;
+        margin-top: 24px;
     }
-    .btn-place-order:hover { background: #1ebe5d; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,0.35); }
-    .btn-place-order svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
-    .co-note { font-size: 0.78rem; color: #aaa; text-align: center; margin-top: 10px; line-height: 1.5; }
+    
+    .btn-place-order:hover { 
+        background: #C9A84C;
+        transform: translateY(-2px); 
+        box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+    }
+    
+    .btn-place-order:active {
+        transform: translateY(0);
+    }
 
-    .back-link {
-        display: inline-flex; align-items: center; gap: 5px;
-        color: var(--accent); text-decoration: none;
-        font-size: 0.85rem; margin-bottom: 28px;
-        transition: gap 0.2s;
+    /* WhatsApp button */
+    .btn-whatsapp {
+        width: 100%;
+        background: #25D366;
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s;
+        margin-top: 12px;
     }
-    .back-link:hover { gap: 9px; }
+    
+    .btn-whatsapp:hover {
+        background: #1ebe5d;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
+    }
+    
+    .btn-whatsapp svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .co-note { 
+        font-size: 0.8rem; 
+        color: #888; 
+        text-align: center; 
+        margin-top: 12px; 
+        line-height: 1.6;
+    }
 
     /* ── Right panel (summary) ── */
     .co-right {
-        padding-left: 48px;
         position: sticky;
         top: 130px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
 
-    .co-items { margin-bottom: 20px; }
+    .co-items-card {
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    .co-items { 
+        margin-bottom: 0;
+    }
+    
     .co-item {
-        display: flex; gap: 14px;
-        padding: 12px 0;
+        display: flex;
+        gap: 14px;
+        padding: 14px 0;
         border-bottom: 1px solid #f0f0f0;
         align-items: center;
     }
-    .co-item:last-child { border-bottom: none; }
-    .co-item-img-wrap { position: relative; flex-shrink: 0; }
+    
+    .co-item:last-child { 
+        border-bottom: none;
+    }
+    
+    .co-item-img-wrap { 
+        position: relative; 
+        flex-shrink: 0;
+    }
+    
     .co-item-img {
-        width: 60px; height: 60px;
-        object-fit: cover; border-radius: 8px;
-        border: 1px solid #eee;
+        width: 64px;
+        height: 64px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #e8e8e8;
     }
+    
     .co-item-badge {
-        position: absolute; top: -6px; right: -6px;
-        background: #888; color: #fff;
-        width: 20px; height: 20px; border-radius: 50%;
-        font-size: 0.7rem; font-weight: 600;
-        display: flex; align-items: center; justify-content: center;
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: var(--accent);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
     }
-    .co-item-info { flex: 1; }
-    .co-item-name { font-size: 0.88rem; font-weight: 500; }
-    .co-item-meta { font-size: 0.78rem; color: #aaa; margin-top: 2px; }
-    .co-item-price { font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+    
+    .co-item-info { 
+        flex: 1;
+    }
+    
+    .co-item-name { 
+        font-size: 0.9rem; 
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .co-item-meta { 
+        font-size: 0.8rem; 
+        color: #888; 
+        margin-top: 4px;
+    }
+    
+    .co-item-price { 
+        font-size: 0.95rem; 
+        font-weight: 700;
+        white-space: nowrap;
+        color: var(--accent);
+    }
 
     /* Discount code */
     .discount-row {
-        display: flex; gap: 8px;
-        margin-bottom: 16px;
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
     }
+    
     .discount-row input {
-        flex: 1; padding: 11px 14px;
-        border: 1.5px solid #d0d0d0; border-radius: 8px;
-        font-size: 0.88rem; outline: none;
+        flex: 1;
+        padding: 12px 14px;
+        border: 1.5px solid #d0d0d0;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        outline: none;
         transition: border-color 0.2s;
     }
-    .discount-row input:focus { border-color: var(--accent); }
-    .discount-row input.applied { border-color: #4CAF50; background: #f0fff4; }
+    
+    .discount-row input:focus { 
+        border-color: var(--accent);
+    }
+    
+    .discount-row input.applied { 
+        border-color: #4CAF50;
+        background: #f0fff4;
+    }
+    
     .btn-apply-discount {
-        padding: 11px 18px;
-        background: var(--dark); color: #fff;
-        border: none; border-radius: 8px;
-        font-size: 0.85rem; font-weight: 500;
-        cursor: pointer; transition: background 0.2s;
+        padding: 12px 16px;
+        background: var(--dark);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
         white-space: nowrap;
     }
-    .btn-apply-discount:hover { background: #333; }
-    .discount-msg { font-size: 0.78rem; margin-bottom: 10px; }
-    .discount-msg.success { color: #4CAF50; }
-    .discount-msg.error { color: #f44336; }
+    
+    .btn-apply-discount:hover { 
+        background: #333;
+        transform: translateY(-2px);
+    }
+    
+    .discount-msg { 
+        font-size: 0.8rem; 
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        border-radius: 6px;
+    }
+    
+    .discount-msg.success { 
+        color: #2e7d32;
+        background: #f0fff4;
+        border-left: 3px solid #4CAF50;
+    }
+    
+    .discount-msg.error { 
+        color: #c62828;
+        background: #fff3e0;
+        border-left: 3px solid #f44336;
+    }
 
     /* Totals */
-    .co-totals { border-top: 1px solid #e8e8e8; padding-top: 14px; }
+    .co-totals { 
+        border-top: 2px solid #e8e8e8; 
+        padding-top: 16px;
+    }
+    
     .co-totals-row {
-        display: flex; justify-content: space-between;
-        padding: 5px 0; font-size: 0.88rem; color: #555;
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 0.9rem;
+        color: #555;
     }
-    .co-totals-row.discount-line { color: #4CAF50; }
+    
+    .co-totals-row.discount-line { 
+        color: #2e7d32;
+        font-weight: 600;
+    }
+    
     .co-totals-row.total-line {
-        font-size: 1.1rem; font-weight: 700; color: var(--dark);
-        border-top: 1px solid #e8e8e8;
-        margin-top: 8px; padding-top: 12px;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--dark);
+        border-top: 2px solid #e8e8e8;
+        margin-top: 12px;
+        padding-top: 16px;
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(212, 175, 55, 0) 100%);
+        padding: 16px 12px;
+        margin: 12px -12px 0 -12px;
+        border-radius: 8px;
     }
-    .co-totals-row .currency-label { font-size: 0.75rem; color: #aaa; margin-right: 4px; }
+    
+    .co-totals-row .currency-label { 
+        font-size: 0.75rem; 
+        color: #aaa; 
+        margin-right: 4px;
+    }
 
     /* How it works */
     .co-howto {
-        margin-top: 20px;
-        background: #f9f9f9;
-        border-radius: 10px;
-        padding: 14px 18px;
-        font-size: 0.8rem;
-        color: #666;
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 12px;
+        padding: 18px;
+        font-size: 0.85rem;
+        color: #555;
         line-height: 1.8;
     }
-    .co-howto-title { font-weight: 600; color: #333; margin-bottom: 6px; }
+    
+    .co-howto-title { 
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+    
+    .co-howto-step {
+        margin-bottom: 10px;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .co-howto-step-num {
+        background: var(--accent);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
 
     /* Messages */
     .co-alert {
-        background: #fff3cd; color: #856404;
-        border: 1px solid #ffc107;
-        padding: 12px 16px; border-radius: 8px;
-        margin-bottom: 18px; font-size: 0.88rem;
+        background: #fff3cd;
+        color: #856404;
+        border-left: 4px solid #ffc107;
+        padding: 14px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .co-alert.success {
+        background: #f0fff4;
+        color: #2e7d32;
+        border-left-color: #4CAF50;
     }
 
-    @media (max-width: 820px) {
-        .co-page { grid-template-columns: 1fr; gap: 0; }
-        .co-left { padding-right: 0; border-right: none; border-bottom: 1px solid #e8e8e8; padding-bottom: 32px; }
-        .co-right { padding-left: 0; padding-top: 32px; position: static; }
-        .co-right { order: -1; }
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .co-page {
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+        
+        .co-right {
+            position: static;
+        }
     }
+    
     @media (max-width: 480px) {
-        .fl-row { grid-template-columns: 1fr; }
+        .co-page {
+            padding: 20px 16px 60px;
+        }
+        
+        .fl-row { 
+            grid-template-columns: 1fr;
+        }
+        
+        .co-section {
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .co-item-img {
+            width: 48px;
+            height: 48px;
+        }
+        
+        .btn-place-order,
+        .btn-whatsapp {
+            font-size: 0.9rem;
+            padding: 14px;
+        }
+    }
+
+    /* Autofill styles */
+    .autofill-indicator {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4CAF50;
+        font-size: 0.9rem;
+        pointer-events: none;
     }
 </style>
 {% endblock %}
@@ -293,32 +664,39 @@
 
     <!-- ── LEFT: Form ── -->
     <div class="co-left">
-        <div class="co-logo">
-            <img src="{% static 'images/wyatt.png' %}" alt="Wyatt Collection">
+        <div class="co-header">
+            <div class="co-logo">
+                <img src="{% static 'images/wyatt.png' %}" alt="Wyatt Collection">
+            </div>
+            <a href="{% url 'shop:shop' %}" class="back-link">← Continue shopping</a>
         </div>
 
-        <a href="{% url 'shop:shop' %}" class="back-link">← Continue shopping</a>
-
-        <form method="post" action="{% url 'shop:checkout' %}" id="checkoutForm">
+        <form method="post" action="{% url 'shop:checkout' %}" id="checkoutForm">        <form method="post" action="{% url 'shop:checkout' %}" id="checkoutForm">
             {% csrf_token %}
             <!-- Hidden fields for form submission -->
             <input type="hidden" name="name" id="nameInput">
             <input type="hidden" name="discount_code" id="discountCodeInput" value="">
             <input type="hidden" name="discount_amount" id="discountAmountInput" value="0">
-            <input type="hidden" name="name" id="nameInput" value="">
 
-            <!-- Contact -->
+            <!-- Contact Section -->
             <div class="co-section">
                 <div class="co-section-title">
-                    Contact
-                    {% if not user.is_authenticated %}
-                    <span class="co-section-subtitle">Have an account? <a href="{% url 'shop:login' %}?next=/checkout/" style="color:var(--accent);">Sign in</a> to auto-fill</span>
-                    {% endif %}
+                    <span class="co-section-icon">💬</span>
+                    <span>Contact Information</span>
                 </div>
+                {% if user.is_authenticated %}
+                <div class="co-alert success">
+                    ✓ Logged in as <strong>{{ user.first_name|default:user.email }}</strong>
+                </div>
+                {% else %}
+                <div class="co-note" style="margin-bottom: 16px; color: #666; font-size: 0.9rem;">
+                    <a href="{% url 'shop:login' %}?next=/checkout/" style="color: var(--accent); font-weight: 600;">Sign in</a> to auto-fill your details
+                </div>
+                {% endif %}
                 <div class="fl-group">
-                    <input type="email" name="email" id="emailInput" placeholder=" "
+                    <input type="email" name="email" id="emailInput" placeholder=" " required
                         value="{{ prefill.email|default:'' }}">
-                    <label>Email (optional — for order updates)</label>
+                    <label>Email *</label>
                 </div>
                 <div class="fl-group">
                     <input type="tel" name="phone" id="phoneInput" placeholder=" " required
@@ -327,14 +705,17 @@
                 </div>
                 <label class="co-checkbox">
                     <input type="checkbox" name="email_offers" id="emailOffers">
-                    Send me news and offers via WhatsApp
+                    Send me updates and offers via WhatsApp
                 </label>
             </div>
 
-            <!-- Delivery -->
+            <!-- Delivery Section -->
             <div class="co-section">
-                <div class="co-section-title">Delivery</div>
-                <div class="fl-row" style="margin-bottom:12px;">
+                <div class="co-section-title">
+                    <span class="co-section-icon">📍</span>
+                    <span>Delivery Address</span>
+                </div>
+                <div class="fl-row">
                     <div class="fl-group">
                         <input type="text" name="first_name" id="firstNameInput" placeholder=" " required
                             value="{{ prefill.first_name|default:'' }}">
@@ -343,18 +724,18 @@
                     <div class="fl-group">
                         <input type="text" name="last_name" id="lastNameInput" placeholder=" "
                             value="{{ prefill.last_name|default:'' }}">
-                        <label>Last name (optional)</label>
+                        <label>Last name</label>
                     </div>
                 </div>
                 <div class="fl-group">
                     <input type="text" name="address" id="addressInput" placeholder=" " required
                         value="{{ prefill.address|default:'' }}">
-                    <label>Address *</label>
+                    <label>Street address *</label>
                 </div>
                 <div class="fl-group">
                     <input type="text" name="apartment" id="apartmentInput" placeholder=" "
                         value="{{ prefill.apartment|default:'' }}">
-                    <label>Apartment, suite, etc. (optional)</label>
+                    <label>Apartment, floor, building, etc. (optional)</label>
                 </div>
                 <div class="fl-row">
                     <div class="fl-group">
@@ -368,52 +749,190 @@
                         <label>Postal code (optional)</label>
                     </div>
                 </div>
-                <label class="co-checkbox" style="margin-top:8px;">
-                    <input type="checkbox" id="saveInfo">
-                    Save this information for next time
+                <label class="co-checkbox">
+                    <input type="checkbox" id="saveInfo" checked>
+                    Save this information for faster checkout next time
                 </label>
             </div>
 
-            <!-- Notes -->
+            <!-- Shipping Method -->
             <div class="co-section">
-                <div class="co-section-title">Order notes <span class="co-section-subtitle">optional</span></div>
+                <div class="co-section-title">
+                    <span class="co-section-icon">🚚</span>
+                    <span>Shipping Method</span>
+                </div>
+                <div class="shipping-options" id="shippingOptions">
+                    <label class="shipping-option selected">
+                        <input type="radio" name="shipping_method" value="nairobi" checked>
+                        <div class="shipping-option-left">
+                            <div class="shipping-radio">
+                                <div class="shipping-radio-dot"></div>
+                            </div>
+                            <div>
+                                <div class="shipping-option-name">🏙️ Nairobi Delivery</div>
+                                <div class="shipping-option-desc">2-3 business days</div>
+                            </div>
+                        </div>
+                        <div class="shipping-option-price">Free</div>
+                    </label>
+                    <label class="shipping-option">
+                        <input type="radio" name="shipping_method" value="outside_nairobi">
+                        <div class="shipping-option-left">
+                            <div class="shipping-radio">
+                                <div class="shipping-radio-dot"></div>
+                            </div>
+                            <div>
+                                <div class="shipping-option-name">🌍 Outside Nairobi</div>
+                                <div class="shipping-option-desc">3-5 business days</div>
+                            </div>
+                        </div>
+                        <div class="shipping-option-price">KSh 500</div>
+                    </label>
+                    <label class="shipping-option">
+                        <input type="radio" name="shipping_method" value="pickup">
+                        <div class="shipping-option-left">
+                            <div class="shipping-radio">
+                                <div class="shipping-radio-dot"></div>
+                            </div>
+                            <div>
+                                <div class="shipping-option-name">🏪 Pickup at CBD</div>
+                                <div class="shipping-option-desc">Next business day</div>
+                            </div>
+                        </div>
+                        <div class="shipping-option-price">Free</div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Order Notes -->
+            <div class="co-section">
+                <div class="co-section-title">
+                    <span class="co-section-icon">📝</span>
+                    <span>Order Notes</span>
+                    <span class="co-section-subtitle">(optional)</span>
+                </div>
                 <div class="fl-group">
                     <textarea name="notes" id="notesInput" placeholder=" "></textarea>
                     <label>Special instructions or requests</label>
                 </div>
             </div>
 
-            <!-- Order methods -->
+            <!-- Checkout Methods -->
             <div class="co-section">
-                <div class="co-section-title">Checkout Method</div>
+                <div class="co-section-title">
+                    <span class="co-section-icon">💳</span>
+                    <span>Complete Purchase</span>
+                </div>
                 
-                <!-- Regular Checkout Button -->
-                <button type="submit" class="btn-place-order" style="background:#D4AF37;color:#000;margin-bottom:12px;">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;margin-right:8px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    Place Order
+                <button type="submit" class="btn-place-order">
+                    Place Order & Continue
                 </button>
-                <div class="form-help" style="margin-bottom:20px;font-size:0.85rem;">Standard checkout - You'll provide payment details after order confirmation</div>
-
-                <!-- Or Divider -->
-                <div style="text-align:center;margin:20px 0;font-size:0.85rem;color:#999;">— OR —</div>
-
-                <!-- WhatsApp Checkout Option -->
-                <label style="display:flex;align-items:center;padding:14px;background:#f0f0f0;border-radius:8px;cursor:pointer;margin-bottom:12px;border:2px solid transparent;transition:all 0.2s;">
-                    <input type="checkbox" id="useWhatsApp" name="send_via_whatsapp" style="width:18px;height:18px;cursor:pointer;margin-right:12px;">
-                    <div style="flex:1;">
-                        <div style="font-weight:600;font-size:0.9rem;">Order via WhatsApp</div>
-                        <div style="font-size:0.8rem;color:#666;margin-top:2px;">Get redirected to WhatsApp with your order pre-filled</div>
+                <div class="co-note">Standard checkout - confirm your order and we'll contact you with payment options</div>
+                
+                <div style="text-align: center; margin: 24px 0; color: #bbb; font-size: 0.9rem;">— OR —</div>
+                
+                <label class="co-checkbox" style="padding: 14px; background: #f0f0f0; border-radius: 10px; margin: 0;">
+                    <input type="checkbox" id="useWhatsApp" name="send_via_whatsapp">
+                    <div>
+                        <div style="font-weight: 700; color: var(--dark);">Order via WhatsApp</div>
+                        <div style="font-size: 0.8rem; color: #666; margin-top: 4px;">Quick checkout - your order details will open in WhatsApp</div>
                     </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:24px;height:24px;fill:#25D366;flex-shrink:0;">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                    </svg>
                 </label>
-
-                <div class="form-help" style="font-size:0.8rem;color:#666;">When checked, you can use WhatsApp as an alternative checkout method. Uncheck to use standard checkout only.</div>
             </div>
         </form>
+    </div>
+
+    <!-- ── RIGHT: Order Summary ── -->
+    <div class="co-right">
+        <div class="co-items-card">
+            <div style="font-weight: 700; color: var(--dark); margin-bottom: 16px; font-size: 1rem;">📦 Order Summary</div>
+            <div class="co-items">
+                {% for item in cart_items %}
+                <div class="co-item">
+                    <div class="co-item-img-wrap">
+                        {% if item.image %}
+                        <img src="{{ item.image }}" alt="{{ item.name }}" class="co-item-img"
+                            onerror="this.src='/static/images/placeholder.svg'">
+                        {% else %}
+                        <div class="co-item-img" style="background: linear-gradient(135deg, #f5deb3 0%, #daa520 100%); display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">👔</div>
+                        {% endif %}
+                        <span class="co-item-badge">{{ item.quantity }}</span>
+                    </div>
+                    <div class="co-item-info">
+                        <div class="co-item-name">{{ item.name }}</div>
+                        {% if item.is_on_sale and item.original_price and item.original_price != item.price %}
+                        <div style="margin-top: 4px;">
+                            <div style="color: #999; text-decoration: line-through; font-size: 0.75rem;">KSh {{ item.original_price|thousand_separator }}</div>
+                            <div style="font-weight: 700; color: var(--accent); font-size: 0.9rem;">KSh {{ item.price|thousand_separator }}</div>
+                            {% if item.discount_percent %}
+                            <div style="color: #2e7d32; font-size: 0.75rem; font-weight: 700; margin-top: 2px;">💰 {{ item.discount_percent }}% OFF</div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="co-item-meta" style="font-weight: 700; color: var(--dark);">KSh {{ item.price|thousand_separator }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="co-item-price">KSh {{ item.subtotal|thousand_separator }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Discount Code -->
+        <div class="co-items-card">
+            <div style="font-weight: 700; color: var(--dark); margin-bottom: 12px;">🎟️ Discount Code</div>
+            <div class="discount-row">
+                <input type="text" id="discountCodeField" placeholder="Enter code" aria-label="Discount code">
+                <button type="button" class="btn-apply-discount" onclick="applyDiscount()">Apply</button>
+            </div>
+            <div class="discount-msg" id="discountMsg" role="status" aria-live="polite"></div>
+        </div>
+
+        <!-- Totals -->
+        <div class="co-items-card">
+            <div class="co-totals">
+                <div class="co-totals-row">
+                    <span>Subtotal</span>
+                    <span><strong>KSh {{ cart_total|thousand_separator }}</strong></span>
+                </div>
+                <div class="co-totals-row" id="shippingRow">
+                    <span>Shipping</span>
+                    <span id="shippingDisplay"><strong>Free</strong></span>
+                </div>
+                <div class="co-totals-row discount-line" id="discountRow" style="display: none;">
+                    <span>Discount</span>
+                    <span id="discountDisplay"><strong>-KSh 0</strong></span>
+                </div>
+                <div class="co-totals-row total-line">
+                    <span>Total Amount</span>
+                    <span><strong id="grandTotal">KSh {{ cart_total|thousand_separator }}</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- How it Works -->
+        <div class="co-howto">
+            <div class="co-howto-title">📋 How it Works</div>
+            <div class="co-howto-step">
+                <div class="co-howto-step-num">1</div>
+                <div>Fill in your details</div>
+            </div>
+            <div class="co-howto-step">
+                <div class="co-howto-step-num">2</div>
+                <div>Place your order</div>
+            </div>
+            <div class="co-howto-step">
+                <div class="co-howto-step-num">3</div>
+                <div>Receive payment options via WhatsApp</div>
+            </div>
+            <div class="co-howto-step">
+                <div class="co-howto-step-num">4</div>
+                <div>We deliver within 1-4 days</div>
+            </div>
+        </div>
+    </div>
+
+</div>
     </div>
 
     <!-- ── RIGHT: Order Summary ── -->
@@ -494,44 +1013,96 @@
 
 {% block extra_js %}
 <script>
-    // Check stock status on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const cartItems = JSON.parse('{{ cart_items_json|safe }}');
-        if (cartItems && Array.isArray(cartItems)) {
-            cartItems.forEach(item => {
-                fetch(`/api/product/${item.id}/stock/`)
-                    .then(r => r.json())
-                    .then(data => {
-                        const statusEl = document.getElementById(`stock-status-${item.id}`);
-                        if (statusEl && data.stock_quantity !== undefined) {
-                            if (data.is_low_stock && !data.is_out_of_stock) {
-                                statusEl.textContent = `⚠️ Only ${data.stock_quantity} left in stock`;
-                                statusEl.style.color = '#d97706';
-                            } else if (data.is_out_of_stock) {
-                                statusEl.textContent = '❌ This product is out of stock';
-                                statusEl.style.color = '#dc2626';
-                            }
-                        }
-                    })
-                    .catch(err => console.log('Stock check skipped:', err));
-            });
-        }
-    });
-
     const CART_SUBTOTAL = {{ cart_total }};
     let currentDiscount = 0;
+    let currentShippingFee = 0;
 
-    function updateTotal() {
-        const total = CART_SUBTOTAL - currentDiscount;
-        document.getElementById('grandTotal').textContent = 'KSh ' + total.toLocaleString('en-KE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    // ── Initialize on page load ──
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSavedInfo();
+        setupShippingHandlers();
+        setupFieldValidation();
+        markAutofilled();
+    });
+
+    // ── Auto-fill for registered customers ──
+    function markAutofilled() {
+        const fields = ['emailInput', 'phoneInput', 'firstNameInput', 'lastNameInput', 'addressInput', 'apartmentInput', 'cityInput', 'postalInput'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.value) {
+                el.classList.add('autofilled', 'has-value');
+            }
+        });
     }
 
-    // ── Discount code ──
-    // Simple client-side codes — extend as needed
+    // ── Shipping method handlers ──
+    function setupShippingHandlers() {
+        const shippingOptions = document.querySelectorAll('input[name="shipping_method"]');
+        const shippingDisplay = document.getElementById('shippingDisplay');
+        const shippingFees = {
+            'nairobi': 0,
+            'outside_nairobi': 500,
+            'pickup': 0
+        };
+
+        shippingOptions.forEach(option => {
+            option.addEventListener('change', function() {
+                // Update selected visual state
+                document.querySelectorAll('.shipping-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.closest('.shipping-option').classList.add('selected');
+
+                // Update shipping fee
+                currentShippingFee = shippingFees[this.value] || 0;
+                if (currentShippingFee === 0) {
+                    shippingDisplay.innerHTML = '<strong>Free</strong>';
+                } else {
+                    shippingDisplay.innerHTML = `<strong>KSh ${currentShippingFee.toLocaleString('en-KE')}</strong>`;
+                }
+                updateTotal();
+            });
+        });
+
+        // Set initial shipping fee
+        const initialShipping = document.querySelector('input[name="shipping_method"]:checked');
+        if (initialShipping) {
+            currentShippingFee = shippingFees[initialShipping.value] || 0;
+        }
+    }
+
+    // ── Field validation and floating label ──
+    function setupFieldValidation() {
+        document.querySelectorAll('.fl-group input, .fl-group textarea, .fl-group select').forEach(field => {
+            function updateLabel() {
+                if (field.value.trim()) {
+                    field.classList.add('has-value');
+                } else {
+                    field.classList.remove('has-value');
+                }
+            }
+
+            field.addEventListener('input', updateLabel);
+            field.addEventListener('change', updateLabel);
+            field.addEventListener('blur', updateLabel);
+            updateLabel();
+        });
+    }
+
+    // ── Update total calculation ──
+    function updateTotal() {
+        const subtotal = CART_SUBTOTAL;
+        const total = subtotal + currentShippingFee - currentDiscount;
+        const formattedTotal = total.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('grandTotal').textContent = 'KSh ' + formattedTotal;
+    }
+
+    // ── Discount codes ──
     const DISCOUNT_CODES = {
         'WYATT10': { type: 'percent', value: 10 },
         'WYATT15': { type: 'percent', value: 15 },
-        'SAVE200':   { type: 'fixed',   value: 200 },
+        'SAVE200': { type: 'fixed', value: 200 },
     };
 
     function applyDiscount() {
@@ -540,11 +1111,15 @@
         const rowEl = document.getElementById('discountRow');
         const dispEl = document.getElementById('discountDisplay');
 
-        if (!code) { msgEl.textContent = 'Please enter a discount code.'; msgEl.className = 'discount-msg error'; return; }
+        if (!code) {
+            msgEl.textContent = '⚠️ Please enter a discount code.';
+            msgEl.className = 'discount-msg error';
+            return;
+        }
 
         const promo = DISCOUNT_CODES[code];
         if (!promo) {
-            msgEl.textContent = 'Invalid discount code.';
+            msgEl.textContent = '❌ Invalid code. Try WYATT10, WYATT15, or SAVE200.';
             msgEl.className = 'discount-msg error';
             document.getElementById('discountCodeField').classList.remove('applied');
             currentDiscount = 0;
@@ -555,10 +1130,12 @@
             currentDiscount = promo.type === 'percent'
                 ? Math.round(CART_SUBTOTAL * promo.value / 100)
                 : promo.value;
-            msgEl.textContent = `✓ Code applied — ${promo.type === 'percent' ? promo.value + '% off' : 'KSh ' + promo.value + ' off'}`;
+            
+            const discountText = promo.type === 'percent' ? `${promo.value}% off` : `KSh ${promo.value} off`;
+            msgEl.textContent = `✅ Code applied — ${discountText}`;
             msgEl.className = 'discount-msg success';
             document.getElementById('discountCodeField').classList.add('applied');
-            dispEl.textContent = '-KSh ' + currentDiscount.toLocaleString('en-KE', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            dispEl.textContent = '<strong>-KSh ' + currentDiscount.toLocaleString('en-KE', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + '</strong>';
             rowEl.style.display = 'flex';
             document.getElementById('discountAmountInput').value = currentDiscount;
             document.getElementById('discountCodeInput').value = code;
@@ -568,139 +1145,143 @@
 
     // Allow Enter key on discount field
     document.getElementById('discountCodeField').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') { e.preventDefault(); applyDiscount(); }
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            applyDiscount();
+        }
     });
 
-    // ── Save info (localStorage) ──
+    // ── Load saved checkout info from localStorage ──
     const SAVE_KEY = 'wyatt_checkout_info';
 
     function loadSavedInfo() {
         try {
             const saved = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
             if (!saved) return;
-            const fields = ['emailInput','phoneInput','firstNameInput','lastNameInput','addressInput','apartmentInput','cityInput','postalInput'];
-            fields.forEach(id => {
-                const el = document.getElementById(id);
-                if (el && saved[id] && !el.value) {
-                    el.value = saved[id];
-                    el.classList.add('has-value');
+
+            const fieldMap = {
+                'emailInput': 'email',
+                'phoneInput': 'phone',
+                'firstNameInput': 'firstName',
+                'lastNameInput': 'lastName',
+                'addressInput': 'address',
+                'apartmentInput': 'apartment',
+                'cityInput': 'city',
+                'postalInput': 'postal'
+            };
+
+            for (const [elementId, savedKey] of Object.entries(fieldMap)) {
+                const el = document.getElementById(elementId);
+                if (el && saved[savedKey] && !el.value) {
+                    el.value = saved[savedKey];
+                    el.classList.add('has-value', 'autofilled');
                 }
-            });
-            if (saved.saveInfo) document.getElementById('saveInfo').checked = true;
-        } catch(e) {}
+            }
+
+            if (saved.saveInfo) {
+                document.getElementById('saveInfo').checked = true;
+            }
+        } catch (e) {
+            console.log('Could not load saved checkout info');
+        }
     }
 
+    // ── Form submission ──
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // Build full name and set on hidden field
+        // Get form values
         const fn = document.getElementById('firstNameInput').value.trim();
         const ln = document.getElementById('lastNameInput').value.trim();
         const fullName = (fn + ' ' + ln).trim();
-        
         const email = document.getElementById('emailInput').value.trim();
-        const phone_no = document.getElementById('phoneInput').value.trim();
+        const phone = document.getElementById('phoneInput').value.trim();
         const address = document.getElementById('addressInput').value.trim();
         const city = document.getElementById('cityInput').value.trim();
-        
+        const notes = document.getElementById('notesInput').value.trim();
+        const apartment = document.getElementById('apartmentInput').value.trim();
+
         // Validate required fields
-        if (!fullName) {
-            alert('Please enter your first and last name');
-            document.getElementById('firstNameInput').focus();
+        const errors = [];
+        if (!fn) errors.push('First name');
+        if (!email) errors.push('Email');
+        if (!phone) errors.push('Phone');
+        if (!address) errors.push('Address');
+        if (!city) errors.push('City');
+
+        if (errors.length > 0) {
+            alert('Please fill in required fields:\n\n' + errors.join(', '));
+            if (!fn) document.getElementById('firstNameInput').focus();
             return;
         }
-        if (!email) {
-            alert('Please enter your email');
-            document.getElementById('emailInput').focus();
-            return;
-        }
-        if (!phone_no) {
-            alert('Please enter your phone number');
-            document.getElementById('phoneInput').focus();
-            return;
-        }
-        if (!address) {
-            alert('Please enter your address');
-            document.getElementById('addressInput').focus();
-            return;
-        }
-        if (!city) {
-            alert('Please enter your city');
-            document.getElementById('cityInput').focus();
-            return;
-        }
-        
+
+        // Set hidden name field
         document.getElementById('nameInput').value = fullName;
 
+        // Get selected shipping method
+        const shippingMethod = document.querySelector('input[name="shipping_method"]:checked');
+        const shippingFee = currentShippingFee;
+
         // Check if WhatsApp option is selected
-        const useWhatsApp = document.getElementById('useWhatsApp') && document.getElementById('useWhatsApp').checked;
+        const useWhatsApp = document.getElementById('useWhatsApp').checked;
 
         if (useWhatsApp) {
-            // WhatsApp checkout
-            const notes = document.getElementById('notesInput').value.trim();
-            
-            // Build cart items list
-            const cartItems = JSON.parse('{{ cart_items_json|safe }}');
-            let itemsText = '';
-            if (cartItems && Array.isArray(cartItems)) {
-                itemsText = '\n*Order Items:*\n';
-                cartItems.forEach(item => {
-                    const subtotal = typeof item.subtotal === 'number' ? item.subtotal : parseFloat(item.subtotal) || 0;
-                    itemsText += `• ${item.name} x${item.quantity} - KSh ${subtotal.toLocaleString('en-KE', {minimumFractionDigits: 0, maximumFractionDigits: 0})}\n`;
-                });
+            // Build WhatsApp message
+            const shippingLabels = {
+                'nairobi': '🏙️ Nairobi Delivery (Free)',
+                'outside_nairobi': '🌍 Outside Nairobi (KSh 500)',
+                'pickup': '🏪 Pickup at CBD (Free)'
+            };
+
+            let message = `*Order from Wyatt Collection*\n\n`;
+            message += `*Customer Details:*\n`;
+            message += `Name: ${fullName}\n`;
+            message += `Email: ${email}\n`;
+            message += `Phone: ${phone}\n`;
+            message += `Address: ${address}${apartment ? ', ' + apartment : ''}\n`;
+            message += `City: ${city}\n\n`;
+
+            message += `*Shipping:*\n`;
+            message += `${shippingLabels[shippingMethod.value]}\n\n`;
+
+            message += `*Order Total:*\n`;
+            const total = CART_SUBTOTAL + shippingFee - currentDiscount;
+            message += `KSh ${total.toLocaleString('en-KE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}\n\n`;
+
+            if (notes) {
+                message += `*Notes:*\n${notes}\n\n`;
             }
-            
-            const message = `Hello, I'd like to place an order:\n\n` +
-                `Name: ${fullName}\n` +
-                `Email: ${email}\n` +
-                `Phone: ${phone_no}\n` +
-                `Address: ${address}\n` +
-                `City: ${city}\n` +
-                `Notes: ${notes}\n` +
-                itemsText +
-                `\nTotal Amount: KSh {{ cart_total|thousand_separator }}\n\n` +
-                `Please confirm and send payment details.`;
-            
+
+            message += `Thank you for shopping with Wyatt Collection!`;
+
             const whatsappUrl = `https://wa.me/254706105967?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
             return;
         }
 
-        // Save info to localStorage if checked
+        // Save checkout info if checked
         if (document.getElementById('saveInfo').checked) {
             const data = {
+                email: email,
+                phone: phone,
+                firstName: fn,
+                lastName: ln,
+                address: address,
+                apartment: apartment,
+                city: city,
+                postal: document.getElementById('postalInput').value.trim(),
                 saveInfo: true,
-                emailInput: email,
-                phoneInput: phone_no,
-                firstNameInput: fn,
-                lastNameInput: ln,
-                addressInput: address,
-                apartmentInput: document.getElementById('apartmentInput').value,
-                cityInput: city,
-                postalInput: document.getElementById('postalInput').value,
+                savedAt: new Date().toISOString()
             };
-            localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+            try {
+                localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.log('Could not save checkout info');
+            }
         }
 
-        // Regular checkout - submit form
+        // Submit form for standard checkout
         this.submit();
-    });
-
-    // Init
-    document.addEventListener('DOMContentLoaded', function() {
-        loadSavedInfo();
-        updateTotal();
-
-        // Mark pre-filled inputs so floating labels stay up
-        document.querySelectorAll('.fl-group input, .fl-group textarea').forEach(function(el) {
-            function check() {
-                if (el.value) el.classList.add('has-value');
-                else el.classList.remove('has-value');
-            }
-            check();
-            el.addEventListener('input', check);
-            el.addEventListener('change', check);
-        });
     });
 </script>
 {% endblock %}
