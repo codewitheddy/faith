@@ -445,6 +445,8 @@
                                 <div class="cart-item-price-display">
                                     {% if item.original_price and item.original_price != item.price %}
                                     <span class="price-original">KSh {{ item.original_price|thousand_separator }}</span>
+                                    {% else %}
+                                    <span class="price-original" style="visibility: hidden;">KSh 0</span>
                                     {% endif %}
                                     <span class="price-current">KSh {{ item.price|thousand_separator }}</span>
                                 </div>

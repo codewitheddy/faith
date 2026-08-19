@@ -105,30 +105,33 @@ def cart(request):
         # Fetch product to get original price for display
         try:
             product = Product.objects.get(id=product_id)
-            base_price = float(product.price) if product.price else float(item['price'])
             current_price = float(item['price'])
             
-            # Check if this item is on sale
-            is_on_sale = product.is_on_sale and product.sale_price and product.sale_price < product.price
+            # Get base price (original price)
+            base_price = float(product.price)
+            
+            # Check if product is on sale
+            is_on_sale = product.on_sale  # Uses the @property that checks sale_price < price
+            
+            # Get discount info
             discount_percent = product.discount_percent if is_on_sale else 0
             
-            # Calculate total savings
-            if discount_percent > 0 and is_on_sale:
+            # Calculate savings
+            if is_on_sale and discount_percent > 0:
                 savings_per_item = (base_price - current_price) * item['quantity']
                 cart_total_savings += savings_per_item
             
-            original_price = base_price if is_on_sale else None
-            
         except Product.DoesNotExist:
-            original_price = None
+            base_price = float(item['price'])
+            current_price = float(item['price'])
             is_on_sale = False
             discount_percent = 0
         
         cart_items.append({
             'id': product_id,
             'name': item['name'],
-            'price': float(item['price']),
-            'original_price': original_price,
+            'price': current_price,  # Actual price customer pays
+            'original_price': base_price,  # Original/list price
             'is_on_sale': is_on_sale,
             'discount_percent': discount_percent,
             'quantity': item['quantity'],
@@ -519,7 +522,7 @@ def checkout(request):
         # Send order confirmation email to customer
         send_order_confirmation_email(order)
 
-        # Build WhatsApp message
+        # Build WhatsApp message with pricing info
         shipping_labels = {
             'nairobi': 'Nairobi Delivery',
             'outside_nairobi': 'Outside Nairobi',
@@ -529,16 +532,43 @@ def checkout(request):
         message += f"Order #: {order.order_number}\n\n"
         message += "*ORDER ITEMS*\n"
         item_count = 0
-        for i, item in enumerate(cart.values(), 1):
-            sub = float(item['price']) * item['quantity']
+        total_savings = 0
+        
+        for i, (product_id, item) in enumerate(cart.items(), 1):
             item_count += item['quantity']
-            message += f"{i}. {item['name']}\n"
-            message += f"   Qty: {item['quantity']} x Ksh {float(item['price']):,.2f}\n"
-            message += f"   Subtotal: Ksh {sub:,.2f}\n\n"
+            sub = float(item['price']) * item['quantity']
+            
+            # Fetch product to get original price and discount info
+            try:
+                product = Product.objects.get(id=product_id)
+                original_price = float(product.price)
+                current_price = float(item['price'])
+                is_on_sale = product.on_sale
+                discount_percent = product.discount_percent if is_on_sale else 0
+                
+                # Calculate savings
+                if is_on_sale and discount_percent > 0:
+                    savings = (original_price - current_price) * item['quantity']
+                    total_savings += savings
+                
+                message += f"{i}. {item['name']}\n"
+                if is_on_sale and discount_percent > 0:
+                    message += f"   Original: ~~Ksh {original_price:,.2f}~~\n"
+                    message += f"   Discounted: Ksh {current_price:,.2f} ({discount_percent}% OFF)\n"
+                    message += f"   Qty: {item['quantity']} x Ksh {current_price:,.2f}\n"
+                else:
+                    message += f"   Qty: {item['quantity']} x Ksh {current_price:,.2f}\n"
+                message += f"   Subtotal: Ksh {sub:,.2f}\n\n"
+            except Product.DoesNotExist:
+                message += f"{i}. {item['name']}\n"
+                message += f"   Qty: {item['quantity']} x Ksh {float(item['price']):,.2f}\n"
+                message += f"   Subtotal: Ksh {sub:,.2f}\n\n"
 
         message += "*ORDER SUMMARY*\n"
         message += f"Total Items: {item_count}\n"
         message += f"Subtotal: Ksh {subtotal:,.2f}\n"
+        if total_savings > 0:
+            message += f"💰 Total Savings: Ksh {total_savings:,.2f}\n"
         message += f"Shipping ({shipping_labels.get(shipping_method, shipping_method)}): Ksh {float(shipping_fee):,.2f}\n"
         if discount_amount > 0:
             message += f"Discount ({discount_code}): -Ksh {float(discount_amount):,.2f}\n"
@@ -581,6 +611,7 @@ def checkout(request):
 
     cart_items = []
     cart_total = 0
+    cart_total_savings = 0
     for product_id, item in cart.items():
         subtotal = float(item['price']) * item['quantity']
         cart_total += subtotal
@@ -588,18 +619,33 @@ def checkout(request):
         # Fetch product to get original price for display
         try:
             product = Product.objects.get(id=product_id)
-            original_price = float(product.price) if product.price else None
-            is_on_sale = product.is_on_sale
+            current_price = float(item['price'])
+            base_price = float(product.price)
+            
+            # Check if product is on sale
+            is_on_sale = product.on_sale  # Uses the @property that checks sale_price < price
+            
+            # Get discount info
+            discount_percent = product.discount_percent if is_on_sale else 0
+            
+            # Calculate savings
+            if is_on_sale and discount_percent > 0:
+                savings_per_item = (base_price - current_price) * item['quantity']
+                cart_total_savings += savings_per_item
+            
         except Product.DoesNotExist:
-            original_price = None
+            base_price = float(item['price'])
+            current_price = float(item['price'])
             is_on_sale = False
+            discount_percent = 0
         
         cart_items.append({
             'id': product_id,
             'name': item['name'],
-            'price': float(item['price']),
-            'original_price': original_price,
+            'price': current_price,  # Actual price customer pays
+            'original_price': base_price,  # Original/list price
             'is_on_sale': is_on_sale,
+            'discount_percent': discount_percent,
             'quantity': item['quantity'],
             'subtotal': float(subtotal),
             'image': item.get('image', ''),
@@ -628,6 +674,7 @@ def checkout(request):
         'cart_items': cart_items,
         'cart_items_json': json.dumps(cart_items),
         'cart_total': cart_total,
+        'cart_total_savings': cart_total_savings,
         'cart_count': _get_cart_count(request),
         'prefill': prefill,
     })

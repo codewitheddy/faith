@@ -18,13 +18,31 @@ def send_order_confirmation_email(order):
     try:
         # Prepare order items for template
         items = []
+        total_savings = 0
         for order_item in order.items.all():
             product_name = order_item.product.name if order_item.product else "[Deleted Product]"
+            current_price = float(order_item.price)
+            original_price = float(order_item.product.price) if order_item.product else current_price
+            
+            # Check if product is on sale
+            is_on_sale = order_item.product.on_sale if order_item.product else False
+            discount_percent = order_item.product.discount_percent if order_item.product and is_on_sale else 0
+            
+            # Calculate savings
+            savings = 0
+            if is_on_sale and discount_percent > 0:
+                savings = (original_price - current_price) * order_item.quantity
+                total_savings += savings
+            
             items.append({
                 'name': product_name,
                 'quantity': order_item.quantity,
-                'price': float(order_item.price),
+                'price': current_price,  # What customer pays
+                'original_price': original_price,  # Original price
+                'is_on_sale': is_on_sale,
+                'discount_percent': discount_percent,
                 'subtotal': float(order_item.price * order_item.quantity),
+                'savings': savings,
             })
         
         context = {
@@ -33,6 +51,7 @@ def send_order_confirmation_email(order):
             'order_date': order.created_at.strftime('%d %B %Y'),
             'items': items,
             'total': float(order.total_amount),
+            'total_savings': total_savings,
             'address': order.customer_address,
             'city': order.city if hasattr(order, 'city') else 'N/A',
             'phone': order.customer_phone,
@@ -73,13 +92,31 @@ def send_order_completion_email(order):
     try:
         # Prepare order items for template
         items = []
+        total_savings = 0
         for order_item in order.items.all():
             product_name = order_item.product.name if order_item.product else "[Deleted Product]"
+            current_price = float(order_item.price)
+            original_price = float(order_item.product.price) if order_item.product else current_price
+            
+            # Check if product is on sale
+            is_on_sale = order_item.product.on_sale if order_item.product else False
+            discount_percent = order_item.product.discount_percent if order_item.product and is_on_sale else 0
+            
+            # Calculate savings
+            savings = 0
+            if is_on_sale and discount_percent > 0:
+                savings = (original_price - current_price) * order_item.quantity
+                total_savings += savings
+            
             items.append({
                 'name': product_name,
                 'quantity': order_item.quantity,
-                'price': float(order_item.price),
+                'price': current_price,  # What customer pays
+                'original_price': original_price,  # Original price
+                'is_on_sale': is_on_sale,
+                'discount_percent': discount_percent,
                 'subtotal': float(order_item.price * order_item.quantity),
+                'savings': savings,
             })
         
         context = {
@@ -88,6 +125,7 @@ def send_order_completion_email(order):
             'completion_date': order.updated_at.strftime('%d %B %Y') if order.updated_at else 'Today',
             'items': items,
             'total': float(order.total_amount),
+            'total_savings': total_savings,
         }
         
         # Render HTML template

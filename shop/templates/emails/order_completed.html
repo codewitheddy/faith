@@ -61,9 +61,21 @@
                 <tbody>
                     {% for item in items %}
                     <tr>
-                        <td class="item-name">{{ item.name }}</td>
+                        <td class="item-name">
+                            {{ item.name }}
+                            {% if item.is_on_sale and item.discount_percent %}
+                            <div style="font-size: 12px; color: #4CAF50; margin-top: 4px;">💰 {{ item.discount_percent }}% OFF</div>
+                            {% endif %}
+                        </td>
                         <td class="item-qty">{{ item.quantity }}</td>
-                        <td class="item-price">KSh {{ item.price|floatformat:0|add:"0"|stringformat:",.0f" }}</td>
+                        <td class="item-price">
+                            {% if item.is_on_sale and item.original_price and item.original_price != item.price %}
+                            <div style="text-decoration: line-through; color: #999; font-size: 12px;">KSh {{ item.original_price|floatformat:0|add:"0"|stringformat:",.0f" }}</div>
+                            <div style="color: #C9A84C; font-weight: bold;">KSh {{ item.price|floatformat:0|add:"0"|stringformat:",.0f" }}</div>
+                            {% else %}
+                            <div>KSh {{ item.price|floatformat:0|add:"0"|stringformat:",.0f" }}</div>
+                            {% endif %}
+                        </td>
                         <td class="item-price">KSh {{ item.subtotal|floatformat:0|add:"0"|stringformat:",.0f" }}</td>
                     </tr>
                     {% endfor %}

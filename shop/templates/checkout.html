@@ -432,14 +432,17 @@
                 </div>
                 <div class="co-item-info">
                     <div class="co-item-name">{{ item.name }}</div>
-                    {% if item.is_on_sale and item.original_price %}
                     <div style="font-size:0.75rem;">
+                        {% if item.is_on_sale and item.original_price and item.original_price != item.price %}
+                        <div style="color:#999;text-decoration:line-through;font-size:0.75rem;">KSh {{ item.original_price|thousand_separator }}</div>
                         <div style="font-weight:700;color:#C9A84C;">KSh {{ item.price|thousand_separator }}</div>
-                        <div style="color:#999;text-decoration:line-through;font-size:0.7rem;">KSh {{ item.original_price|thousand_separator }}</div>
+                        {% if item.discount_percent %}
+                        <div style="color:#4CAF50;font-size:0.7rem;font-weight:600;">💰 {{ item.discount_percent }}% OFF</div>
+                        {% endif %}
+                        {% else %}
+                        <div style="font-weight:700;">KSh {{ item.price|thousand_separator }}</div>
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <div class="co-item-meta">KSh {{ item.price|thousand_separator }}</div>
-                    {% endif %}
                     <!-- Stock warning if low stock -->
                     {% if item.quantity %}
                     <div class="co-item-meta" id="stock-status-{{ item.id }}" style="margin-top:6px;color:#d97706;font-weight:500;"></div>
