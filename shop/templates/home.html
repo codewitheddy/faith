@@ -1247,12 +1247,187 @@
             color: #666;
             margin-bottom: 50px;
         }
-        
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            margin-bottom: 40px;
+
+        /* Testimonials Carousel Styles */
+        .testimonials-carousel-wrapper {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto 50px;
+            background: var(--white);
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .testimonials-carousel {
+            display: flex;
+            overflow: hidden;
+            border-radius: 20px;
+            position: relative;
+            height: 400px;
+        }
+
+        .testimonial-slide {
+            min-width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+            padding: 40px 30px;
+            background: linear-gradient(135deg, #FAF7F2 0%, #fff 100%);
+        }
+
+        .testimonial-card {
+            width: 100%;
+            max-width: 100%;
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-slide .testimonial-card:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Navigation Arrows */
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(201, 168, 76, 0.9);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--black);
+            z-index: 10;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+        }
+
+        .carousel-nav:hover {
+            background: #C9A84C;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 18px rgba(201, 168, 76, 0.5);
+        }
+
+        .carousel-nav:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .carousel-prev {
+            left: -25px;
+        }
+
+        .carousel-next {
+            right: -25px;
+        }
+
+        @media (max-width: 768px) {
+            .carousel-nav {
+                width: 40px;
+                height: 40px;
+                background: rgba(201, 168, 76, 0.95);
+            }
+
+            .carousel-prev {
+                left: 10px;
+            }
+
+            .carousel-next {
+                right: 10px;
+            }
+        }
+
+        /* Carousel Indicators */
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: #C9A84C;
+            border-color: #C9A84C;
+            transform: scale(1.3);
+        }
+
+        .indicator:hover {
+            border-color: #C9A84C;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .testimonials-carousel {
+                height: auto;
+                min-height: 350px;
+            }
+
+            .testimonial-slide {
+                padding: 30px 20px;
+            }
+
+            .testimonial-text {
+                font-size: 0.95rem;
+            }
+
+            .testimonials-section h2 {
+                font-size: 2rem;
+            }
+
+            .testimonials-subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .testimonials-carousel-wrapper {
+                padding: 15px;
+            }
+
+            .testimonial-slide {
+                padding: 20px 15px;
+            }
+
+            .testimonial-card {
+                padding: 0;
+            }
+
+            .testimonial-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .testimonial-text {
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+
+            .testimonial-name {
+                font-size: 0.9rem;
+            }
+
+            .testimonial-location {
+                font-size: 0.8rem;
+            }
         }
         
         .testimonial-card {
@@ -2677,57 +2852,145 @@ fill="currentColor" viewBox="0 0 24 24" >
         </div>
     </div>
 
-    <!-- Testimonials Section -->
+    <!-- Testimonials Section with Carousel -->
     <section class="testimonials-section" id="testimonials">
         <div class="testimonials-container">
             <h2>What Our Customers Say</h2>
             <p class="testimonials-subtitle">Real experiences from our valued customers across Kenya</p>
             
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">"</div>
-                    <div class="testimonial-stars">★★★★★</div>
-                    <p class="testimonial-text">
-                        Absolutely stunning pieces! I ordered a necklace for my anniversary and it exceeded all expectations. The quality is exceptional and delivery was super fast. Highly recommend!
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">A</div>
-                        <div class="testimonial-info">
-                            <div class="testimonial-name">Amina Hassan</div>
-                            <div class="testimonial-location">Nairobi</div>
+            <!-- Carousel Container -->
+            <div class="testimonials-carousel-wrapper">
+                <div class="testimonials-carousel">
+                    <!-- Slide 1 -->
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <div class="testimonial-quote">"</div>
+                            <p class="testimonial-text">
+                                The quality is absolutely outstanding! I've never worn a suit that fits this perfectly. The attention to detail is incredible, and the customer service was phenomenal.
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">JK</div>
+                                <div class="testimonial-info">
+                                    <div class="testimonial-name">James Kipchoge</div>
+                                    <div class="testimonial-location">Nairobi, Kenya</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2 -->
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <div class="testimonial-quote">"</div>
+                            <p class="testimonial-text">
+                                Best purchase I've made in years. The craftsmanship is evident in every stitch. I've already ordered twice and recommended Wyatt Collection to all my friends!
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">MO</div>
+                                <div class="testimonial-info">
+                                    <div class="testimonial-name">Michael Ochieng</div>
+                                    <div class="testimonial-location">Mombasa, Kenya</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <div class="testimonial-quote">"</div>
+                            <p class="testimonial-text">
+                                Wyatt Collection transformed my wardrobe. The styles are modern, elegant, and perfect for the office. Delivery was fast and the packaging was premium!
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">DP</div>
+                                <div class="testimonial-info">
+                                    <div class="testimonial-name">David Patel</div>
+                                    <div class="testimonial-location">Kisumu, Kenya</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4 -->
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <div class="testimonial-quote">"</div>
+                            <p class="testimonial-text">
+                                I'm impressed with how affordable premium quality menswear can be. These pieces are investment pieces that will last for years. Highly recommended!
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">EA</div>
+                                <div class="testimonial-info">
+                                    <div class="testimonial-name">Ethan Asante</div>
+                                    <div class="testimonial-location">Eldoret, Kenya</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5 -->
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <div class="testimonial-quote">"</div>
+                            <p class="testimonial-text">
+                                Every piece I own from Wyatt Collection gets compliments. The fit is impeccable, the colors are sophisticated, and I feel confident wearing them anywhere.
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">CK</div>
+                                <div class="testimonial-info">
+                                    <div class="testimonial-name">Charles Kiplagat</div>
+                                    <div class="testimonial-location">Nakuru, Kenya</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 6 -->
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <div class="testimonial-quote">"</div>
+                            <p class="testimonial-text">
+                                From browsing to checkout was seamless. The website is user-friendly, payments are secure, and the support team is always ready to help. Absolutely brilliant!
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">RM</div>
+                                <div class="testimonial-info">
+                                    <div class="testimonial-name">Raymond Mwangi</div>
+                                    <div class="testimonial-location">Thika, Kenya</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">"</div>
-                    <div class="testimonial-stars">★★★★★</div>
-                    <p class="testimonial-text">
-                        The Wyatt Collection has become my go-to for all jewellery needs. Beautiful designs, affordable prices, and excellent customer service. The team is very responsive on WhatsApp!
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">M</div>
-                        <div class="testimonial-info">
-                            <div class="testimonial-name">Mary Wanjiku</div>
-                            <div class="testimonial-location">Mombasa</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">"</div>
-                    <div class="testimonial-stars">★★★★★</div>
-                    <p class="testimonial-text">
-                        I bought earrings and a bracelet set as a gift. The packaging was elegant and the recipient was thrilled! Will definitely order again. Thank you Wyatt Collection!
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">J</div>
-                        <div class="testimonial-info">
-                            <div class="testimonial-name">James Omondi</div>
-                            <div class="testimonial-location">Kisumu</div>
-                        </div>
-                    </div>
-                </div>
+
+                <!-- Navigation Arrows -->
+                <button class="carousel-nav carousel-prev" onclick="prevTestimonial()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <button class="carousel-nav carousel-next" onclick="nextTestimonial()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Carousel Indicators -->
+            <div class="carousel-indicators">
+                <button class="indicator active" onclick="goToTestimonial(0)"></button>
+                <button class="indicator" onclick="goToTestimonial(1)"></button>
+                <button class="indicator" onclick="goToTestimonial(2)"></button>
+                <button class="indicator" onclick="goToTestimonial(3)"></button>
+                <button class="indicator" onclick="goToTestimonial(4)"></button>
+                <button class="indicator" onclick="goToTestimonial(5)"></button>
             </div>
         </div>
     </section>
@@ -3566,6 +3829,80 @@ fill="currentColor" viewBox="0 0 24 24" >
             });
         });
 
+        // Product Modal
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        /* Testimonials Carousel */
+        let currentTestimonialIndex = 0;
+        const testimonialSlides = document.querySelectorAll('.testimonial-slide');
+        const totalTestimonialSlides = testimonialSlides.length;
+        let autoplayInterval;
+
+        function updateTestimonialCarousel() {
+            const carousel = document.querySelector('.testimonials-carousel');
+            const translateValue = -currentTestimonialIndex * 100;
+            carousel.style.transform = `translateX(${translateValue}%)`;
+
+            // Update indicators
+            document.querySelectorAll('.carousel-indicators .indicator').forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentTestimonialIndex);
+            });
+        }
+
+        function nextTestimonial() {
+            currentTestimonialIndex = (currentTestimonialIndex + 1) % totalTestimonialSlides;
+            updateTestimonialCarousel();
+            resetAutoplay();
+        }
+
+        function prevTestimonial() {
+            currentTestimonialIndex = (currentTestimonialIndex - 1 + totalTestimonialSlides) % totalTestimonialSlides;
+            updateTestimonialCarousel();
+            resetAutoplay();
+        }
+
+        function goToTestimonial(index) {
+            currentTestimonialIndex = index;
+            updateTestimonialCarousel();
+            resetAutoplay();
+        }
+
+        function startAutoplay() {
+            autoplayInterval = setInterval(() => {
+                nextTestimonial();
+            }, 6000); // Change slide every 6 seconds
+        }
+
+        function resetAutoplay() {
+            clearInterval(autoplayInterval);
+            startAutoplay();
+        }
+
+        // Keyboard navigation for testimonials
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevTestimonial();
+            if (e.key === 'ArrowRight') nextTestimonial();
+        });
+
+        // Initialize carousel on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            startAutoplay();
+
+            // Pause autoplay on hover
+            const carouselWrapper = document.querySelector('.testimonials-carousel-wrapper');
+            if (carouselWrapper) {
+                carouselWrapper.addEventListener('mouseenter', () => {
+                    clearInterval(autoplayInterval);
+                });
+
+                carouselWrapper.addEventListener('mouseleave', () => {
+                    startAutoplay();
+                });
+            }
+        });
+        
         // Product Modal
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
