@@ -498,7 +498,7 @@ body.dark-mode .theme-toggle .icon-moon { display: none; }
     background: var(--dark);
 }
 body:not(.dark-mode) .login-container {
-    background: linear-gradient(135deg, #f0ede6 0%, #faf8f4 100%);
+    background: #f0ede6;
 }
 .login-card {
     background: var(--dark-2);

@@ -48,13 +48,13 @@ body {
    ============================================ */
 
 .main-sidebar {
-    background: linear-gradient(180deg, var(--dark-bg) 0%, var(--darker-bg) 100%) !important;
+    background: var(--dark-bg) !important;
     border-right: 1px solid var(--border-color) !important;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3) !important;
 }
 
 .sidebar-dark-pink {
-    background: linear-gradient(180deg, var(--dark-bg) 0%, var(--darker-bg) 100%) !important;
+    background: var(--dark-bg) !important;
 }
 
 /* Brand Logo Area */
@@ -107,7 +107,7 @@ body {
 }
 
 .nav-sidebar .nav-link.active {
-    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--dark-pink) 100%) !important;
+    background: var(--primary-pink) !important;
     color: var(--dark-bg) !important;
     font-weight: 600 !important;
     box-shadow: 0 4px 12px rgba(248, 200, 220, 0.3) !important;
@@ -170,7 +170,7 @@ body {
    ============================================ */
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--dark-pink) 100%) !important;
+    background: var(--primary-pink) !important;
     border: none !important;
     color: var(--dark-bg) !important;
     font-weight: 600 !important;
@@ -234,7 +234,7 @@ body {
 }
 
 .card-header {
-    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--light-pink) 100%) !important;
+    background: var(--primary-pink) !important;
     color: var(--dark-bg) !important;
     border-bottom: none !important;
     border-radius: 16px 16px 0 0 !important;
@@ -254,7 +254,7 @@ body {
 }
 
 .info-box-icon {
-    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--dark-pink) 100%) !important;
+    background: var(--primary-pink) !important;
     color: var(--dark-bg) !important;
     border-radius: 12px !important;
     width: 70px !important;
@@ -372,7 +372,7 @@ textarea:focus {
 }
 
 .page-item.active .page-link {
-    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--dark-pink) 100%) !important;
+    background: var(--primary-pink) !important;
     border-color: var(--primary-pink) !important;
     color: var(--dark-bg) !important;
     box-shadow: 0 4px 12px rgba(248, 200, 220, 0.3) !important;
@@ -424,7 +424,7 @@ textarea:focus {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--primary-pink) 0%, var(--dark-pink) 100%);
+    background: var(--primary-pink);
     border-radius: 10px;
 }
 
@@ -484,7 +484,7 @@ textarea:focus {
    ============================================ */
 
 .login-page {
-    background: linear-gradient(135deg, #fde4ec 0%, var(--primary-pink) 50%, #fde4ec 100%) !important;
+    background: var(--primary-pink) !important;
 }
 
 .login-box {
@@ -524,10 +524,7 @@ textarea:focus {
    ============================================ */
 
 .text-gradient {
-    background: linear-gradient(135deg, var(--primary-pink) 0%, var(--dark-pink) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary-pink);
 }
 
 .shadow-luxury {
@@ -535,7 +532,6 @@ textarea:focus {
 }
 
 .border-gradient {
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, var(--primary-pink), var(--dark-pink)) border-box;
+    border: 2px solid var(--primary-pink);
+    background: white;
 }
