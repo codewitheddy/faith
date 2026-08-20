@@ -4,9 +4,9 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <a href="{% url 'admin:dashboard' %}">Dashboard</a>
     <span class="breadcrumbs-separator">/</span>
-    <a href="{% url 'myadmin:user_list' %}">Staff Users</a>
+    <a href="{% url 'admin:user_list' %}">Staff Users</a>
     <span class="breadcrumbs-separator">/</span>
     <span class="text-gold">{{ title }}</span>
 </div>
@@ -89,7 +89,7 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">{{ action }} User</button>
-                <a href="{% url 'myadmin:user_list' %}" class="btn btn-secondary">Cancel</a>
+                <a href="{% url 'admin:user_list' %}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views_admin
 
-app_name = 'myadmin'
+app_name = 'admin'
 
 urlpatterns = [
     # Authentication

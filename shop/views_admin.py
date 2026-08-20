@@ -28,43 +28,19 @@ def is_staff_or_superuser(user):
 
 # Decorator for all admin views
 staff_required = method_decorator(
-    user_passes_test(is_staff_or_superuser, login_url='/myadmin/login/'),
+    user_passes_test(is_staff_or_superuser, login_url='/admin/login/'),
     name='dispatch'
 )
 
 
 # Authentication Views
 class AdminLoginView(LoginView):
-    """Custom login view for MyAdmin"""
+    """Custom login view for Admin"""
     template_name = 'myadmin/login.html'
     redirect_authenticated_user = True
     
     def get_success_url(self):
-        return reverse_lazy('myadmin:dashboard')
-    
-    def form_valid(self, form):
-        user = form.get_user()
-        if not (user.is_staff or user.is_superuser):
-            messages.error(self.request, 'Access denied. Staff privileges required.')
-            return self.form_invalid(form)
-        
-        # Log successful login
-        import logging
-        logger = logging.getLogger('myadmin')
-        logger.info(f"User {user.username} logged in from IP {self.request.META.get('REMOTE_ADDR')}")
-        
-        messages.success(self.request, f'Welcome back, {user.username}!')
-        return super().form_valid(form)
-    
-    def form_invalid(self, form):
-        # Log failed login attempt
-        import logging
-        logger = logging.getLogger('myadmin')
-        username = form.data.get('username', 'unknown')
-        logger.warning(f"Failed login attempt for username: {username} from IP: {self.request.META.get('REMOTE_ADDR')}")
-        
-        messages.error(self.request, 'Invalid credentials. Please try again.')
-        return super().form_invalid(form)
+        return reverse_lazy('admin:dashboard')
 
 
 class AdminLogoutView(View):
@@ -86,7 +62,7 @@ class AdminLogoutView(View):
             logout(request)
             messages.success(request, f'You have been logged out successfully.')
         
-        return redirect('/myadmin/login/')
+        return redirect('/admin/login/')
     
     def post(self, request):
         """Handle POST request for logout (for CSRF-protected forms)"""

@@ -3,7 +3,7 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a> &rsaquo; Hero Slides
+    <a href="{% url 'admin:dashboard' %}">Dashboard</a> &rsaquo; Hero Slides
 </div>
 {% endblock %}
 
@@ -13,7 +13,7 @@
         <h1 class="page-title">Hero Slides</h1>
         <p class="page-subtitle">Manage the homepage slider. Slides are shown in order.</p>
     </div>
-    <a href="{% url 'myadmin:heroslide_add' %}" class="btn btn-primary">+ Add Slide</a>
+    <a href="{% url 'admin:heroslide_add' %}" class="btn btn-primary">+ Add Slide</a>
 </div>
 
 {% if slides %}
@@ -85,8 +85,8 @@
                 </td>
                 <td>
                     <div style="display:flex;gap:8px;justify-content:center;">
-                        <a href="{% url 'myadmin:heroslide_edit' slide.pk %}" class="btn btn-sm btn-secondary" title="Edit">Edit</a>
-                        <a href="{% url 'myadmin:heroslide_delete' slide.pk %}" class="btn btn-sm"
+                        <a href="{% url 'admin:heroslide_edit' slide.pk %}" class="btn btn-sm btn-secondary" title="Edit">Edit</a>
+                        <a href="{% url 'admin:heroslide_delete' slide.pk %}" class="btn btn-sm"
                            style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;" title="Delete">Del</a>
                     </div>
                 </td>
@@ -100,7 +100,7 @@
     <div style="font-size:3rem;margin-bottom:16px;">🖼️</div>
     <h3 style="margin-bottom:8px;">No hero slides yet</h3>
     <p style="color:#888;margin-bottom:24px;">The homepage will show the default static slides until you add some here.</p>
-    <a href="{% url 'myadmin:heroslide_add' %}" class="btn btn-primary">+ Add First Slide</a>
+    <a href="{% url 'admin:heroslide_add' %}" class="btn btn-primary">+ Add First Slide</a>
 </div>
 {% endif %}
 {% endblock %}

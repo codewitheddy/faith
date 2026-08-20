@@ -1,126 +1,218 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
-        .header { background: #0f3460; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
-        .header img { height: 50px; margin-bottom: 10px; }
-        .header h1 { margin: 0; font-size: 24px; }
-        .content { background: white; padding: 30px; border-radius: 0 0 5px 5px; }
-        .order-number { background: #e8f4f8; padding: 15px; border-left: 4px solid #0f3460; margin: 20px 0; border-radius: 3px; }
-        .order-number strong { color: #0f3460; }
-        .section-title { font-size: 16px; font-weight: bold; color: #0f3460; margin-top: 25px; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th { background: #f0f0f0; padding: 10px; text-align: left; font-weight: bold; color: #333; border-bottom: 2px solid #ddd; }
-        td { padding: 12px 10px; border-bottom: 1px solid #eee; }
-        .item-name { font-weight: bold; }
-        .item-price { text-align: right; }
-        .item-qty { text-align: center; }
-        .totals { margin-top: 20px; }
-        .total-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .total-row.grand-total { border-top: 2px solid #0f3460; border-bottom: 2px solid #0f3460; font-weight: bold; font-size: 18px; background: #f0f0f0; padding: 15px 10px; margin-top: 15px; }
-        .grand-total .amount { color: #0f3460; }
-        .address-section { background: #f9f9f9; padding: 15px; border-radius: 3px; }
-        .cta-button { display: inline-block; background: #0f3460; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 20px; font-weight: bold; }
-        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; border-top: 1px solid #eee; margin-top: 30px; }
-        .footer a { color: #0f3460; text-decoration: none; }
-        .status-badge { display: inline-block; background: #4CAF50; color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Order Confirmed — Wyatt Collection</title>
+<!--[if mso]>
+<style type="text/css">
+  table { border-collapse: collapse; }
+  .outlook-fallback { font-family: Arial, sans-serif; }
+</style>
+<![endif]-->
+<style>
+  /* Reset */
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+  img { -ms-interpolation-mode: bicubic; border: 0; display: block; }
+  body { margin: 0 !important; padding: 0 !important; background-color: #f4f4f7; width: 100% !important; }
+
+  /* Responsive */
+  @media screen and (max-width: 600px) {
+    .email-wrapper { width: 100% !important; }
+    .email-body { padding: 24px 20px !important; }
+    .header-cell { padding: 28px 20px !important; }
+    .item-price-col { display: none !important; }
+    .col-mobile-full { width: 100% !important; display: block !important; }
+    .stat-cell { padding: 10px 8px !important; }
+    h1 { font-size: 22px !important; }
+  }
+</style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>✓ Order Confirmed!</h1>
-            <p>Thank you for shopping with us</p>
-        </div>
+<body style="margin:0;padding:0;background-color:#f4f4f7;">
 
-        <div class="content">
-            <p>Hi {{ customer_name }},</p>
+<!-- Preheader (hidden preview text) -->
+<div style="display:none;max-height:0;overflow:hidden;color:#f4f4f7;font-size:1px;">
+  Order #{{ order_number }} confirmed — thank you for shopping with Wyatt Collection!
+</div>
 
-            <p>Your order has been successfully placed and we're preparing it for delivery. Please find your order details below.</p>
+<!-- Outer wrapper -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f4f7;">
+<tr>
+<td align="center" style="padding:0;">
 
-            <div class="order-number">
-                <strong>Order Number:</strong> {{ order_number }}<br>
-                <strong>Date:</strong> {{ order_date }}<br>
-                <strong>Status:</strong> <span class="status-badge">CONFIRMED</span>
-            </div>
+  <!-- Email card -->
+  <table role="presentation" class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" border="0"
+         style="width:100%;background:#ffffff;border-radius:0;overflow:hidden;">
 
-            <div class="section-title">Order Items</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th class="item-qty">Qty</th>
-                        <th class="item-price">Price</th>
-                        <th class="item-price">Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in items %}
-                    <tr>
-                        <td class="item-name">
-                            {{ item.name }}
-                            {% if item.is_on_sale and item.discount_percent %}
-                            <div style="font-size: 12px; color: #4CAF50; margin-top: 4px;">💰 {{ item.discount_percent }}% OFF</div>
-                            {% endif %}
-                        </td>
-                        <td class="item-qty">{{ item.quantity }}</td>
-                        <td class="item-price">
-                            {% if item.is_on_sale and item.original_price and item.original_price != item.price %}
-                            <div style="text-decoration: line-through; color: #999; font-size: 12px;">KSh {{ item.original_price|floatformat:0|add:"0"|stringformat:",.0f" }}</div>
-                            <div style="color: #C9A84C; font-weight: bold;">KSh {{ item.price|floatformat:0|add:"0"|stringformat:",.0f" }}</div>
-                            {% else %}
-                            <div>KSh {{ item.price|floatformat:0|add:"0"|stringformat:",.0f" }}</div>
-                            {% endif %}
-                        </td>
-                        <td class="item-price">KSh {{ item.subtotal|floatformat:0|add:"0"|stringformat:",.0f" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- ── HEADER ── -->
+    <tr>
+      <td class="header-cell" align="center"
+          style="background:linear-gradient(135deg,#0f3460 0%,#1a4a8a 100%);padding:40px 48px;text-align:center;">
+        <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:14px;color:rgba(255,255,255,0.75);letter-spacing:1.5px;text-transform:uppercase;">Wyatt Collection</p>
+        <h1 style="margin:0;font-family:Arial,sans-serif;font-size:28px;font-weight:700;color:#ffffff;line-height:1.2;">
+          ✓ Order Confirmed!
+        </h1>
+        <p style="margin:10px 0 0;font-family:Arial,sans-serif;font-size:15px;color:rgba(255,255,255,0.85);">
+          Thank you for shopping with us
+        </p>
+      </td>
+    </tr>
 
-            <div class="totals">
-                <div class="total-row grand-total">
-                    <span>Total Amount:</span>
-                    <span class="amount">KSh {{ total|floatformat:0|add:"0"|stringformat:",.0f" }}</span>
-                </div>
-            </div>
+    <!-- ── BODY ── -->
+    <tr>
+      <td class="email-body" style="padding:40px 48px 32px;font-family:Arial,sans-serif;font-size:15px;color:#333333;line-height:1.6;">
 
-            <div class="section-title">Delivery Address</div>
-            <div class="address-section">
-                <p><strong>{{ customer_name }}</strong></p>
-                <p>{{ address }}<br>
-                {{ city }}, Kenya</p>
-                <p><strong>Phone:</strong> {{ phone }}</p>
-            </div>
+        <p style="margin:0 0 12px;">Hi <strong>{{ customer_name }}</strong>,</p>
+        <p style="margin:0 0 24px;color:#555555;">
+          Your order has been successfully placed and we're preparing it for delivery. Find your order details below.
+        </p>
 
-            <div class="section-title">What's Next?</div>
-            <p>Our team will contact you shortly via WhatsApp or phone to confirm payment details and delivery arrangements.</p>
-            <p><strong>Payment Methods Accepted:</strong></p>
-            <ul>
-                <li>M-Pesa (Lipa na M-Pesa Online)</li>
-                <li>Bank Transfer</li>
-                <li>Cash on Delivery (Nairobi only)</li>
-            </ul>
+        <!-- Order info box -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="background:#f0f5ff;border-left:4px solid #0f3460;border-radius:0 8px 8px 0;margin-bottom:28px;">
+          <tr>
+            <td style="padding:16px 20px;font-family:Arial,sans-serif;font-size:14px;color:#333;line-height:1.8;">
+              <strong style="color:#0f3460;">Order Number:</strong> {{ order_number }}<br>
+              <strong style="color:#0f3460;">Date:</strong> {{ order_date }}<br>
+              <strong style="color:#0f3460;">Status:</strong>
+              <span style="display:inline-block;background:#4CAF50;color:#fff;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:0.5px;">CONFIRMED</span>
+            </td>
+          </tr>
+        </table>
 
-            <p>For any questions or concerns, reach out to us:</p>
-            <ul>
-                <li><strong>WhatsApp:</strong> +254 706 105 967</li>
-                <li><strong>Email:</strong> info@wyattcollection.ke</li>
-            </ul>
+        <!-- Section: Order Items -->
+        <p style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:16px;font-weight:700;color:#0f3460;border-bottom:2px solid #e8e8e8;padding-bottom:8px;">
+          Order Items
+        </p>
 
-            <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-                This is an automated email. Please do not reply to this message. If you need to contact us, use the details above.
-            </p>
-        </div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:8px;">
+          <!-- Table header -->
+          <tr style="background:#f5f5f5;">
+            <td style="padding:10px 12px;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#444;border-bottom:2px solid #e0e0e0;">Product</td>
+            <td style="padding:10px 8px;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#444;border-bottom:2px solid #e0e0e0;text-align:center;width:40px;">Qty</td>
+            <td style="padding:10px 8px;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#444;border-bottom:2px solid #e0e0e0;text-align:right;width:100px;">Price</td>
+            <td style="padding:10px 12px;font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#444;border-bottom:2px solid #e0e0e0;text-align:right;width:100px;">Subtotal</td>
+          </tr>
 
-        <div class="footer">
-            <p><strong>Wyatt Collection</strong></p>
-            <p>Premium Menswear | Kenya 🇰🇪</p>
-            <p><a href="https://wyattcollection.ke">Visit our website</a></p>
-        </div>
-    </div>
+          {% for item in items %}
+          <tr>
+            <td style="padding:12px 12px;font-family:Arial,sans-serif;font-size:14px;color:#333;border-bottom:1px solid #f0f0f0;vertical-align:top;">
+              <strong>{{ item.name }}</strong>
+              {% if item.is_on_sale and item.discount_percent %}
+              <br><span style="font-size:12px;color:#4CAF50;">💰 {{ item.discount_percent }}% OFF</span>
+              {% endif %}
+            </td>
+            <td style="padding:12px 8px;font-family:Arial,sans-serif;font-size:14px;color:#333;border-bottom:1px solid #f0f0f0;text-align:center;vertical-align:top;">
+              {{ item.quantity }}
+            </td>
+            <td style="padding:12px 8px;font-family:Arial,sans-serif;font-size:14px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;">
+              {% if item.is_on_sale and item.original_price != item.price %}
+              <span style="display:block;text-decoration:line-through;color:#aaa;font-size:12px;">KSh {{ item.original_price_fmt }}</span>
+              <span style="display:block;color:#C9A84C;font-weight:700;">KSh {{ item.price_fmt }}</span>
+              {% else %}
+              <span style="color:#333;">KSh {{ item.price_fmt }}</span>
+              {% endif %}
+            </td>
+            <td style="padding:12px 12px;font-family:Arial,sans-serif;font-size:14px;font-weight:700;color:#333;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;">
+              KSh {{ item.subtotal_fmt }}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+
+        <!-- Total -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+          {% if total_savings > 0 %}
+          <tr>
+            <td style="padding:8px 12px;font-family:Arial,sans-serif;font-size:13px;color:#4CAF50;text-align:right;">
+              You saved: KSh {{ total_savings_fmt }} 🎉
+            </td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td style="padding:14px 12px;font-family:Arial,sans-serif;font-size:17px;font-weight:700;color:#0f3460;background:#f0f5ff;border-radius:8px;text-align:right;">
+              Total Amount: <span style="color:#C9A84C;">KSh {{ total_fmt }}</span>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Delivery address -->
+        <p style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:16px;font-weight:700;color:#0f3460;border-bottom:2px solid #e8e8e8;padding-bottom:8px;">
+          Delivery Address
+        </p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+          <tr>
+            <td style="padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#444;background:#fafafa;border-radius:8px;line-height:1.8;">
+              <strong>{{ customer_name }}</strong><br>
+              {{ address }}<br>
+              {% if city != 'N/A' %}{{ city }}, {% endif %}Kenya<br>
+              <strong>Phone:</strong> {{ phone }}
+            </td>
+          </tr>
+        </table>
+
+        <!-- What's next -->
+        <p style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:16px;font-weight:700;color:#0f3460;border-bottom:2px solid #e8e8e8;padding-bottom:8px;">
+          What Happens Next?
+        </p>
+        <p style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:14px;color:#555;line-height:1.7;">
+          Our team will contact you shortly via <strong>WhatsApp or phone</strong> to confirm payment and delivery arrangements.
+        </p>
+
+        <!-- Payment methods -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+          <tr>
+            <td style="padding:14px 16px;font-family:Arial,sans-serif;font-size:14px;color:#444;background:#fff8e6;border-left:4px solid #C9A84C;border-radius:0 8px 8px 0;line-height:1.8;">
+              <strong style="color:#7a5c1e;">Payment Methods Accepted:</strong><br>
+              • M-Pesa (Lipa na M-Pesa)<br>
+              • Bank Transfer<br>
+              • Cash on Delivery <span style="font-size:12px;color:#888;">(Nairobi only)</span>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Contact -->
+        <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:14px;color:#555;line-height:1.7;">
+          For any questions, reach us at:
+        </p>
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+          <tr>
+            <td style="padding:4px 0;font-family:Arial,sans-serif;font-size:14px;color:#333;">
+              📱 <strong>WhatsApp:</strong> <a href="https://wa.me/254706105967" style="color:#0f3460;text-decoration:none;">+254 706 105 967</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 0;font-family:Arial,sans-serif;font-size:14px;color:#333;">
+              ✉️ <strong>Email:</strong> <a href="mailto:info@wyattcollection.ke" style="color:#0f3460;text-decoration:none;">info@wyattcollection.ke</a>
+            </td>
+          </tr>
+        </table>
+
+        <p style="margin:24px 0 0;padding-top:16px;border-top:1px solid #eeeeee;font-family:Arial,sans-serif;font-size:12px;color:#aaa;line-height:1.6;">
+          This is an automated email. Please do not reply directly — use the contact details above.
+        </p>
+
+      </td>
+    </tr>
+
+    <!-- ── FOOTER ── -->
+    <tr>
+      <td style="background:#f9f9f9;border-top:1px solid #eeeeee;padding:28px 48px;text-align:center;font-family:Arial,sans-serif;font-size:13px;color:#888;line-height:1.8;">
+        <strong style="color:#333;">Wyatt Collection</strong><br>
+        Premium Menswear · Nairobi, Kenya 🇰🇪<br>
+        <a href="https://wyattcollection.ke" style="color:#0f3460;text-decoration:none;">wyattcollection.ke</a>
+      </td>
+    </tr>
+
+  </table>
+  <!-- /Email card -->
+
+</td>
+</tr>
+</table>
+<!-- /Outer wrapper -->
+
 </body>
 </html>

@@ -4,9 +4,9 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <a href="{% url 'admin:dashboard' %}">Dashboard</a>
     <span class="breadcrumbs-separator">/</span>
-    <a href="{% url 'myadmin:category_list' %}">Categories</a>
+    <a href="{% url 'admin:category_list' %}">Categories</a>
     <span class="breadcrumbs-separator">/</span>
     <span class="text-gold">{% if object %}Edit: {{ object.name }}{% else %}Add Category{% endif %}</span>
 </div>
@@ -28,7 +28,7 @@
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">{% if object %}Update{% else %}Create{% endif %} Category</button>
-                <a href="{% url 'myadmin:category_list' %}" class="btn btn-secondary">Cancel</a>
+                <a href="{% url 'admin:category_list' %}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

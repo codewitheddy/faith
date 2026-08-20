@@ -4,7 +4,7 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <a href="{% url 'admin:dashboard' %}">Dashboard</a>
     <span class="breadcrumbs-separator">/</span>
     <span class="text-gold">Categories</span>
 </div>
@@ -13,7 +13,7 @@
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">Categories</h1>
-    <a href="{% url 'myadmin:category_add' %}" class="btn btn-primary">
+    <a href="{% url 'admin:category_add' %}" class="btn btn-primary">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
         Add Category
     </a>
@@ -38,8 +38,8 @@
                 <td><span class="badge badge-gold">{{ category.product_count }}</span></td>
                 <td>
                     <div class="table-actions">
-                        <a href="{% url 'myadmin:category_edit' category.pk %}" class="btn btn-secondary btn-sm">Edit</a>
-                        <a href="{% url 'myadmin:category_delete' category.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="{% url 'admin:category_edit' category.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                        <a href="{% url 'admin:category_delete' category.pk %}" class="btn btn-danger btn-sm">Delete</a>
                     </div>
                 </td>
             </tr>
@@ -50,7 +50,7 @@
 {% else %}
 <div class="empty-state">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-    <p>No categories yet. <a href="{% url 'myadmin:category_add' %}" class="text-gold">Add one now.</a></p>
+    <p>No categories yet. <a href="{% url 'admin:category_add' %}" class="text-gold">Add one now.</a></p>
 </div>
 {% endif %}
 {% endblock %}

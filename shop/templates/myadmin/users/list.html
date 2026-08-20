@@ -4,7 +4,7 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <a href="{% url 'admin:dashboard' %}">Dashboard</a>
     <span class="breadcrumbs-separator">/</span>
     <span class="text-gold">Staff Users</span>
 </div>
@@ -13,7 +13,7 @@
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">Staff Users</h1>
-    <a href="{% url 'myadmin:user_add' %}" class="btn btn-primary">
+    <a href="{% url 'admin:user_add' %}" class="btn btn-primary">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
         Add User
     </a>
@@ -45,7 +45,7 @@
             </div>
             <div style="display:flex;gap:8px;align-items:flex-end;">
                 <button type="submit" class="btn btn-primary">Filter</button>
-                <a href="{% url 'myadmin:user_list' %}" class="btn btn-secondary">Clear</a>
+                <a href="{% url 'admin:user_list' %}" class="btn btn-secondary">Clear</a>
             </div>
         </div>
     </form>
@@ -85,10 +85,10 @@
                 <td style="font-size:13px;color:var(--text-muted);">{{ u.date_joined|date:"M d, Y" }}</td>
                 <td>
                     <div class="table-actions">
-                        <a href="{% url 'myadmin:user_edit' u.pk %}" class="btn btn-secondary btn-sm">Edit</a>
-                        <a href="{% url 'myadmin:user_password_change' u.pk %}" class="btn btn-secondary btn-sm">Password</a>
+                        <a href="{% url 'admin:user_edit' u.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                        <a href="{% url 'admin:user_password_change' u.pk %}" class="btn btn-secondary btn-sm">Password</a>
                         {% if u != request.user %}
-                        <a href="{% url 'myadmin:user_delete' u.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="{% url 'admin:user_delete' u.pk %}" class="btn btn-danger btn-sm">Delete</a>
                         {% endif %}
                     </div>
                 </td>

@@ -363,3 +363,32 @@ class HeroSlide(models.Model):
         elif self.theme == 'custom' and self.bg_color:
             return self.bg_color
         return '#FAF7F2'
+
+
+class ProductGallery(models.Model):
+    """Gallery images for product detail pages."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='gallery_images')
+    image = models.ImageField(upload_to='product_gallery/%Y/%m/', 
+                             help_text="Gallery image for product detail page")
+    alt_text = models.CharField(max_length=200, blank=True, 
+                               help_text="Alternative text for accessibility")
+    caption = models.CharField(max_length=300, blank=True, 
+                              help_text="Optional caption for the image")
+    sort_order = models.PositiveSmallIntegerField(default=0, 
+                                                 help_text="Order in which images appear")
+    is_featured = models.BooleanField(default=False, 
+                                     help_text="Mark as featured/hero image for detail page")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['sort_order', '-created_at']
+        verbose_name_plural = 'Product Gallery Images'
+    
+    def __str__(self):
+        return f"{self.product.name} - Image {self.sort_order}"
+    
+    def get_image_url(self):
+        """Return image URL"""
+        if self.image:
+            return self.image.url
+        return None

@@ -3,8 +3,8 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a> &rsaquo;
-    <a href="{% url 'myadmin:heroslide_list' %}">Hero Slides</a> &rsaquo; Delete
+    <a href="{% url 'admin:dashboard' %}">Dashboard</a> &rsaquo;
+    <a href="{% url 'admin:heroslide_list' %}">Hero Slides</a> &rsaquo; Delete
 </div>
 {% endblock %}
 
@@ -24,7 +24,7 @@
                     Yes, Delete
                 </button>
             </form>
-            <a href="{% url 'myadmin:heroslide_list' %}" class="btn btn-secondary">Cancel</a>
+            <a href="{% url 'admin:heroslide_list' %}" class="btn btn-secondary">Cancel</a>
         </div>
     </div>
 </div>

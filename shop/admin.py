@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Category, Product, ProductVariant, Order, OrderItem, UserProfile, Wishlist, HeroSlide
+from .models import Category, Product, ProductVariant, Order, OrderItem, UserProfile, Wishlist, HeroSlide, ProductGallery
 
 # Customize admin site headers
 admin.site.site_header = "WYATT COLLECTION ADMIN"
@@ -25,6 +25,13 @@ class ProductVariantInline(admin.TabularInline):
     fields = ['name', 'price_adjustment', 'is_available', 'sort_order']
 
 
+class ProductGalleryInline(admin.TabularInline):
+    model = ProductGallery
+    extra = 2
+    fields = ['image', 'alt_text', 'caption', 'sort_order', 'is_featured']
+    ordering = ['sort_order']
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'category', 'price', 'sale_price', 'is_on_sale', 'is_available', 'created_at']
@@ -33,7 +40,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ['name', 'description', 'short_description']
     date_hierarchy = 'created_at'
     list_per_page = 20
-    inlines = [ProductVariantInline]
+    inlines = [ProductVariantInline, ProductGalleryInline]
 
     fieldsets = (
         ('Basic Information', {
@@ -214,3 +221,34 @@ class HeroSlideAdmin(admin.ModelAdmin):
             obj.circle_emoji or '👔'
         )
     has_image.short_description = 'Image'
+
+
+@admin.register(ProductGallery)
+class ProductGalleryAdmin(admin.ModelAdmin):
+    list_display = ['product', 'image_thumbnail', 'alt_text', 'sort_order', 'is_featured', 'created_at']
+    list_editable = ['sort_order', 'is_featured']
+    list_filter = ['is_featured', 'created_at', 'product']
+    search_fields = ['product__name', 'alt_text', 'caption']
+    date_hierarchy = 'created_at'
+    list_per_page = 25
+    
+    fieldsets = (
+        ('Product & Image', {
+            'fields': ('product', 'image'),
+        }),
+        ('Image Details', {
+            'fields': ('alt_text', 'caption'),
+        }),
+        ('Display Settings', {
+            'fields': ('sort_order', 'is_featured'),
+        }),
+    )
+    
+    def image_thumbnail(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="height:50px;width:50px;object-fit:cover;border-radius:4px;border:1px solid #ddd;">',
+                obj.image.url
+            )
+        return '-'
+    image_thumbnail.short_description = 'Thumbnail'

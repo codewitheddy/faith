@@ -179,6 +179,22 @@
                         <img src="{% static 'images/placeholder.svg' %}" alt="{{ product.name }}" id="mainProductImage">
                     {% endif %}
                 </div>
+
+                <!-- Gallery Images Thumbnails -->
+                {% if product.gallery_images.all %}
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px;">
+                    {% for gallery_img in product.gallery_images.all %}
+                    <button type="button"
+                        class="gallery-thumb"
+                        onclick="switchGalleryImage('{{ gallery_img.image.url }}', '{{ gallery_img.alt_text|default:product.name }}')"
+                        style="padding:0;border:2px solid #eee;border-radius:10px;cursor:pointer;overflow:hidden;aspect-ratio:1/1;background:var(--light-gray);transition:all 0.2s;"
+                        title="{{ gallery_img.alt_text|default:product.name }}">
+                        <img src="{{ gallery_img.image.url }}" alt="{{ gallery_img.alt_text|default:product.name }}" style="width:100%;height:100%;object-fit:cover;">
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
                 <div class="product-badges">
                     {% if product.is_available %}
                         <span class="product-badge available">✓ In Stock</span>
@@ -360,6 +376,18 @@
     let selectedVariantId = null;
     let selectedVariantPrice = basePrice;  // tracks the currently active price
     let cartQty = 0;
+
+    function switchGalleryImage(imageUrl, altText) {
+        const mainImg = document.getElementById('mainProductImage');
+        mainImg.src = imageUrl;
+        mainImg.alt = altText;
+
+        // Highlight active thumbnail
+        document.querySelectorAll('.gallery-thumb').forEach(btn => {
+            btn.style.borderColor = '#eee';
+        });
+        event.target.closest('.gallery-thumb').style.borderColor = 'var(--accent)';
+    }
 
     function updateCartBadge(count) {
         setCartCount(count);

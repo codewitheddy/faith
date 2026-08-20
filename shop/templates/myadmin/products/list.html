@@ -6,7 +6,7 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <a href="{% url 'admin:dashboard' %}">Dashboard</a>
     <span class="breadcrumbs-separator">/</span>
     <span class="text-gold">Products</span>
 </div>
@@ -16,9 +16,9 @@
 <div class="page-header">
     <h1 class="page-title">Products</h1>
     <div style="margin-left:auto;display:flex;gap:8px;">
-        <a href="{% url 'myadmin:product_export' %}?search={{ search_query }}&category={{ category_filter }}&availability={{ availability_filter }}&variants={{ variants_filter }}"
+        <a href="{% url 'admin:product_export' %}?search={{ search_query }}&category={{ category_filter }}&availability={{ availability_filter }}&variants={{ variants_filter }}"
            class="btn btn-secondary">⬇ Export CSV</a>
-        <a href="{% url 'myadmin:product_add' %}" class="btn btn-primary">
+        <a href="{% url 'admin:product_add' %}" class="btn btn-primary">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Add Product
         </a>
@@ -87,14 +87,14 @@
             </div>
             <div style="display:flex;gap:8px;align-items:flex-end;">
                 <button type="submit" class="btn btn-primary">Filter</button>
-                <a href="{% url 'myadmin:product_list' %}" class="btn btn-secondary">Clear</a>
+                <a href="{% url 'admin:product_list' %}" class="btn btn-secondary">Clear</a>
             </div>
         </div>
     </form>
 </div>
 
 <!-- Bulk Actions -->
-<form method="post" action="{% url 'myadmin:product_bulk_action' %}" id="bulkForm">
+<form method="post" action="{% url 'admin:product_bulk_action' %}" id="bulkForm">
     {% csrf_token %}
     <div class="card" style="padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
         <select name="action" class="form-select" style="width:auto;min-width:180px;">
@@ -198,8 +198,8 @@
                     </td>
                     <td>
                         <div class="table-actions">
-                            <a href="{% url 'myadmin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a>
-                            <a href="{% url 'myadmin:product_delete' product.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                            <a href="{% url 'admin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                            <a href="{% url 'admin:product_delete' product.pk %}" class="btn btn-danger btn-sm">Delete</a>
                         </div>
                     </td>
                 </tr>
@@ -210,7 +210,7 @@
     {% else %}
     <div class="empty-state">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-        <p>No products found. <a href="{% url 'myadmin:product_add' %}" class="text-gold">Add one now.</a></p>
+        <p>No products found. <a href="{% url 'admin:product_add' %}" class="text-gold">Add one now.</a></p>
     </div>
     {% endif %}
 </form>
@@ -237,7 +237,7 @@
 
 {% block extra_js %}
 <script>
-const STOCK_UPDATE_URL = "{% url 'myadmin:product_stock_update' %}";
+const STOCK_UPDATE_URL = "{% url 'admin:product_stock_update' %}";
 const CSRF = "{{ csrf_token }}";
 
 // ── Single inline save ──────────────────────────────────────────────────────

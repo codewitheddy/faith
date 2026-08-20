@@ -6,9 +6,9 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <a href="{% url 'admin:dashboard' %}">Dashboard</a>
     <span class="breadcrumbs-separator">/</span>
-    <a href="{% url 'myadmin:product_list' %}">Products</a>
+    <a href="{% url 'admin:product_list' %}">Products</a>
     <span class="breadcrumbs-separator">/</span>
     <span class="text-gold">Performance</span>
 </div>
@@ -131,7 +131,7 @@
                         {% else %}—{% endif %}
                     </td>
                     <td>
-                        <a href="{% url 'myadmin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                        <a href="{% url 'admin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -174,7 +174,7 @@
                     </td>
                     <td><span class="badge badge-warning">{{ product.total_sold }}</span></td>
                     <td style="color:var(--info);font-size:13px;">{{ product.view_count }}</td>
-                    <td><a href="{% url 'myadmin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a></td>
+                    <td><a href="{% url 'admin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -212,7 +212,7 @@
                     </td>
                     <td><span style="color:var(--danger);">♥ {{ product.wishlist_count }}</span></td>
                     <td style="color:var(--success);font-size:13px;">{{ product.total_sold|default:"0" }}</td>
-                    <td><a href="{% url 'myadmin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a></td>
+                    <td><a href="{% url 'admin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a></td>
                 </tr>
                 {% endif %}
                 {% endfor %}
@@ -265,9 +265,9 @@
                     </td>
                     <td>
                         <div class="table-actions">
-                            <a href="{% url 'myadmin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                            <a href="{% url 'admin:product_edit' product.pk %}" class="btn btn-secondary btn-sm">Edit</a>
                             {% if not product.is_available %}
-                            <form method="post" action="{% url 'myadmin:product_bulk_action' %}" style="display:inline;">
+                            <form method="post" action="{% url 'admin:product_bulk_action' %}" style="display:inline;">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="mark_available">
                                 <input type="hidden" name="product_ids" value="{{ product.pk }}">

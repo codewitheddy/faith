@@ -8,6 +8,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _fmt(value):
+    """Format a number with comma thousands separator, no decimals."""
+    try:
+        return f"{float(value):,.0f}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
 def send_order_confirmation_email(order):
     """
     Send order confirmation email to customer
@@ -34,14 +42,18 @@ def send_order_confirmation_email(order):
                 savings = (original_price - current_price) * order_item.quantity
                 total_savings += savings
             
+            subtotal = float(order_item.price * order_item.quantity)
             items.append({
                 'name': product_name,
                 'quantity': order_item.quantity,
-                'price': current_price,  # What customer pays
-                'original_price': original_price,  # Original price
+                'price': current_price,
+                'price_fmt': _fmt(current_price),
+                'original_price': original_price,
+                'original_price_fmt': _fmt(original_price),
                 'is_on_sale': is_on_sale,
                 'discount_percent': discount_percent,
-                'subtotal': float(order_item.price * order_item.quantity),
+                'subtotal': subtotal,
+                'subtotal_fmt': _fmt(subtotal),
                 'savings': savings,
             })
         
@@ -51,7 +63,9 @@ def send_order_confirmation_email(order):
             'order_date': order.created_at.strftime('%d %B %Y'),
             'items': items,
             'total': float(order.total_amount),
+            'total_fmt': _fmt(order.total_amount),
             'total_savings': total_savings,
+            'total_savings_fmt': _fmt(total_savings),
             'address': order.customer_address,
             'city': order.city if hasattr(order, 'city') else 'N/A',
             'phone': order.customer_phone,
@@ -108,14 +122,18 @@ def send_order_completion_email(order):
                 savings = (original_price - current_price) * order_item.quantity
                 total_savings += savings
             
+            subtotal = float(order_item.price * order_item.quantity)
             items.append({
                 'name': product_name,
                 'quantity': order_item.quantity,
-                'price': current_price,  # What customer pays
-                'original_price': original_price,  # Original price
+                'price': current_price,
+                'price_fmt': _fmt(current_price),
+                'original_price': original_price,
+                'original_price_fmt': _fmt(original_price),
                 'is_on_sale': is_on_sale,
                 'discount_percent': discount_percent,
-                'subtotal': float(order_item.price * order_item.quantity),
+                'subtotal': subtotal,
+                'subtotal_fmt': _fmt(subtotal),
                 'savings': savings,
             })
         
@@ -125,7 +143,9 @@ def send_order_completion_email(order):
             'completion_date': order.updated_at.strftime('%d %B %Y') if order.updated_at else 'Today',
             'items': items,
             'total': float(order.total_amount),
+            'total_fmt': _fmt(order.total_amount),
             'total_savings': total_savings,
+            'total_savings_fmt': _fmt(total_savings),
         }
         
         # Render HTML template

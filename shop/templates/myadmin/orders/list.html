@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <a href="{% url 'admin:dashboard' %}">Dashboard</a>
     <span class="breadcrumbs-separator">/</span>
     <span class="text-gold">Orders</span>
 </div>
@@ -15,7 +15,7 @@
 <div class="page-header">
     <h1 class="page-title">Orders</h1>
     <span style="font-size:13px;color:var(--text-muted);">{{ status_counts_total }} total</span>
-    <a href="{% url 'myadmin:order_export' %}?search={{ search_query }}&status={{ status_filter }}&date_from={{ date_from }}&date_to={{ date_to }}"
+    <a href="{% url 'admin:order_export' %}?search={{ search_query }}&status={{ status_filter }}&date_from={{ date_from }}&date_to={{ date_to }}"
        class="btn btn-secondary btn-sm" style="margin-left:auto;">⬇ Export CSV</a>
 </div>
 
@@ -60,14 +60,14 @@
             </div>
             <div style="display:flex;gap:8px;align-items:flex-end;">
                 <button type="submit" class="btn btn-primary">Filter</button>
-                <a href="{% url 'myadmin:order_list' %}" class="btn btn-secondary">Clear</a>
+                <a href="{% url 'admin:order_list' %}" class="btn btn-secondary">Clear</a>
             </div>
         </div>
     </form>
 </div>
 
 <!-- Bulk Actions -->
-<form method="post" action="{% url 'myadmin:order_bulk_action' %}" id="bulkForm">
+<form method="post" action="{% url 'admin:order_bulk_action' %}" id="bulkForm">
     {% csrf_token %}
     <input type="hidden" name="search" value="{{ search_query }}">
     <input type="hidden" name="status" value="{{ status_filter }}">
@@ -129,7 +129,7 @@
                     <td style="color:var(--text-muted);font-size:13px;">{{ order.created_at|date:"M d, Y H:i" }}</td>
                     <td>
                         <div class="table-actions" style="display:flex;gap:6px;align-items:center;">
-                            <form method="post" action="{% url 'myadmin:order_update_status' order.pk %}" style="display:flex;" class="inline-status-form">
+                            <form method="post" action="{% url 'admin:order_update_status' order.pk %}" style="display:flex;" class="inline-status-form">
                                 {% csrf_token %}
                                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
                                 <select name="status" class="form-select" style="width:auto;font-size:12px;padding:5px 8px;height:auto;"
@@ -139,7 +139,7 @@
                                     {% endfor %}
                                 </select>
                             </form>
-                            <a href="{% url 'myadmin:order_detail' order.pk %}" class="btn btn-secondary btn-sm">View</a>
+                            <a href="{% url 'admin:order_detail' order.pk %}" class="btn btn-secondary btn-sm">View</a>
                         </div>
                     </td>
                 </tr>

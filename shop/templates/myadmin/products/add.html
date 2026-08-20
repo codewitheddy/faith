@@ -5,9 +5,9 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-    <a href="{% url 'myadmin:dashboard' %}">Dashboard</a>
+    <a href="{% url 'admin:dashboard' %}">Dashboard</a>
     <span class="breadcrumbs-separator">/</span>
-    <a href="{% url 'myadmin:product_list' %}">Products</a>
+    <a href="{% url 'admin:product_list' %}">Products</a>
     <span class="breadcrumbs-separator">/</span>
     <span class="text-gold">Add Product</span>
 </div>
@@ -133,7 +133,7 @@
 
     <div class="form-actions">
         <button type="submit" class="btn btn-primary" onclick="serializeVariants()">Save Product</button>
-        <a href="{% url 'myadmin:product_list' %}" class="btn btn-secondary">Cancel</a>
+        <a href="{% url 'admin:product_list' %}" class="btn btn-secondary">Cancel</a>
     </div>
 
     <!-- Display all form errors at the top -->
